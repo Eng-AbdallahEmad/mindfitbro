@@ -90,6 +90,7 @@
                             ['label' => 'نتائج عملاؤنا',     'href' => route('home') . '#before-after'],
                             ['label' => 'آراء المشتركين',    'href' => route('home') . '#testimonials'],
                             ['label' => 'تواصل معنا',        'href' => route('home') . '#contact'],
+                            ['label' => 'حاسبة السعرات الحرارية', 'href' => route('calorie-calculator')],
                         ] as $link)
                         <li>
                             <a href="{{ $link['href'] }}"
@@ -160,11 +161,11 @@
                         </div>
                         +966 5x xxx xxxx
                     </a>
-                    <a href="mailto:hello@mindfitbro.com" class="group flex items-center gap-3 text-sm text-white/60 hover:text-white transition-colors duration-300">
+                    <a href="mailto:info@mindfitbro.com" class="group flex items-center gap-3 text-sm text-white/60 hover:text-white transition-colors duration-300">
                         <div class="w-8 h-8 rounded-[8px] bg-white/10 flex items-center justify-center flex-shrink-0 group-hover:bg-[#D4ED57]/20 transition-colors">
                             <span class="material-symbols-rounded text-[#D4ED57]/60 group-hover:text-[#D4ED57]" style="font-size:16px">mail</span>
                         </div>
-                        hello@mindfitbro.com
+                        info@mindfitbro.com
                     </a>
                     <div class="flex items-center gap-3 text-sm text-white/60">
                         <div class="w-8 h-8 rounded-[8px] bg-white/10 flex items-center justify-center flex-shrink-0">
@@ -177,7 +178,7 @@
                 <hr class="border-white/10">
 
                 {{-- الرقم الضريبي والسجل التجاري --}}
-                <div class="flex flex-col gap-3">
+                {{-- <div class="flex flex-col gap-3">
                     <div class="flex items-center gap-3 text-sm text-white/60">
                         <div class="w-8 h-8 rounded-[8px] bg-white/10 flex items-center justify-center flex-shrink-0">
                             <span class="material-symbols-rounded text-[#D4ED57]/60" style="font-size:16px">receipt_long</span>
@@ -196,7 +197,7 @@
                             <span>10xxxxxxxx</span>
                         </div>
                     </div>
-                </div>
+                </div> --}}
 
             </div>
 

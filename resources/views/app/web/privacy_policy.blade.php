@@ -172,8 +172,8 @@
                     </ul>
                     <p class="text-xs text-gray-400 leading-relaxed mt-1">
                         لممارسة حقوقك، تواصل معانا على
-                        <a href="mailto:hello@mindfitbro.com" class="text-primary font-bold hover:underline">
-                            hello@mindfitbro.com
+                        <a href="mailto:info@mindfitbro.com" class="text-primary font-bold hover:underline">
+                            info@mindfitbro.com
                         </a>
                     </p>
                 </div>
@@ -237,12 +237,12 @@
                 </p>
 
                 <div class="flex flex-col gap-3">
-                    <a href="mailto:hello@mindfitbro.com"
+                    <a href="mailto:info@mindfitbro.com"
                         class="group flex items-center gap-3 text-sm text-gray-600 hover:text-primary transition-colors duration-300 w-fit">
                         <div class="w-8 h-8 rounded-[8px] bg-white border border-gray-100 flex items-center justify-center flex-shrink-0 group-hover:border-primary/30 transition-colors">
                             <span class="material-symbols-rounded text-primary" style="font-size:16px">mail</span>
                         </div>
-                        <span class="font-semibold">hello@mindfitbro.com</span>
+                        <span class="font-semibold">info@mindfitbro.com</span>
                     </a>
                     <a href="tel:+96650000000"
                         class="group flex items-center gap-3 text-sm text-gray-600 hover:text-primary transition-colors duration-300 w-fit">

@@ -13,11 +13,25 @@ return new class extends Migration
     {
         Schema::create('users', function (Blueprint $table) {
             $table->id();
+
+            // Basic Info
             $table->string('name');
+            $table->string('username')->unique();
+            $table->string('phone')->nullable();
             $table->string('email')->unique();
-            $table->timestamp('email_verified_at')->nullable();
+            $table->enum('gender', ['male', 'female'])->nullable();
+
+            // Auth
             $table->string('password');
+            $table->timestamp('email_verified_at')->nullable();
             $table->rememberToken();
+
+            // Optional for fitness system
+            $table->enum('role', ['user', 'coach', 'admin'])->default('user');
+            $table->enum('status', ['active', 'inactive', 'banned'])->default('active');
+
+            $table->timestamp('terms_accepted_at')->nullable();
+
             $table->timestamps();
         });
 

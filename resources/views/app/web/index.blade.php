@@ -85,30 +85,30 @@
 
         <div class="absolute transform -translate-x-[66.8rem] translate-y-[70px] max-w-[195px] hidden lg:block">
             <p class="text-white text-xl font-black font-arabic">
-                أكثر من <span class="text-[#D4ED57] font-bold">5000</span> قصة نجاح
+                أكثر من <span class="text-[#D4ED57] font-bold">500</span> قصة نجاح
             </p>
         </div>
 
         {{-- Content --}}
         <div class="relative z-10 text-right px-4 lg:px-6 w-full">
-            <h2 class="text-white font-semibold font-arabic text-xl lg:text-3xl">هـل أنــــت جــاهـز تبقـي أقـوي ....</h2>
-            <h1 class="text-white font-black font-display text-[5.7rem] lg:text-[14rem] text-center my-5 lg:my-0">ذهنيـاً وجـسديــاً؟</h1>
+            <h2 class="text-white font-semibold font-arabic text-xl lg:text-3xl">رحلتك تبدأ الآن بـ....</h2>
+            <h1 class="text-white font-black font-display text-[5.7rem] lg:text-[14rem] text-center my-5 lg:my-0">نتــائــج حـقيـقيـة</h1>
 
-            <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 hidden lg:block">
+            <div class="absolute top-1/2 left-1/2 translate-x-[-60%] translate-y-[-46%] hidden lg:block w-[800px]">
 
                 <!-- Image -->
                 <img 
-                class="w-[520px]"
+                class="w-full"
                 src="{{ asset('assets/imgs/hero.png') }}"
                 alt="{{ config('app.name', 'laravel') }}"
                 >
 
                 <!-- Shadow -->
-                <div class="absolute bottom-[65px] left-[43%] -translate-x-1/2 w-[280px] h-[30px] bg-black blur-xl rounded-full"></div>
+                <div class="absolute bottom-[65px] left-1/2 -translate-x-1/2 w-[640px] h-[30px] bg-black blur-xl rounded-full"></div>
 
                 <!-- Outline Text -->
-                <h2 class="absolute top-[18%] lg:top-[42%] left-1/2 -translate-x-1/2 -translate-y-1/2 text-outline font-black text-center pointer-events-none lg:whitespace-nowrap font-display text-[14rem]">
-                    ذهنيـاً وجـسديــاً؟
+                <h2 class="absolute top-[18%] lg:top-[38%] left-1/2 translate-x-[-43.5%] -translate-y-1/2 text-outline font-black text-center pointer-events-none lg:whitespace-nowrap font-display text-[14rem]">
+                    نتــائــج حـقيـقيـة
                 </h2>
 
             </div>
@@ -407,7 +407,7 @@
 
                                 <img src="{{ asset('assets/imgs/t1.png') }}"
                                     class="w-full h-full object-cover"
-                                    alt="كابتن 1">
+                                    alt="MindFitBro - Salim Taboubi">
 
                             </div>
                         </div>
@@ -418,7 +418,7 @@
 
                                 <img src="{{ asset('assets/imgs/t2.png') }}"
                                     class="w-full h-full object-cover"
-                                    alt="كابتن 2">
+                                    alt="MindFitBro - Ahmed Mostafa">
                             </div>
                         </div>
 
@@ -428,39 +428,9 @@
 
                                 <img src="{{ asset('assets/imgs/t3.png') }}"
                                     class="w-full h-full object-cover"
-                                    alt="كابتن 3">
+                                    alt="MindFitBro - Mahmoud Ahab">
                             </div>
-                        </div>
-
-                        <!-- Slide 4 -->
-                        <div class="swiper-slide">
-                            <div class="relative w-full h-full">
-
-                                <img src="{{ asset('assets/imgs/t4.png') }}"
-                                    class="w-full h-full object-cover"
-                                    alt="كابتن 4">
-                            </div>
-                        </div>
-
-                        <!-- Slide 5 -->
-                        <div class="swiper-slide">
-                            <div class="relative w-full h-full">
-
-                                <img src="{{ asset('assets/imgs/t5.png') }}"
-                                    class="w-full h-full object-cover"
-                                    alt="كابتن 5">
-                            </div>
-                        </div>
-
-                        <!-- Slide 6 -->
-                        <div class="swiper-slide">
-                            <div class="relative w-full h-full">
-
-                                <img src="{{ asset('assets/imgs/t6.png') }}"
-                                    class="w-full h-full object-cover"
-                                    alt="كابتن 6">
-                            </div>
-                        </div>                        
+                        </div>                       
                     </div>
 
                     <!-- Pagination -->
@@ -597,13 +567,11 @@
 
         @php
             $beforeAfterClients = [
-                ['name'=>'أحمد سامي', 'image'=>asset('assets/imgs/t1.png')],
-                ['name'=>'محمد علي', 'image'=>asset('assets/imgs/t2.png')],
-                ['name'=>'خالد أمين', 'image'=>asset('assets/imgs/t3.png')],
-                ['name'=>'يوسف حسن', 'image'=>asset('assets/imgs/t4.png')],
-                ['name'=>'عمر فاروق', 'image'=>asset('assets/imgs/t5.png')],
-                ['name'=>'كريم ناصر','image'=>asset('assets/imgs/t6.png')],
-                ['name'=>'طارق محمود', 'image'=>asset('assets/imgs/t7.png')],
+                ['name'=>'Client 1', 'image'=>asset('assets/imgs/c1.png')],
+                ['name'=>'Client 2', 'image'=>asset('assets/imgs/c2.png')],
+                ['name'=>'Client 3', 'image'=>asset('assets/imgs/c3.png')],
+                ['name'=>'Client 4', 'image'=>asset('assets/imgs/c4.png')],
+                ['name'=>'Client 5', 'image'=>asset('assets/imgs/c5.png')],
             ];
         @endphp
 
@@ -750,7 +718,7 @@
             $plans = [
                 [
                     'key'        => 'starter',
-                    'name'       => 'ستارتر',
+                    'name'       => 'الأساسي',
                     'icon'       => 'bolt',
                     'icon_bg'    => 'bg-blue-50',
                     'icon_color' => 'text-primary',
@@ -759,16 +727,18 @@
                     'popular'    => false,
                     'btn_class'  => 'border-2 border-primary text-primary hover:bg-blue-50',
                     'features'   => [
-                        ['text' => 'خطة تدريب أساسية',      'check' => true],
-                        ['text' => 'برنامج غذائي مبدئي',     'check' => true],
-                        ['text' => 'متابعة أسبوعية',         'check' => true],
-                        ['text' => 'جلسات فيديو مع الكوتش', 'check' => false],
-                        ['text' => 'تحليل مختبري',           'check' => false],
+                        ['text' => 'برنامج تدريبي',                             'check' => true],
+                        ['text' => 'برنامج غذائي',                              'check' => true],
+                        ['text' => 'نظام مكملات',                                'check' => true],
+                        ['text' => 'متابعة شهرية',                              'check' => true],
+                        ['text' => 'التعديلات في البرامج حسب التطور',           'check' => true],
+                        ['text' => 'إتاحة الباقة العائلية',                     'check' => false],
+                        ['text' => 'متابعة طبية (حسب الحاجة)',                  'check' => false],
                     ],
                 ],
                 [
                     'key'        => 'pro',
-                    'name'       => 'برو',
+                    'name'       => 'النخبة',
                     'icon'       => 'star',
                     'icon_bg'    => 'bg-primary',
                     'icon_color' => 'text-accent',
@@ -777,11 +747,13 @@
                     'popular'    => true,
                     'btn_class'  => 'bg-accent text-darkBg hover:bg-yellow-300',
                     'features'   => [
-                        ['text' => 'خطة تدريب متقدمة',   'check' => true],
-                        ['text' => 'برنامج غذائي مفصّل',  'check' => true],
-                        ['text' => 'متابعة يومية',        'check' => true],
-                        ['text' => 'جلستين فيديو شهرياً', 'check' => true],
-                        ['text' => 'تحليل مختبري',        'check' => false],
+                        ['text' => 'برنامج تدريبي',                         'check' => true],
+                        ['text' => 'برنامج غذائي',                          'check' => true],
+                        ['text' => 'نظام مكملات',                            'check' => true],
+                        ['text' => 'متابعة أسبوعية',                        'check' => true],
+                        ['text' => 'متابعة طبية (حسب الحاجة)',             'check' => true],
+                        ['text' => 'إتاحة الباقة العائلية',                'check' => true],
+                        ['text' => 'التعديلات في البرامج حسب التطور',      'check' => true],
                     ],
                 ],
                 [
@@ -795,11 +767,13 @@
                     'popular'    => false,
                     'btn_class'  => 'bg-primary text-white hover:bg-blue-800',
                     'features'   => [
-                        ['text' => 'كل مميزات برو',             'check' => true],
-                        ['text' => 'كوتش خاص على مدار الساعة', 'check' => true],
-                        ['text' => 'جلسات فيديو أسبوعية',      'check' => true],
-                        ['text' => 'تحليل مختبري شامل',         'check' => true],
-                        ['text' => 'تقرير تقدم شهري مفصّل',    'check' => true],
+                        ['text' => 'برنامج تدريبي',                         'check' => true],
+                        ['text' => 'برنامج غذائي',                          'check' => true],
+                        ['text' => 'نظام مكملات',                            'check' => true],
+                        ['text' => 'متابعة يومية',                          'check' => true],
+                        ['text' => 'متابعة طبية (حسب الحاجة)',             'check' => true],
+                        ['text' => 'إتاحة الباقة العائلية',                'check' => true],
+                        ['text' => 'التعديلات في البرامج حسب التطور',      'check' => true],
                     ],
                 ],
             ];
@@ -990,46 +964,46 @@
         @php
             $testimonials = [
                 [
-                    'name'   => 'أحمد سامي',
-                    'title'  => 'خسر 18 كجم في 3 أشهر',
-                    'avatar' => asset('assets/imgs/t1.png'),
+                    'name'   => 'Farouq Hashim',
+                    'title'  => 'Jan 27, 2026',
+                    'avatar' => 'https://ui-avatars.com/api/?name=Farouq+Hashim&background=174DAD&color=fff&size=44',
                     'rating' => 5,
-                    'text'   => 'والله ما توقعت النتيجة تكون بالشكل ده بسرعة، الكوتش متابعني يومياً والخطة كانت مضبوطة على جسمي تماماً. حياتي اتغيرت فعلاً.',
+                    'text'   => 'An excellent coach. Very professional and committed, always follows up on the traning and motivates you to improve',
                 ],
                 [
-                    'name'   => 'محمد علي',
-                    'title'  => 'خسر 24 كجم في 6 أشهر',
-                    'avatar' => asset('assets/imgs/t2.png'),
+                    'name'   => 'Mohammad Alhamdan',
+                    'title'  => 'Jan 15, 2026',
+                    'avatar' => 'https://ui-avatars.com/api/?name=Muhammad+Alhamdan&background=E8FE61&color=000&size=44',
                     'rating' => 5,
-                    'text'   => 'جربت برامج كتير قبل كده بس MindFitBro هو الأول اللي حسيت فيه بفرق حقيقي. النظام الغذائي والتدريب مع بعض عملوا معجزة.',
+                    'text'   => 'The best of the best very informed almost a doctor!! 👍',
                 ],
                 [
-                    'name'   => 'خالد أمين',
-                    'title'  => 'خسر 15 كجم في 4 أشهر',
-                    'avatar' => asset('assets/imgs/t3.png'),
+                    'name'   => 'Omar Hassan',
+                    'title'  => 'Mar 10, 2026',
+                    'avatar' => 'https://ui-avatars.com/api/?name=Omar+Hassan&background=F5C842&color=fff&size=44',
                     'rating' => 5,
-                    'text'   => 'أكتر حاجة عجبتني هي المتابعة اليومية، مش بس خطة وخلاص. الكوتش كان معايا في كل خطوة وده خلاني أكمل من غير ما أفقد الحماس.',
+                    'text'   => 'out of the 5 years I\'ve been training, coach Ahmed is by far the best coach I\'ve had. he had shown me techniques and mistakes in my training that I never new I had. he is Very understanding and will make a schedule that suits your lifestyle perfectly.',
                 ],
                 [
-                    'name'   => 'يوسف حسن',
-                    'title'  => 'خسر 20 كجم في 5 أشهر',
-                    'avatar' => asset('assets/imgs/t4.png'),
+                    'name'   => 'نايف ال بسام',
+                    'title'  => 'Dec 29, 2025',
+                    'avatar' => 'https://ui-avatars.com/api/?name=Naife+Al+Bassam&background=1D9E75&color=fff&size=44',
                     'rating' => 5,
-                    'text'   => 'البرنامج مش بس غيّر جسمي، غيّر تفكيري كمان. بقيت أفهم جسمي أكتر وأعرف أتعامل مع الأكل والتمرين بشكل صح.',
+                    'text'   => 'والله كويس المدرب عجبتني الحصة شكرا لكم 💜',
                 ],
                 [
-                    'name'   => 'عمر فاروق',
-                    'title'  => 'خسر 12 كجم في 3 أشهر',
-                    'avatar' => asset('assets/imgs/t5.png'),
-                    'rating' => 4,
-                    'text'   => 'نتائج ممتازة في وقت قصير، التحليل المختبري في أول البرنامج فرّق معايا كتير لأنهم عرفوا المشكلة الحقيقية ووضعوا الحل الصح.',
+                    'name'   => 'سامي مؤمنة',
+                    'title'  => 'Feb 23, 2026',
+                    'avatar' => 'https://ui-avatars.com/api/?name=Sami+Moumena&background=D85A30&color=fff&size=44',
+                    'rating' => 5,
+                    'text'   => 'الله يعطيك العافية يا كوتش ما قصرت انبسطت جداً معاك في الجلسه وأتعلمت منك أشياء كثير',
                 ],
                 [
-                    'name'   => 'كريم ناصر',
-                    'title'  => 'خسر 30 كجم في 8 أشهر',
-                    'avatar' => asset('assets/imgs/t6.png'),
+                    'name'   => 'Osama Damanhori',
+                    'title'  => 'Feb 22, 2026',
+                    'avatar' => 'https://ui-avatars.com/api/?name=Osama+Damanhori&background=7F77DD&color=fff&size=44',
                     'rating' => 5,
-                    'text'   => 'ثمانية أشهر غيّروا حياتي للأبد. الفريق كان محترف جداً والنتائج تتكلم عن نفسها. أنصح كل واحد عنده هدف يجرب MindFitBro.',
+                    'text'   => 'مدرب فنان جداً مهتم بانه يطلع أفضل أداء عندك',
                 ],
             ];
         @endphp
@@ -1053,8 +1027,9 @@
             <div class="flex flex-col items-center gap-1">
                 <span
                     class="font-display text-3xl lg:text-5xl font-semibold text-textColor"
-                    data-count="5000">
-                    +5000
+                    data-suffix="+"
+                    data-count="500" dir="ltr">
+                    500+
                 </span>
                 <span class="text-gray-500 text-xs lg:text-sm font-medium">عميل راضي</span>
             </div>
@@ -1064,9 +1039,9 @@
             <div class="flex flex-col items-center gap-1">
                 <span
                     class="font-display text-3xl lg:text-5xl font-semibold text-textColor"
-                    data-count="4.9"
+                    data-count="5.0"
                     data-decimals="1">
-                    4.9
+                    5.0
                 </span>
                 <div class="flex gap-0.5">
                     @for($i = 0; $i < 5; $i++)
@@ -1080,9 +1055,10 @@
             <div class="flex flex-col items-center gap-1">
                 <span
                     class="font-display text-3xl lg:text-5xl font-semibold text-textColor"
-                    data-count="98"
+                    data-count="100"
+                    data-suffix="%"
                     data-decimals="0">
-                    98%
+                    100%
                 </span>
                 <span class="text-gray-500 text-xs lg:text-sm font-arabic font-medium">نسبة الرضا</span>
             </div>
@@ -1307,7 +1283,7 @@
                 </div>
                 <span class="text-lg font-black text-textColor">البريد الإلكتروني</span>
                 <span class="text-xs text-gray-400 font-semibold leading-relaxed">بنرد خلال 24 ساعة</span>
-                <span class="text-sm font-bold text-primary">hello@mindfitbro.com</span>
+                <a href="mailto:info@mindfitbro.com" class="text-sm font-bold text-primary hover:underline">info@mindfitbro.com</a>
             </div>
 
         </div>
@@ -1416,7 +1392,7 @@
                     <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
                         <div class="flex flex-col gap-1.5">
                             <label class="text-[13px] font-bold text-textColor">الاسم الكامل</label>
-                            <input type="text" name="name" placeholder="مثال: أحمد محمد"
+                            <input type="text" name="name" placeholder="مثال: عبدالله عماد"
                                 class="bg-[#F4F7FF] border border-[#e0e8ff] focus:border-primary rounded-xl px-4 py-3 text-sm text-textColor outline-none transition-colors duration-200 font-arabic w-full">
                         </div>
                         <div class="flex flex-col gap-1.5">
