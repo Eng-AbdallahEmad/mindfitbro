@@ -365,7 +365,7 @@
                         type="tel"
                         name="phone"
                         value="{{ old('phone') }}"
-                        placeholder="+966 5x xxx xxxx"
+                        placeholder="+966 5xx xxx xxx"
                         autocomplete="tel"
                         class="auth-input @error('phone') error @enderror"
                     >

@@ -72,9 +72,9 @@
     <x-web.navbar :transparent="true" />
 
     {{-- Hero Section --}}
-    <section class="hero relative w-full flex items-center overflow-hidden px-2 lg:px-28 pt-[7.8rem] lg:pt-[13rem] pb-[5rem] lg:pb-[10rem]">
+    <section class="hero relative w-full flex items-center overflow-hidden px-2 xl:px-28 pt-[10rem] lg:pt-[20rem] pb-[5rem] lg:pb-[10rem]">
         <div class="absolute top-0 left-[149px] w-[195px] h-[34rem] z-20 pointer-events-none
-                    bg-gradient-to-b from-white/30 to-transparent hidden lg:block"></div>
+                    bg-gradient-to-b from-white/30 to-transparent hidden xl:block"></div>
 
         {{-- Background Layer --}}
         <div class="hero-bg absolute inset-0 z-0"></div>
@@ -83,7 +83,7 @@
         <div class="orb orb-1 absolute z-0 hidden lg:block"></div>
         <div class="orb orb-2 absolute z-0 hidden lg:block"></div>
 
-        <div class="absolute transform -translate-x-[66.8rem] translate-y-[70px] max-w-[195px] hidden lg:block">
+        <div class="absolute transform -translate-x-[66.8rem] translate-y-[70px] max-w-[195px] hidden xl:block">
             <p class="text-white text-xl font-black font-arabic">
                 أكثر من <span class="text-[#D4ED57] font-bold">500</span> قصة نجاح
             </p>
@@ -91,13 +91,13 @@
 
         {{-- Content --}}
         <div class="relative z-10 text-right px-4 lg:px-6 w-full">
-            <h2 class="text-white font-semibold font-arabic text-xl lg:text-3xl">رحلتك تبدأ الآن بـ....</h2>
-            <h1 class="text-white font-black font-display text-[5.7rem] lg:text-[14rem] text-center my-5 lg:my-0">نتــائــج حـقيـقيـة</h1>
+            <h2 class="text-white font-semibold font-arabic text-xl lg:text-3xl">رحلتك تبدأ الآن بــــــ</h2>
+            <h1 class="text-white font-black font-display text-[4.2rem] md:text-[12rem] xl:text-[9rem] text-center my-5 lg:my-0 md:whitespace-nowrap">نتـائـج حـقيقية</h1>
 
-            <div class="absolute top-1/2 left-1/2 translate-x-[-60%] translate-y-[-46%] hidden lg:block w-[800px]">
+            <div class="absolute top-1/2 left-1/2 md:translate-x-[-70%] xl:translate-x-[-60%] md:translate-y-[-42%] xl:translate-y-[-46%] hidden lg:block md:w-[800px]">
 
                 <!-- Image -->
-                <img 
+                <img
                 class="w-full"
                 src="{{ asset('assets/imgs/hero.png') }}"
                 alt="{{ config('app.name', 'laravel') }}"
@@ -107,13 +107,13 @@
                 <div class="absolute bottom-[65px] left-1/2 -translate-x-1/2 w-[640px] h-[30px] bg-black blur-xl rounded-full"></div>
 
                 <!-- Outline Text -->
-                <h2 class="absolute top-[18%] lg:top-[38%] left-1/2 translate-x-[-43.5%] -translate-y-1/2 text-outline font-black text-center pointer-events-none lg:whitespace-nowrap font-display text-[14rem]">
-                    نتــائــج حـقيـقيـة
+                <h2 class="absolute md:top-[31%] xl:top-[38%] left-1/2 md:translate-x-[-35.5%] xl:translate-x-[-47.2%] -translate-y-1/2 text-outline font-black text-center pointer-events-none lg:whitespace-nowrap font-display md:text-[12rem] xl:text-[9rem]">
+                    نتـائـج حـقيقية
                 </h2>
 
             </div>
 
-            <h3 class="text-white font-normal font-arabic max-w-lg text-base lg:text-xl z-50 relative">
+            <h3 class="text-white font-normal font-arabic md:mt-4 xl:mt-0 md:max-w-md xl:max-w-lg text-base lg:text-xl z-50 relative">
                 سواء كنت تسعى لضبط الهرمونات، تحسين صحة الجهاز الهضمي، أو الوصول لقوام مثالي…
                 نقدّم لك تدريبًا احترافيًا قائمًا على العلم، يحقق نتائج حقيقية ومستدامة.
             </h3>
@@ -143,12 +143,12 @@
                     'العيد خلص بس عروضنا لسه مخلصتش',
                 ];
             @endphp
-        
+
         <div class="flex w-max animate-marquee group-hover:[animation-play-state:paused]">
-            
+
             @foreach(array_merge($items, $items) as $item)
                 <span class="flex items-center gap-[28px] px-[28px] whitespace-nowrap text-[14px] font-bold text-textColor tracking-[0.01em] font-arabic">
-                    
+
                     {{ $item }}
 
                     <span class="flex items-center text-blue-600">
@@ -167,18 +167,18 @@
     {{-- Why Us Section --}}
     <section id="our-target" class="bg-white w-full py-16 lg:py-28 px-8 lg:px-20 flex flex-col justify-center">
         <div class="flex flex-col justify-center items-center mb-7">
-            <h2 class="font-display text-4xl lg:text-7xl cursor-default transition-all duration-300 text-textColor hover:text-primary font-semibold mb-4 lg:mb-7">
+            <h2 class="font-display text-3xl lg:text-7xl cursor-default transition-all duration-300 text-textColor hover:text-primary font-semibold mb-4 lg:mb-7">
                 أنت مش لوحدك في الرحلة
             </h2>
             <p class="font-arabic font-bold text-textColor text-sm lg:text-xl flex items-center justify-center gap-1 text-center leading-relaxed">
                 كل هدف له طريق… ومع مجتمع MindFitBro مش بس هتمشيه، أنت هتكسّره لحد ما تبقى أقوى نسخة من نفسك
 
-                <lottie-player 
-                    src="{{ asset('assets/lotties/Muscle.json') }}" 
-                    background="transparent" 
-                    speed="1" 
+                <lottie-player
+                    src="{{ asset('assets/lotties/Muscle.json') }}"
+                    background="transparent"
+                    speed="1"
                     class="w-[40px] h-[40px] translate-y-[-9px] hidden lg:block"
-                    loop 
+                    loop
                     autoplay>
                 </lottie-player>
             </p>
@@ -188,15 +188,6 @@
             <div class="swiper-wrapper">
                 <div class="swiper-slide">
                     <div class="video-card relative w-full h-full rounded-2xl overflow-hidden bg-black">
-
-                        <!-- الفيديو -->
-                        <video
-                            class="video-slide absolute inset-0 w-full h-full object-cover opacity-0 pointer-events-none transition-all duration-700"
-                            playsinline
-                            preload="metadata">
-                            <source src="{{ asset('assets/videos/v1.mp4') }}" type="video/mp4">
-                        </video>
-
                         <!-- الثمبنيل + زر التشغيل -->
                         <div class="video-overlay absolute inset-0 z-10 transition-all duration-700 opacity-100">
                             <img
@@ -209,28 +200,20 @@
                             <div class="absolute inset-0 bg-black/30"></div>
 
                             <!-- زر التشغيل -->
-                            <button
-                                type="button"
+                            <a
+                                href="https://drive.google.com/file/d/1_uI2GML9pVNSK-3oa1JuXqbuXRBhwf13/view?usp=sharing"
+                                target="_blank"
                                 class="play-btn absolute inset-0 m-auto w-20 h-20 rounded-full bg-white/90 flex items-center justify-center shadow-xl hover:scale-110 transition duration-300">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="w-9 h-9 text-black mr-[-3px]" fill="currentColor" viewBox="0 0 24 24">
                                     <path d="M8 5.14v14l11-7-11-7z"/>
                                 </svg>
-                            </button>
+                            </a>
                         </div>
 
                     </div>
                 </div>
                 <div class="swiper-slide">
                     <div class="video-card relative w-full h-full rounded-2xl overflow-hidden bg-black">
-
-                        <!-- الفيديو -->
-                        <video
-                            class="video-slide absolute inset-0 w-full h-full object-cover opacity-0 pointer-events-none transition-all duration-700"
-                            playsinline
-                            preload="metadata">
-                            <source src="{{ asset('assets/videos/v1.mp4') }}" type="video/mp4">
-                        </video>
-
                         <!-- الثمبنيل + زر التشغيل -->
                         <div class="video-overlay absolute inset-0 z-10 transition-all duration-700 opacity-100">
                             <img
@@ -243,28 +226,20 @@
                             <div class="absolute inset-0 bg-black/30"></div>
 
                             <!-- زر التشغيل -->
-                            <button
-                                type="button"
+                            <a
+                                href="https://drive.google.com/file/d/1_uI2GML9pVNSK-3oa1JuXqbuXRBhwf13/view?usp=sharing"
+                                target="_blank"
                                 class="play-btn absolute inset-0 m-auto w-20 h-20 rounded-full bg-white/90 flex items-center justify-center shadow-xl hover:scale-110 transition duration-300">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="w-9 h-9 text-black mr-[-3px]" fill="currentColor" viewBox="0 0 24 24">
                                     <path d="M8 5.14v14l11-7-11-7z"/>
                                 </svg>
-                            </button>
+                            </a>
                         </div>
 
                     </div>
                 </div>
                 <div class="swiper-slide">
                     <div class="video-card relative w-full h-full rounded-2xl overflow-hidden bg-black">
-
-                        <!-- الفيديو -->
-                        <video
-                            class="video-slide absolute inset-0 w-full h-full object-cover opacity-0 pointer-events-none transition-all duration-700"
-                            playsinline
-                            preload="metadata">
-                            <source src="{{ asset('assets/videos/v1.mp4') }}" type="video/mp4">
-                        </video>
-
                         <!-- الثمبنيل + زر التشغيل -->
                         <div class="video-overlay absolute inset-0 z-10 transition-all duration-700 opacity-100">
                             <img
@@ -277,13 +252,14 @@
                             <div class="absolute inset-0 bg-black/30"></div>
 
                             <!-- زر التشغيل -->
-                            <button
-                                type="button"
+                            <a
+                                href="https://drive.google.com/file/d/1_uI2GML9pVNSK-3oa1JuXqbuXRBhwf13/view?usp=sharing"
+                                target="_blank"
                                 class="play-btn absolute inset-0 m-auto w-20 h-20 rounded-full bg-white/90 flex items-center justify-center shadow-xl hover:scale-110 transition duration-300">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="w-9 h-9 text-black mr-[-3px]" fill="currentColor" viewBox="0 0 24 24">
                                     <path d="M8 5.14v14l11-7-11-7z"/>
                                 </svg>
-                            </button>
+                            </a>
                         </div>
 
                     </div>
@@ -293,7 +269,7 @@
         </div>
 
         <div class="my-9 lg:my-24 text-center">
-            <h2 class="font-display text-4xl lg:text-7xl cursor-default transition-all duration-300 text-textColor hover:text-primary font-semibold mb-4 lg:mb-7">خد بالك</h2>
+            <h2 class="font-display text-3xl lg:text-7xl cursor-default transition-all duration-300 text-textColor hover:text-primary font-semibold mb-4 lg:mb-7">خد بالك</h2>
             <p class="font-arabic font-bold text-textColor text-xl lg:text-5xl">مش كل البرامج شبه بعض… شوف الفرق</p>
         </div>
 
@@ -393,11 +369,11 @@
     {{-- Our Services Section --}}
     <section class="w-full bg-[#EFF5FF] py-16 lg:py-28 px-8 lg:px-20">
         <div class="flex flex-col-reverse md:flex-row-reverse gap-8 items-start">
-    
-            <!-- RIGHT: Slider -->
-            <div class="w-full md:w-[750px] flex-shrink-0 mx-auto md:mx-0">
 
-                <div class="swiper mySwiper2 w-full lg:w-[70%] h-[310px] lg:h-[550px] aspect-[9/16] rounded-2xl overflow-hidden shadow-2xl">
+            <!-- RIGHT: Slider -->
+            <div class="w-full md:w-[420px] xl:w-[750px] flex-shrink-0 mx-auto md:mx-0">
+
+                <div class="swiper mySwiper2 w-full md:w-[100%] xl:w-[70%] h-[310px] lg:h-[550px] aspect-[9/16] rounded-2xl overflow-hidden shadow-2xl">
 
                     <div class="swiper-wrapper">
 
@@ -430,7 +406,7 @@
                                     class="w-full h-full object-cover"
                                     alt="MindFitBro - Mahmoud Ahab">
                             </div>
-                        </div>                       
+                        </div>
                     </div>
 
                     <!-- Pagination -->
@@ -439,13 +415,13 @@
                 </div>
 
             </div>
-        
+
             <!-- LEFT: Content -->
             <div class="flex flex-col gap-6">
 
                 <!-- Heading -->
                 <div>
-                    <h2 class="font-display text-4xl lg:text-7xl cursor-default transition-all duration-300 text-textColor hover:text-primary font-semibold mb-4 lg:mb-7">
+                    <h2 class="font-display text-3xl lg:text-7xl cursor-default transition-all duration-300 text-textColor hover:text-primary font-semibold mb-4 lg:mb-7">
                         مش بنقدّم تمارين وبس…
                     </h2>
                     <p class="text-base leading-relaxed text-[#1C1C1C] font-arabic">
@@ -577,26 +553,26 @@
 
         {{-- Header --}}
         <div class="flex flex-col items-center gap-3 text-center px-6">
-            <h2 class="font-display text-4xl lg:text-7xl cursor-default transition-all duration-300 text-textColor hover:text-primary font-semibold mb-4 lg:mb-7">
+            <h2 class="font-display text-3xl lg:text-7xl cursor-default transition-all duration-300 text-textColor hover:text-primary font-semibold mb-4 lg:mb-7">
                 نتائــج حـــقيقية
             </h2>
             <p class="font-arabic font-bold text-textColor text-base lg:text-xl flex items-center justify-center gap-1 text-center leading-relaxed">
-                <lottie-player 
-                    src="{{ asset('assets/lotties/Muscle.json') }}" 
-                    background="transparent" 
-                    speed="1" 
+                <lottie-player
+                    src="{{ asset('assets/lotties/Muscle.json') }}"
+                    background="transparent"
+                    speed="1"
                     class="w-[40px] h-[40px] translate-y-[-9px] scale-x-[-1]"
-                    loop 
+                    loop
                     autoplay>
                 </lottie-player>
                 أبطالنا… نتائجهم تتكلم — MindFitBro
 
-                <lottie-player 
-                    src="{{ asset('assets/lotties/Muscle.json') }}" 
-                    background="transparent" 
-                    speed="1" 
+                <lottie-player
+                    src="{{ asset('assets/lotties/Muscle.json') }}"
+                    background="transparent"
+                    speed="1"
                     class="w-[40px] h-[40px] translate-y-[-9px]"
-                    loop 
+                    loop
                     autoplay>
                 </lottie-player>
             </p>
@@ -633,16 +609,16 @@
         </div>
 
         {{-- Our Message --}}
-        <div class="mt-8 lg:mt-14 px-3 lg:px-0">
+        <div class="mt-8 lg:mt-14 px-3 lg:px-24">
             <div class="container px-5 lg:px-52 py-10 lg:py-28 bg-primary shadow-xl rounded-[20px] relative overflow-hidden text-center">
 
                 {{-- Decorative Lines --}}
-                <img src="{{ asset('assets/icons/line1.svg') }}" 
-                    alt="" 
+                <img src="{{ asset('assets/icons/line1.svg') }}"
+                    alt=""
                     class="absolute bottom-[-35px] right-[-20px]">
 
-                <img src="{{ asset('assets/icons/line2.svg') }}" 
-                    alt="" 
+                <img src="{{ asset('assets/icons/line2.svg') }}"
+                    alt=""
                     class="absolute top-[-35px] left-[-20px]">
 
                 {{-- Title --}}
@@ -652,17 +628,17 @@
 
                 {{-- Main Heading --}}
                 <h3 class="font-display mb-6 text-[1.72rem] lg:text-[2.6rem] leading-snug text-white z-10">
-                    في MindFitBro، مهمتنا مش بس إنك تتمرن… 
+                    في MindFitBro، مهمتنا مش بس إنك تتمرن…
                     <span class="text-accent">مهمتنا إنك تتحول</span>
                 </h3>
 
                 {{-- Description --}}
                 <p class="font-arabic text-base lg:text-lg text-white/90 leading-relaxed max-w-3xl mx-auto z-10">
-                    بنبني عقلية منضبطة تقودك للاستمرار 
+                    بنبني عقلية منضبطة تقودك للاستمرار
                     <span class="text-accent font-bold">(Mind)</span>،
-                    ونحوّلها لقوة وأداء حقيقي على أرض الواقع 
+                    ونحوّلها لقوة وأداء حقيقي على أرض الواقع
                     <span class="text-accent font-bold">(Fit)</span>،
-                    وسط مجتمع بيدعمك ويدفعك للأمام 
+                    وسط مجتمع بيدعمك ويدفعك للأمام
                     <span class="text-accent font-bold">(Bro)</span>.
 
                     من خلال خبرتنا مع آلاف المشتركين، فهمنا كل التحديات اللي بتواجهك،
@@ -711,72 +687,11 @@
         </div>
 
         @php
-            $familyOffer = true;
+            $familyPlanIds = [2, 3];
+            $familyOffer = $subscription
+                && in_array($subscription->plan_id, $familyPlanIds);
 
             $sarIcon = '<svg width="14" height="16" viewBox="0 0 16 18" fill="none" xmlns="http://www.w3.org/2000/svg" class="inline-block flex-shrink-0" style="vertical-align:middle"><path d="M9.36633 2.59339C10.0415 1.83554 10.4564 1.4953 11.2713 1.06514V13.6848L9.36633 14.0784V2.59339Z" fill="currentColor"/><path d="M15.4529 8.93793C15.8478 8.10434 15.8943 7.73386 16 6.87871L1.39805 10.0494C1.05179 10.8207 0.940326 11.2518 0.886964 12.0176L15.4529 8.93793Z" fill="currentColor"/><path d="M15.4529 12.8033C15.8478 11.9697 15.8943 11.5992 16 10.744L9.43602 12.1334C9.38956 12.8975 9.44292 13.2895 9.38956 14.0552L15.4529 12.8033Z" fill="currentColor"/><path d="M15.4529 16.668C15.8478 15.8345 15.8943 15.464 16 14.6088L10.0168 15.9077C9.7148 16.3245 9.52895 17.0191 9.38956 17.92L15.4529 16.668Z" fill="currentColor"/><path d="M5.95136 15.3519C6.53213 14.6341 7.13614 13.7311 7.5543 12.9901L0.51109 14.5167C0.164822 15.2881 0.0533618 15.7192 0 16.4849L5.95136 15.3519Z" fill="currentColor"/><path d="M5.64935 1.52825C6.32448 0.770398 6.73938 0.430158 7.5543 0V13.0364L5.64935 13.4301V1.52825Z" fill="currentColor"/></svg>';
-
-            $plans = [
-                [
-                    'key'        => 'starter',
-                    'name'       => 'الأساسي',
-                    'icon'       => 'bolt',
-                    'icon_bg'    => 'bg-blue-50',
-                    'icon_color' => 'text-primary',
-                    'desc'       => 'للمبتدئين اللي عايزين يبدأوا رحلتهم بثقة',
-                    'price'      => 299,
-                    'popular'    => false,
-                    'btn_class'  => 'border-2 border-primary text-primary hover:bg-blue-50',
-                    'features'   => [
-                        ['text' => 'برنامج تدريبي',                             'check' => true],
-                        ['text' => 'برنامج غذائي',                              'check' => true],
-                        ['text' => 'نظام مكملات',                                'check' => true],
-                        ['text' => 'متابعة شهرية',                              'check' => true],
-                        ['text' => 'التعديلات في البرامج حسب التطور',           'check' => true],
-                        ['text' => 'إتاحة الباقة العائلية',                     'check' => false],
-                        ['text' => 'متابعة طبية (حسب الحاجة)',                  'check' => false],
-                    ],
-                ],
-                [
-                    'key'        => 'pro',
-                    'name'       => 'النخبة',
-                    'icon'       => 'star',
-                    'icon_bg'    => 'bg-primary',
-                    'icon_color' => 'text-accent',
-                    'desc'       => 'للجادين اللي عايزين نتيجة سريعة ومتابعة مكثفة',
-                    'price'      => 599,
-                    'popular'    => true,
-                    'btn_class'  => 'bg-accent text-darkBg hover:bg-yellow-300',
-                    'features'   => [
-                        ['text' => 'برنامج تدريبي',                         'check' => true],
-                        ['text' => 'برنامج غذائي',                          'check' => true],
-                        ['text' => 'نظام مكملات',                            'check' => true],
-                        ['text' => 'متابعة أسبوعية',                        'check' => true],
-                        ['text' => 'متابعة طبية (حسب الحاجة)',             'check' => true],
-                        ['text' => 'إتاحة الباقة العائلية',                'check' => true],
-                        ['text' => 'التعديلات في البرامج حسب التطور',      'check' => true],
-                    ],
-                ],
-                [
-                    'key'        => 'elite',
-                    'name'       => 'إيليت',
-                    'icon'       => 'emoji_events',
-                    'icon_bg'    => 'bg-amber-50',
-                    'icon_color' => 'text-amber-500',
-                    'desc'       => 'تجربة VIP كاملة مع تحليلات متقدمة وكوتش خاص',
-                    'price'      => 999,
-                    'popular'    => false,
-                    'btn_class'  => 'bg-primary text-white hover:bg-blue-800',
-                    'features'   => [
-                        ['text' => 'برنامج تدريبي',                         'check' => true],
-                        ['text' => 'برنامج غذائي',                          'check' => true],
-                        ['text' => 'نظام مكملات',                            'check' => true],
-                        ['text' => 'متابعة يومية',                          'check' => true],
-                        ['text' => 'متابعة طبية (حسب الحاجة)',             'check' => true],
-                        ['text' => 'إتاحة الباقة العائلية',                'check' => true],
-                        ['text' => 'التعديلات في البرامج حسب التطور',      'check' => true],
-                    ],
-                ],
-            ];
         @endphp
 
         {{-- Cards --}}
@@ -794,18 +709,18 @@
                 </div>
                 @endif
 
-                <div class="w-12 h-12 rounded-2xl flex items-center justify-center mb-5 {{ $plan['icon_bg'] }}">
-                    <span class="material-symbols-rounded text-[26px] {{ $plan['icon_color'] }}">{{ $plan['icon'] }}</span>
+                <div class="w-12 h-12 rounded-2xl flex items-center justify-center mb-5 {{ $plan->icon_bg }}">
+                    <span class="material-symbols-rounded text-[26px] {{ $plan->icon_color }}">{{ $plan->icon }}</span>
                 </div>
 
-                <h3 class="text-xl font-black text-textColor mb-2">{{ $plan['name'] }}</h3>
-                <p class="text-gray-400 text-sm leading-relaxed mb-6">{{ $plan['desc'] }}</p>
+                <h3 class="text-xl font-black text-textColor mb-2">{{ $plan->name }}</h3>
+                <p class="text-gray-400 text-sm leading-relaxed mb-6">{{ $plan->desc }}</p>
 
                 <div class="flex items-baseline gap-1.5 mb-1 text-gray-400">
                     {!! $sarIcon !!}
                     <span class="text-5xl font-black font-display text-textColor leading-none"
-                        x-text="yearly ? Math.round({{ $plan['price'] }} * 0.75) : {{ $plan['price'] }}">
-                        {{ $plan['price'] }}
+                        x-text="yearly ? Math.round({{ $plan->price }} * {{ $plan->yearly_discount_rate }}) : {{ $plan->price }}">
+                        {{ $plan->price }}
                     </span>
                     <span class="text-sm" x-text="yearly ? '/شهر (سنوي)' : '/شهر'">/شهر</span>
                 </div>
@@ -813,29 +728,59 @@
                 <div class="h-5 mb-4">
                     <div x-show="yearly" x-transition class="flex items-center gap-1 text-xs text-gray-300 font-arabic">
                         السعر الأصلي: {!! $sarIcon !!}
-                        <span>{{ $plan['price'] }}/شهر</span>
+                        <span>{{ number_format($plan->price, 2) }}/شهر</span>
                     </div>
                 </div>
 
                 <hr class="border-gray-100 mb-5">
 
                 <ul class="flex flex-col gap-3 mb-8">
-                    @foreach($plan['features'] as $feat)
-                    <li class="flex items-center gap-3 text-sm font-semibold {{ $feat['check'] ? 'text-textColor' : 'text-gray-300' }}">
-                        @if($feat['check'])
-                        <span class="material-symbols-rounded text-green-500 flex-shrink-0" style="font-size:18px">check_circle</span>
-                        @else
-                        <span class="material-symbols-rounded text-gray-300 flex-shrink-0" style="font-size:18px">cancel</span>
-                        @endif
-                        {{ $feat['text'] }}
-                    </li>
+                    @foreach($plan->features as $feat)
+                        <li class="flex items-center gap-3 text-sm font-semibold {{ $feat->pivot->is_included ? 'text-textColor' : 'text-gray-300' }}">
+
+                            @if($feat->pivot->is_included)
+                                <span class="material-symbols-rounded text-green-500 flex-shrink-0" style="font-size:18px">
+                                    check_circle
+                                </span>
+                            @else
+                                <span class="material-symbols-rounded text-gray-300 flex-shrink-0" style="font-size:18px">
+                                    cancel
+                                </span>
+                            @endif
+
+                            {{ $feat->name }}
+                        </li>
                     @endforeach
                 </ul>
 
-                <a href="#" class="block w-full py-3 rounded-[14px] font-black text-sm text-center transition-all duration-300 font-arabic {{ $plan['btn_class'] }}">
-                    اشترك دلوقتي
-                </a>
+                {{-- {{ dd($subscription) }} --}}
 
+                @if($subscription)
+                    <button type="button"
+                            class="block w-full py-3 rounded-[14px] font-black text-sm text-center font-arabic {{ $plan->btn_class }} opacity-75 cursor-not-allowed">
+                        أنت مشترك بالفعل ✓
+                    </button>
+                @elseif($cart && $cart->items->count())
+                    <a href="{{ route('cart.index') }}"
+                            class="block w-full py-3 rounded-[14px] font-black text-sm text-center transition-all duration-300 font-arabic {{ $plan->btn_class }}">
+                        أكمل الدفع →
+                    </a>
+                @elseif (auth()->check() && auth()->user()->role === 'coach')
+                        <button type="button"
+                            class="block w-full py-3 rounded-[14px] font-black text-sm text-center font-arabic {{ $plan->btn_class }} opacity-75 cursor-not-allowed">
+                            أنت مدرب، لا يمكنك الاشتراك في الباقات
+                        </button>
+                @else
+                    <form method="POST" action="{{ route('cart.add') }}">
+                        @csrf
+                        <input type="hidden" name="plan_id" value="{{ $plan->id }}">
+                        <input type="hidden" name="quantity" value="1">
+                        <button type="submit"
+                                class="block w-full py-3 rounded-[14px] font-black text-sm text-center transition-all duration-300 font-arabic {{ $plan->btn_class }}">
+                            اشترك دلوقتي
+                        </button>
+                    </form>
+                @endif
             </div>
             @endforeach
         </div>
@@ -847,7 +792,7 @@
                     {{-- شريط العرض المحدود --}}
                     <div class="w-full bg-accent flex items-center justify-center gap-2 py-2 px-4">
                         <span class="material-symbols-rounded text-darkBg" style="font-size:16px;font-variation-settings:'FILL' 1">timer</span>
-                        <p class="text-darkBg text-xs font-black tracking-widest">⚡ عرض محدود — ينتهي قريباً</p>
+                        <p class="text-darkBg text-xs font-black tracking-widest">⚡ عرض محدود</p>
                         <span class="material-symbols-rounded text-darkBg" style="font-size:16px;font-variation-settings:'FILL' 1">timer</span>
                     </div>
 
@@ -1022,7 +967,7 @@
         </div>
 
         {{-- Stats Row --}}
-        <div class="flex flex-wrap justify-center gap-10 font-arabic">
+        <div class="flex flex-wrap justify-center gap-4 md:gap-10 font-arabic">
 
             <div class="flex flex-col items-center gap-1">
                 <span
@@ -1211,7 +1156,7 @@
             <div class="flex flex-wrap justify-center gap-10 font-arabic">
 
                 <div class="flex flex-col items-center gap-1">
-                    <span class="font-display text-4xl font-semibold text-textColor"
+                    <span class="font-display text-xl md:text-4xl font-semibold text-textColor"
                         data-count="20" data-suffix="+">20+</span>
                     <span class="text-gray-400 text-sm font-medium">شريك معتمد</span>
                 </div>
@@ -1219,7 +1164,7 @@
                 <div class="w-px bg-gray-200 self-stretch hidden md:block"></div>
 
                 <div class="flex flex-col items-center gap-1">
-                    <span class="font-display text-4xl font-semibold text-textColor"
+                    <span class="font-display text-xl md:text-4xl font-semibold text-textColor"
                         data-count="8" data-suffix=" دول">8 دول</span>
                     <span class="text-gray-400 text-sm font-medium">نطاق التغطية</span>
                 </div>
@@ -1227,7 +1172,7 @@
                 <div class="w-px bg-gray-200 self-stretch hidden md:block"></div>
 
                 <div class="flex flex-col items-center gap-1">
-                    <span class="font-display text-4xl font-semibold text-textColor"
+                    <span class="font-display text-xl md:text-4xl font-semibold text-textColor"
                         data-count="3" data-suffix=" سنوات">3 سنوات</span>
                     <span class="text-gray-400 text-sm font-medium">من الشراكة</span>
                 </div>
@@ -1263,18 +1208,19 @@
                 </div>
                 <span class="text-lg font-black text-textColor">اتصل بينا</span>
                 <span class="text-xs text-gray-400 font-semibold leading-relaxed">متاح من 9 صبح لـ 10 بالليل</span>
-                <span class="text-sm font-bold text-primary">+966 5x xxx xxxx</span>
+                <span class="text-sm font-bold text-primary" dir="ltr">+966593035979</span>
             </div>
 
             {{-- WhatsApp --}}
-            <div class="group relative rounded-[20px] p-6 bg-white border-2 border-white hover:border-accent flex flex-col items-center text-center gap-3 transition-all duration-300 hover:-translate-y-1 font-arabic cursor-pointer">
+            <a href="https://wa.me/966593035979" target="_blank" rel="noopener noreferrer"
+                class="group relative rounded-[20px] p-6 bg-white border-2 border-white hover:border-accent flex flex-col items-center text-center gap-3 transition-all duration-300 hover:-translate-y-1 font-arabic cursor-pointer">
                 <div class="w-14 h-14 rounded-[14px] bg-[#EFF5FF] flex items-center justify-center">
                     <span class="material-symbols-rounded text-primary" style="font-size:28px">chat</span>
                 </div>
                 <span class="text-lg font-black text-textColor">واتساب</span>
                 <span class="text-xs text-gray-400 font-semibold leading-relaxed">رد فوري خلال دقائق</span>
                 <span class="text-sm font-bold text-primary">ابدأ محادثة دلوقتي</span>
-            </div>
+            </a>
 
             {{-- Email --}}
             <div class="group relative rounded-[20px] p-6 bg-white border-2 border-white hover:border-accent flex flex-col items-center text-center gap-3 transition-all duration-300 hover:-translate-y-1 font-arabic cursor-pointer">
@@ -1332,7 +1278,7 @@
                         </div>
                         <div>
                             <p class="text-[11px] text-white/50 font-semibold mb-0.5">رقم التواصل</p>
-                            <p class="text-sm font-bold text-white">+966 5x xxx xxxx</p>
+                            <p class="text-sm font-bold text-white" dir="ltr">+966 593 035 979</p>
                         </div>
                     </div>
 
@@ -1347,7 +1293,7 @@
                                 <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
                                 <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
                                 <g id="SVGRepo_iconCarrier">
-                                    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd"> 
+                                    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
                                         <g id="Dribbble-Light-Preview" transform="translate(-340.000000, -7439.000000)" fill="currentColor">
                                             <g id="icons" transform="translate(56.000000, 160.000000)">
                                                 <path d="M289.869652,7279.12273 C288.241769,7279.19618 286.830805,7279.5942 285.691486,7280.72871 C284.548187,7281.86918 284.155147,7283.28558 284.081514,7284.89653 C284.035742,7285.90201 283.768077,7293.49818 284.544207,7295.49028 C285.067597,7296.83422 286.098457,7297.86749 287.454694,7298.39256 C288.087538,7298.63872 288.809936,7298.80547 289.869652,7298.85411 C298.730467,7299.25511 302.015089,7299.03674 303.400182,7295.49028 C303.645956,7294.859 303.815113,7294.1374 303.86188,7293.08031 C304.26686,7284.19677 303.796207,7282.27117 302.251908,7280.72871 C301.027016,7279.50685 299.5862,7278.67508 289.869652,7279.12273 M289.951245,7297.06748 C288.981083,7297.0238 288.454707,7296.86201 288.103459,7296.72603 C287.219865,7296.3826 286.556174,7295.72155 286.214876,7294.84312 C285.623823,7293.32944 285.819846,7286.14023 285.872583,7284.97693 C285.924325,7283.83745 286.155174,7282.79624 286.959165,7281.99226 C287.954203,7280.99968 289.239792,7280.51332 297.993144,7280.90837 C299.135448,7280.95998 300.179243,7281.19026 300.985224,7281.99226 C301.980262,7282.98483 302.473801,7284.28014 302.071806,7292.99991 C302.028024,7293.96767 301.865833,7294.49274 301.729513,7294.84312 C300.829003,7297.15085 298.757333,7297.47145 289.951245,7297.06748 M298.089663,7283.68956 C298.089663,7284.34665 298.623998,7284.88065 299.283709,7284.88065 C299.943419,7284.88065 300.47875,7284.34665 300.47875,7283.68956 C300.47875,7283.03248 299.943419,7282.49847 299.283709,7282.49847 C298.623998,7282.49847 298.089663,7283.03248 298.089663,7283.68956 M288.862673,7288.98792 C288.862673,7291.80286 291.150266,7294.08479 293.972194,7294.08479 C296.794123,7294.08479 299.081716,7291.80286 299.081716,7288.98792 C299.081716,7286.17298 296.794123,7283.89205 293.972194,7283.89205 C291.150266,7283.89205 288.862673,7286.17298 288.862673,7288.98792 M290.655732,7288.98792 C290.655732,7287.16159 292.140329,7285.67967 293.972194,7285.67967 C295.80406,7285.67967 297.288657,7287.16159 297.288657,7288.98792 C297.288657,7290.81525 295.80406,7292.29716 293.972194,7292.29716 C292.140329,7292.29716 290.655732,7290.81525 290.655732,7288.98792" id="instagram-[#167]">
@@ -1397,7 +1343,7 @@
                         </div>
                         <div class="flex flex-col gap-1.5">
                             <label class="text-[13px] font-bold text-textColor">رقم الجوال</label>
-                            <input type="tel" name="phone" placeholder="+966 5x xxx xxxx"
+                            <input type="tel" name="phone" placeholder="+966 5xx xxx xxx"
                                 class="bg-[#F4F7FF] border border-[#e0e8ff] focus:border-primary rounded-xl px-4 py-3 text-sm text-textColor outline-none transition-colors duration-200 font-arabic w-full">
                         </div>
                     </div>
@@ -1467,79 +1413,8 @@
                 },
             });
 
-            // ─── Video Logic ───
-            const videoCards   = document.querySelectorAll('.video-card');
-            const allVideos    = document.querySelectorAll('.video-slide');
-            const allOverlays  = document.querySelectorAll('.video-overlay');
-
-            function resetCard(video, overlay) {
-                video.pause();
-                video.currentTime = 0;
-                video.classList.remove('opacity-100');
-                video.classList.add('opacity-0', 'pointer-events-none');
-                overlay.classList.remove('opacity-0', 'pointer-events-none');
-                overlay.classList.add('opacity-100');
-            }
-
-            function resetAllExcept(currentVideo, currentOverlay) {
-                videoCards.forEach(card => {
-                    const v = card.querySelector('.video-slide');
-                    const o = card.querySelector('.video-overlay');
-                    if (v !== currentVideo) resetCard(v, o);
-                });
-            }
-
-            videoCards.forEach(card => {
-                const video   = card.querySelector('.video-slide');
-                const overlay = card.querySelector('.video-overlay');
-                const playBtn = card.querySelector('.play-btn');
-
-                // ─── زر التشغيل ───
-                playBtn.addEventListener('click', () => {
-                    resetAllExcept(video, overlay);
-
-                    swiper?.autoplay.stop();
-                    swiper && (swiper.allowTouchMove = false);
-
-                    overlay.classList.remove('opacity-100');
-                    overlay.classList.add('opacity-0', 'pointer-events-none');
-
-                    video.classList.remove('opacity-0', 'pointer-events-none');
-                    video.classList.add('opacity-100');
-
-                    video.play();
-                });
-
-                // ─── Pause / Play بعد التشغيل ───
-                video.addEventListener('click', () => {
-                    if (video.paused) {
-                        video.play();
-                    } else {
-                        video.pause();
-                        // رجّع الـ overlay لما يعمل pause
-                        video.classList.remove('opacity-100');
-                        video.classList.add('opacity-0', 'pointer-events-none');
-                        overlay.classList.remove('opacity-0', 'pointer-events-none');
-                        overlay.classList.add('opacity-100');
-
-                        swiper?.autoplay.start();
-                        swiper && (swiper.allowTouchMove = true);
-                    }
-                });
-
-                // ─── لما الفيديو يخلص ───
-                video.addEventListener('ended', () => {
-                    resetCard(video, overlay);
-                    swiper?.autoplay.start();
-                    swiper && (swiper.allowTouchMove = true);
-                });
-            });
-
             // ─── لما السلايد يتغير ───
             swiper.on('slideChange', () => {
-                videoCards.forEach(card => {
-                    resetCard(card.querySelector('.video-slide'), card.querySelector('.video-overlay'));
-                });
                 swiper.autoplay.start();
                 swiper.allowTouchMove = true;
             });

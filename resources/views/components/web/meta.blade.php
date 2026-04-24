@@ -18,3 +18,4 @@
 <meta name="twitter:description" content="MindFitBro is your all-in-one fitness platform. Explore online training programs, book gym classes, and get personalized nutrition tips to reach your goals faster." />
 <meta name="twitter:image" content="{{ asset('assets/imgs/og-image.png') }}" />
 <meta name="twitter:site" content="@mindfitbro" />
+<meta name="csrf-token" content="{{ csrf_token() }}">

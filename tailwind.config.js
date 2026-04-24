@@ -17,7 +17,7 @@ export default {
             },
             fontFamily: {
                 arabic: ['"Noto Kufi Arabic"', "sans-serif"],
-                display: ['"Rakkas"', "serif"],
+                display: ['"Lemonada"', "cursive"],
             },
             keyframes: {
                 marquee: {

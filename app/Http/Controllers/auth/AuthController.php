@@ -1,12 +1,13 @@
 <?php
 
-namespace App\Http\Controllers\auth;
+namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Facades\Validator;
 
 
@@ -123,5 +124,77 @@ class AuthController extends Controller
         $request->session()->regenerateToken();
 
         return redirect()->route('login')->with('success', 'تم تسجيل الخروج 👋');
+    }
+
+    // ========================
+    // Forgot Password
+    // ========================
+    function showForgotPassword()
+    {
+        return view('auth.web.forget');
+    }
+
+    function sendResetLink(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|email|exists:users,email',
+        ], [
+            'email.required' => 'البريد الإلكتروني مطلوب',
+            'email.email'    => 'البريد الإلكتروني غير صحيح',
+            'email.exists'   => 'لا يوجد حساب مرتبط بهذا البريد الإلكتروني',
+        ]);
+
+        $status = Password::sendResetLink($request->only('email'));
+
+        if ($status == Password::RESET_LINK_SENT) {
+            return back()->with('status', 'تم إرسال رابط إعادة تعيين كلمة المرور إلى بريدك الإلكتروني');
+        }
+
+        return back()->withErrors(['email' => 'حدث خطأ أثناء إرسال الرابط، يرجى المحاولة مرة أخرى']);
+    }
+
+    // ========================
+    // Reset Password
+    // ========================
+    function showResetPassword(Request $request, string $token)
+    {
+        return view('auth.web.reset_password', [
+            'token' => $token,
+            'email' => $request->email,
+        ]);
+    }
+
+    function resetPassword(Request $request)
+    {
+        $request->validate([
+            'token'    => 'required',
+            'email'    => 'required|email',
+            'password' => 'required|string|min:6|confirmed',
+        ], [
+            'email.required'     => 'البريد الإلكتروني مطلوب',
+            'email.email'        => 'البريد الإلكتروني غير صحيح',
+            'password.required'  => 'كلمة المرور الجديدة مطلوبة',
+            'password.min'       => 'كلمة المرور يجب أن تكون 6 أحرف على الأقل',
+            'password.confirmed' => 'كلمتا السر غير متطابقتين',
+        ]);
+
+        $status = Password::reset(
+            $request->only('email', 'password', 'password_confirmation', 'token'),
+            function (User $user, string $password) {
+                $user->forceFill(['password' => Hash::make($password)])->save();
+            }
+        );
+
+        if ($status == Password::PASSWORD_RESET) {
+            return redirect()->route('login')
+                ->with('success', 'تم إعادة تعيين كلمة المرور بنجاح، يمكنك تسجيل الدخول الآن');
+        }
+
+        $errors = [
+            Password::INVALID_TOKEN => 'رابط الاستعادة غير صالح أو منتهي الصلاحية، اطلب رابطاً جديداً',
+            Password::INVALID_USER  => 'لا يوجد حساب مرتبط بهذا البريد الإلكتروني',
+        ];
+
+        return back()->withErrors(['email' => $errors[$status] ?? 'حدث خطأ، يرجى المحاولة مرة أخرى']);
     }
 }

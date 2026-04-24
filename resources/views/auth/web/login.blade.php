@@ -275,7 +275,7 @@
                 {{-- Password --}}
                 <div class="flex flex-col gap-2">
                     <div class="flex flex-row-reverse items-center justify-between">
-                        <a href="#"
+                        <a href="{{ route('password.request') }}"
                             class="text-xs text-primary font-bold font-arabic hover:underline">
                             نسيت كلمة السر؟
                         </a>

@@ -49,7 +49,6 @@
         font-family: var(--font-arabic, 'Cairo', sans-serif);
     }
 
-    /* ─── Layout ─── */
     .cart-layout {
         display: grid;
         grid-template-columns: 1fr 320px;
@@ -61,7 +60,6 @@
         .cart-layout { grid-template-columns: 1fr; }
     }
 
-    /* ─── Items ─── */
     .cart-items { display: flex; flex-direction: column; gap: 14px; }
 
     .cart-item {
@@ -73,7 +71,7 @@
         align-items: center;
         gap: 16px;
         position: relative;
-        transition: border-color 0.2s, transform 0.2s;
+        transition: border-color 0.2s, transform 0.2s, opacity 0.35s;
     }
 
     .cart-item:hover { border-color: var(--primary); transform: translateY(-1px); }
@@ -81,7 +79,7 @@
     .cart-item.removing {
         opacity: 0;
         transform: translateX(30px);
-        transition: all 0.35s ease;
+        pointer-events: none;
     }
 
     .item-icon {
@@ -89,7 +87,6 @@
         border-radius: 14px;
         display: flex; align-items: center; justify-content: center;
         flex-shrink: 0;
-        font-size: 24px;
     }
 
     .icon-blue   { background: #EFF5FF; }
@@ -126,6 +123,7 @@
     }
 
     .qty-btn:hover { background: var(--primary); color: white; border-color: var(--primary); }
+    .qty-btn:disabled { opacity: 0.4; cursor: not-allowed; }
 
     .qty-num {
         font-size: 15px; font-weight: 700; color: var(--text);
@@ -136,13 +134,16 @@
         font-family: var(--font-display, 'Sora', sans-serif);
         font-size: 18px; font-weight: 900;
         color: var(--primary);
-        white-space: nowrap; text-align: left; direction: ltr;
+        white-space: nowrap;
+        display: flex; align-items: center; gap: 3px;
+        direction: ltr;
     }
 
     .item-price .unit {
         font-size: 11px; font-weight: 500;
         color: var(--gray-muted);
         font-family: var(--font-arabic, 'Cairo', sans-serif);
+        display: flex; align-items: center; gap: 2px;
     }
 
     .remove-btn {
@@ -156,7 +157,6 @@
 
     .remove-btn:hover { background: #fef2f2; color: var(--red); border-color: #fecaca; }
 
-    /* ─── Empty State ─── */
     .empty-state {
         display: none;
         flex-direction: column; align-items: center; justify-content: center;
@@ -170,7 +170,6 @@
     .empty-title { font-size: 17px; font-weight: 700; color: var(--text); }
     .empty-sub   { font-size: 13px; color: var(--gray-muted); font-weight: 500; }
 
-    /* ─── Coupon ─── */
     .coupon-box {
         background: var(--white);
         border-radius: 18px; border: 1.5px solid var(--border);
@@ -200,15 +199,21 @@
     }
 
     .coupon-btn:hover { background: var(--primary-dark); }
+    .coupon-btn:disabled { opacity: 0.6; cursor: not-allowed; }
 
     .coupon-success {
         display: none; align-items: center; gap: 6px;
         color: var(--green); font-size: 13px; font-weight: 700; margin-top: 8px;
     }
 
-    .coupon-success.show { display: flex; }
+    .coupon-error {
+        display: none; align-items: center; gap: 6px;
+        color: var(--red); font-size: 13px; font-weight: 700; margin-top: 8px;
+    }
 
-    /* ─── Summary Card ─── */
+    .coupon-success.show { display: flex; }
+    .coupon-error.show   { display: flex; }
+
     .summary-card {
         background: var(--white); border-radius: 20px;
         border: 1.5px solid var(--border); padding: 24px;
@@ -255,7 +260,11 @@
 
     .summary-row { display: flex; align-items: center; justify-content: space-between; }
     .s-label { font-size: 13px; color: var(--gray-muted); font-weight: 500; }
-    .s-value { font-size: 14px; font-weight: 700; color: var(--text); direction: ltr; text-align: left; }
+    .s-value {
+        font-size: 14px; font-weight: 700; color: var(--text);
+        display: flex; align-items: center; gap: 3px;
+        direction: ltr;
+    }
     .s-value.discount { color: var(--green); }
     .s-value.free     { color: var(--green); }
 
@@ -272,8 +281,8 @@
     .total-value {
         font-family: var(--font-display, 'Sora', sans-serif);
         font-size: 26px; font-weight: 900; color: var(--primary);
-        direction: ltr; text-align: left;
         display: flex; align-items: center; gap: 4px;
+        direction: ltr;
     }
 
     .checkout-btn {
@@ -283,7 +292,7 @@
         font-family: var(--font-arabic, 'Cairo', sans-serif);
         cursor: pointer; transition: background 0.15s, transform 0.1s;
         display: flex; align-items: center; justify-content: center; gap: 10px;
-        margin-bottom: 10px;
+        margin-bottom: 10px; text-decoration: none;
     }
 
     .checkout-btn:hover  { background: var(--accent-hover); transform: translateY(-1px); }
@@ -295,6 +304,8 @@
         padding: 12px 20px; font-size: 13px; font-weight: 700;
         font-family: var(--font-arabic, 'Cairo', sans-serif);
         cursor: pointer; transition: background 0.15s;
+        display: flex; align-items: center; justify-content: center;
+        text-decoration: none;
     }
 
     .continue-btn:hover { background: #EFF5FF; }
@@ -309,377 +320,477 @@
         font-size: 12px; color: #166534; font-weight: 700;
     }
 
-    /* ─── Shake animation for invalid coupon ─── */
     @keyframes shake {
         0%, 100% { transform: translateX(0); }
         25%       { transform: translateX(-6px); }
         75%       { transform: translateX(6px); }
     }
+
+    .loading-overlay {
+        position: absolute; inset: 0;
+        background: rgba(255,255,255,0.6);
+        border-radius: 18px;
+        display: flex; align-items: center; justify-content: center;
+        pointer-events: none; opacity: 0;
+        transition: opacity 0.15s;
+    }
+
+    .cart-item.loading .loading-overlay { opacity: 1; pointer-events: all; }
+
+    .spinner {
+        width: 20px; height: 20px;
+        border: 2px solid var(--border);
+        border-top-color: var(--primary);
+        border-radius: 50%;
+        animation: spin 0.6s linear infinite;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
 </style>
 @endsection
 
 
 @section('content')
 
-    <x-web.navbar :transparent="false" />
+@php
+    $sarIcon = '<svg width="14" height="16" viewBox="0 0 16 18" fill="none" xmlns="http://www.w3.org/2000/svg" class="inline-block flex-shrink-0" style="vertical-align:middle"><path d="M9.36633 2.59339C10.0415 1.83554 10.4564 1.4953 11.2713 1.06514V13.6848L9.36633 14.0784V2.59339Z" fill="currentColor"/><path d="M15.4529 8.93793C15.8478 8.10434 15.8943 7.73386 16 6.87871L1.39805 10.0494C1.05179 10.8207 0.940326 11.2518 0.886964 12.0176L15.4529 8.93793Z" fill="currentColor"/><path d="M15.4529 12.8033C15.8478 11.9697 15.8943 11.5992 16 10.744L9.43602 12.1334C9.38956 12.8975 9.44292 13.2895 9.38956 14.0552L15.4529 12.8033Z" fill="currentColor"/><path d="M15.4529 16.668C15.8478 15.8345 15.8943 15.464 16 14.6088L10.0168 15.9077C9.7148 16.3245 9.52895 17.0191 9.38956 17.92L15.4529 16.668Z" fill="currentColor"/><path d="M5.95136 15.3519C6.53213 14.6341 7.13614 13.7311 7.5543 12.9901L0.51109 14.5167C0.164822 15.2881 0.0533618 15.7192 0 16.4849L5.95136 15.3519Z" fill="currentColor"/><path d="M5.64935 1.52825C6.32448 0.770398 6.73938 0.430158 7.5543 0V13.0364L5.64935 13.4301V1.52825Z" fill="currentColor"/></svg>';
+@endphp
 
-    <section class="w-full bg-lightBg min-h-screen pt-28 lg:pt-36">
-        <div class="cart-wrapper font-arabic">
+<x-web.navbar :transparent="false" />
 
-            {{-- Header --}}
-            <div class="cart-header">
-                <div class="flex items-center gap-3">
-                    <h1 class="cart-title">عربة التسوق</h1>
-                    <span class="cart-count" id="cartCountBadge">0 عناصر</span>
+{{-- Success Message --}}
+@if(session('success'))
+<div class="max-w-[960px] mx-auto px-4 pt-6">
+    <div class="flex items-center gap-3 bg-green-50 border border-green-200 text-green-700 font-arabic font-bold text-sm px-5 py-3 rounded-2xl">
+        <span class="material-symbols-rounded text-green-500" style="font-size:18px">check_circle</span>
+        {{ session('success') }}
+    </div>
+</div>
+@endif
+
+<section class="w-full bg-lightBg min-h-screen pt-28 lg:pt-36">
+    <div class="cart-wrapper font-arabic">
+
+        {{-- Header --}}
+        <div class="cart-header">
+            <div class="flex items-center gap-3">
+                <h1 class="cart-title font-display">عربة التسوق</h1>
+                <span class="cart-count" id="cartCountBadge">{{ $cart->items->count() }} عناصر</span>
+            </div>
+            <span class="text-sm text-gray-400 font-semibold" id="totalItemsText">
+                @if($cart->items->count() > 0)
+                    إجمالي {{ $cart->items->count() }} خطط
+                @endif
+            </span>
+        </div>
+
+        <div class="cart-layout">
+
+            {{-- ══ LEFT: Items + Coupon ══ --}}
+            <div>
+                <div class="cart-items" id="cartItems">
+
+                    @forelse($cart->items as $item)
+                    <div class="cart-item pt-12"
+                         id="item-{{ $item->id }}"
+                         data-item-id="{{ $item->id }}"
+                         data-plan-id="{{ $item->plan_id }}">
+
+                        {{-- Icon --}}
+                        <div class="item-icon {{ $item->plan->icon_bg ? '' : 'icon-blue' }}"
+                             style="{{ $item->plan->icon_bg ? 'background:' . $item->plan->icon_bg : '' }}">
+                            <span class="material-symbols-rounded"
+                                  style="font-size:26px; color:{{ $item->plan->icon_color ?? '#174DAD' }}; font-variation-settings:'FILL' 1">
+                                {{ $item->plan->icon ?? 'star' }}
+                            </span>
+                        </div>
+
+                        {{-- Info --}}
+                        <div class="item-info">
+                            <div class="item-name">{{ $item->plan->name }}</div>
+                            <div class="item-sub">{{ $item->plan->desc }}</div>
+                            @if($item->plan->popular)
+                                <span class="item-badge">الأكثر طلباً</span>
+                            @endif
+                        </div>
+
+                        {{-- Qty --}}
+                        <div class="item-qty">
+                            <button class="qty-btn"
+                                    onclick="changeQty({{ $item->id }}, {{ $item->quantity - 1 }})"
+                                    {{ $item->quantity <= 1 ? 'disabled' : '' }}>−</button>
+                            <span class="qty-num" id="qty-{{ $item->id }}">{{ $item->quantity }}</span>
+                            <button class="qty-btn"
+                                    onclick="changeQty({{ $item->id }}, {{ $item->quantity + 1 }})">+</button>
+                        </div>
+
+                        {{-- Price --}}
+                        <div class="item-price">
+                            <span id="original-price-{{ $item->id }}"
+                                style="{{ $cart->is_yearly ? '' : 'display:none' }}; text-decoration:line-through; font-size:13px; color:var(--gray-muted); font-weight:500;">
+                                {{ number_format($item->monthly_price * 12 * $item->quantity, 0) }}
+                            </span>
+                            <span id="price-{{ $item->id }}">{{ number_format($item->final_price, 0) }}</span>
+                            <span class="unit">
+                                {!! $sarIcon !!}/<span class="unit-period">{{ $cart->is_yearly ? 'سنة' : 'شهر' }}</span>
+                            </span>
+                        </div>
+
+                        {{-- Remove --}}
+                        <button class="remove-btn" onclick="removeItem({{ $item->id }})" title="حذف">✕</button>
+
+                        {{-- Loading overlay --}}
+                        <div class="loading-overlay"><div class="spinner"></div></div>
+                    </div>
+                    @empty
+                    @endforelse
+
                 </div>
-                <span class="text-sm text-gray-400 font-semibold" id="totalItemsText"></span>
+
+                {{-- Empty State --}}
+                <div class="empty-state {{ $cart->items->isEmpty() ? 'show' : '' }}" id="emptyState">
+                    <div class="empty-icon">🛒</div>
+                    <div class="empty-title">العربة فاضية!</div>
+                    <div class="empty-sub">مفيش باقات متضافة لحد دلوقتي</div>
+                    <a href="{{ url('/') }}#programs"
+                       class="group font-arabic text-textColor bg-accent px-6 py-3 rounded-full text-sm font-black flex items-center gap-2 transition mt-2 hover:bg-yellow-300">
+                        تصفح الباقات
+                    </a>
+                </div>
+
+                {{-- Coupon --}}
+                <div class="coupon-box" id="couponSection"
+                     style="{{ $cart->items->isEmpty() ? 'display:none' : '' }}">
+                    <div class="text-sm font-bold text-textColor mb-3">عندك كوبون خصم؟</div>
+                    <div class="coupon-row">
+                        <input
+                            class="coupon-input"
+                            id="couponInput"
+                            placeholder="أدخل كود الخصم..."
+                            autocomplete="off"
+                            value="{{ $cart->coupon_code ?? '' }}"
+                        />
+                        <button class="coupon-btn" id="couponBtn" onclick="applyCoupon()">تطبيق</button>
+                    </div>
+                    <div class="coupon-success {{ $cart->coupon_code ? 'show' : '' }}" id="couponSuccess">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                            <polyline points="20 6 9 17 4 12"/>
+                        </svg>
+                        تم تطبيق خصم 10% بنجاح 🎉
+                    </div>
+                    <div class="coupon-error" id="couponError">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                            <circle cx="12" cy="12" r="10"/>
+                            <line x1="12" y1="8" x2="12" y2="12"/>
+                            <line x1="12" y1="16" x2="12.01" y2="16"/>
+                        </svg>
+                        كود الخصم غير صحيح
+                    </div>
+                </div>
             </div>
 
-            <div class="cart-layout">
+            {{-- ══ RIGHT: Summary ══ --}}
+            <div>
+                <div class="summary-card font-arabic">
+                    <div class="summary-title font-arabic">ملخص الطلب</div>
 
-                {{-- ══════════════════════════════
-                     LEFT: Items + Coupon
-                ══════════════════════════════ --}}
-                <div>
-                    <div class="cart-items" id="cartItems">
-
-                        {{-- ─── Item: النخبة ─── --}}
-                        <div class="cart-item" id="item-pro" data-key="pro" data-base="599">
-                            <div class="item-icon icon-blue">⭐</div>
-                            <div class="item-info">
-                                <div class="item-name">باقة النخبة</div>
-                                <div class="item-sub">متابعة أسبوعية • خطة مخصصة • متابعة طبية</div>
-                                <span class="item-badge">الأكثر طلباً</span>
-                            </div>
-                            <div class="item-qty">
-                                <button class="qty-btn" onclick="changeQty('pro', -1)">−</button>
-                                <span class="qty-num" id="qty-pro">1</span>
-                                <button class="qty-btn" onclick="changeQty('pro', 1)">+</button>
-                            </div>
-                            <div class="item-price">
-                                <span id="price-pro">599</span>
-                                <span class="unit"> ر.س/شهر</span>
-                            </div>
-                            <button class="remove-btn" onclick="removeItem('pro')" title="حذف">✕</button>
+                    {{-- Yearly Toggle --}}
+                    <div class="billing-toggle">
+                        <div>
+                            <div class="billing-label">دفع سنوي</div>
+                            <div class="billing-sub">وفّر مع الاشتراك السنوي</div>
                         </div>
-
-                        {{-- ─── Item: الأساسي ─── --}}
-                        <div class="cart-item" id="item-starter" data-key="starter" data-base="299">
-                            <div class="item-icon icon-amber">⚡</div>
-                            <div class="item-info">
-                                <div class="item-name">باقة الأساسي</div>
-                                <div class="item-sub">متابعة شهرية • برنامج تدريبي وغذائي</div>
-                            </div>
-                            <div class="item-qty">
-                                <button class="qty-btn" onclick="changeQty('starter', -1)">−</button>
-                                <span class="qty-num" id="qty-starter">1</span>
-                                <button class="qty-btn" onclick="changeQty('starter', 1)">+</button>
-                            </div>
-                            <div class="item-price">
-                                <span id="price-starter">299</span>
-                                <span class="unit"> ر.س/شهر</span>
-                            </div>
-                            <button class="remove-btn" onclick="removeItem('starter')" title="حذف">✕</button>
-                        </div>
-
-                        {{-- ─── Item: العائلة ─── --}}
-                        <div class="cart-item" id="item-family" data-key="family" data-base="1399">
-                            <div class="item-icon icon-green">👨‍👩‍👧‍👦</div>
-                            <div class="item-info">
-                                <div class="item-name">باقة العائلة</div>
-                                <div class="item-sub">لـ 4 أفراد • متابعة يومية • جلسات فيديو</div>
-                                <span class="item-badge" style="background:#bbf7d0; color:#166534;">عرض محدود</span>
-                            </div>
-                            <div class="item-qty">
-                                <button class="qty-btn" onclick="changeQty('family', -1)">−</button>
-                                <span class="qty-num" id="qty-family">1</span>
-                                <button class="qty-btn" onclick="changeQty('family', 1)">+</button>
-                            </div>
-                            <div class="item-price">
-                                <span id="price-family">1,399</span>
-                                <span class="unit"> ر.س/شهر</span>
-                            </div>
-                            <button class="remove-btn" onclick="removeItem('family')" title="حذف">✕</button>
-                        </div>
-
-                        {{-- ─── Item: إيليت ─── --}}
-                        {{-- أضيف item-elite لو حبيت --}}
-                        {{--
-                        <div class="cart-item" id="item-elite" data-key="elite" data-base="999">
-                            <div class="item-icon icon-purple">🏆</div>
-                            <div class="item-info">
-                                <div class="item-name">باقة إيليت</div>
-                                <div class="item-sub">متابعة يومية • VIP كامل</div>
-                            </div>
-                            <div class="item-qty">
-                                <button class="qty-btn" onclick="changeQty('elite', -1)">−</button>
-                                <span class="qty-num" id="qty-elite">1</span>
-                                <button class="qty-btn" onclick="changeQty('elite', 1)">+</button>
-                            </div>
-                            <div class="item-price">
-                                <span id="price-elite">999</span>
-                                <span class="unit"> ر.س/شهر</span>
-                            </div>
-                            <button class="remove-btn" onclick="removeItem('elite')" title="حذف">✕</button>
-                        </div>
-                        --}}
-
-                    </div>
-
-                    {{-- Empty State --}}
-                    <div class="empty-state" id="emptyState">
-                        <div class="empty-icon">🛒</div>
-                        <div class="empty-title">العربة فاضية!</div>
-                        <div class="empty-sub">مفيش باقات متضافة لحد دلوقتي</div>
-                        <a href="#programs" class="group font-arabic text-textColor bg-accent px-6 py-3 rounded-full text-sm font-black flex items-center gap-2 transition mt-2 hover:bg-yellow-300">
-                            تصفح الباقات
-                            <svg class="transition-transform duration-300 group-hover:-translate-x-1"
-                                width="22" height="12" viewBox="0 0 29 14" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M0.000447464 5.68288V8.31848H1.36843L1.36822 5.68288H0.000447464ZM2.80722 2.71685C2.60162 2.71685 2.40833 2.7969 2.26296 2.94233C2.11758 3.08773 2.03755 3.28102 2.03756 3.4866L2.03772 5.34545L2.03785 5.34811L2.03772 5.35076L2.03813 10.5141C2.03819 10.9384 2.38346 11.2836 2.80778 11.2836H4.10235L4.10172 2.71684L2.80722 2.71685ZM6.81911 0.22537C6.67374 0.0800182 6.48051 1.07288e-06 6.27496 1.07288e-06L5.54063 0.000130946C5.11631 0.00017794 4.77111 0.345439 4.77111 0.769769L4.7719 11.616L4.77202 11.6184L4.7719 11.6207L4.77202 13.2304C4.77202 13.436 4.8521 13.6292 4.9975 13.7746C5.14287 13.9199 5.3361 14 5.54167 14L6.27581 13.9999C6.70015 13.9998 7.04538 13.6545 7.04535 13.2302L7.04508 8.65474L7.04498 8.65282L7.04508 8.65088L7.04461 0.76958C7.04459 0.564018 6.96451 0.370721 6.81911 0.22537ZM7.71443 5.68239L7.71458 8.31799L28.5106 8.31717L28.5107 5.68156L7.71443 5.68239Z" fill="#202020"/>
-                            </svg>
-                        </a>
-                    </div>
-
-                    {{-- Coupon Box --}}
-                    <div class="coupon-box" id="couponSection">
-                        <div class="text-sm font-bold text-textColor mb-3">عندك كوبون خصم؟</div>
-                        <div class="coupon-row">
-                            <input
-                                class="coupon-input"
-                                id="couponInput"
-                                placeholder="أدخل كود الخصم..."
-                                autocomplete="off"
-                            />
-                            <button class="coupon-btn" onclick="applyCoupon()">تطبيق</button>
-                        </div>
-                        <div class="coupon-success" id="couponSuccess">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                                <polyline points="20 6 9 17 4 12"/>
-                            </svg>
-                            تم تطبيق خصم 10% بنجاح 🎉
+                        <div class="toggle-wrap">
+                            <span class="toggle-text" id="toggleText">{{ $cart->is_yearly ? 'سنوي' : 'شهري' }}</span>
+                            <button class="toggle-pill {{ $cart->is_yearly ? 'on' : '' }}"
+                                    id="yearlyToggle"
+                                    onclick="toggleYearly()"></button>
                         </div>
                     </div>
-                </div>
 
-                {{-- ══════════════════════════════
-                     RIGHT: Summary
-                ══════════════════════════════ --}}
-                <div>
-                    <div class="summary-card font-arabic">
-                        <div class="summary-title">ملخص الطلب</div>
+                    {{-- Rows --}}
+                    <div class="summary-rows">
 
-                        {{-- Yearly Toggle --}}
-                        <div class="billing-toggle">
-                            <div>
-                                <div class="billing-label">دفع سنوي</div>
-                                <div class="billing-sub">وفّر 25% مع الاشتراك السنوي</div>
-                            </div>
-                            <div class="toggle-wrap">
-                                <span class="toggle-text" id="toggleText">شهري</span>
-                                <button class="toggle-pill" id="yearlyToggle" onclick="toggleYearly()"></button>
-                            </div>
+                        {{-- Subtotal --}}
+                        <div class="summary-row">
+                            <span class="s-label">الإجمالي الفرعي</span>
+                            <span class="s-value" id="subtotalVal">
+                                {!! $sarIcon !!}
+                                <span id="subtotalNum">{{ number_format($cart->subtotal, 0) }}</span>
+                            </span>
                         </div>
 
-                        {{-- Rows --}}
-                        <div class="summary-rows">
-                            <div class="summary-row">
-                                <span class="s-label">الإجمالي الفرعي</span>
-                                <span class="s-value" id="subtotalVal">0 ر.س</span>
-                            </div>
-                            <div class="summary-row" id="discountRow" style="display:none">
-                                <span class="s-label">خصم الكوبون (10%)</span>
-                                <span class="s-value discount" id="discountVal">−0 ر.س</span>
-                            </div>
-                            <div class="summary-row" id="yearlyDiscRow" style="display:none">
-                                <span class="s-label">خصم سنوي (25%)</span>
-                                <span class="s-value discount" id="yearlyDiscVal">−0 ر.س</span>
-                            </div>
-                            <div class="summary-row">
-                                <span class="s-label">الشحن والتوصيل</span>
-                                <span class="s-value free">مجاني</span>
-                            </div>
+                        {{-- Coupon Discount --}}
+                        <div class="summary-row" id="discountRow"
+                             style="{{ $cart->coupon_discount > 0 ? '' : 'display:none' }}">
+                            <span class="s-label">خصم الكوبون (10%)</span>
+                            <span class="s-value discount" id="discountVal">
+                                {!! $sarIcon !!}
+                                <span id="discountNum">{{ number_format($cart->coupon_discount, 0) }}</span>
+                                <span>−</span>
+                            </span>
                         </div>
 
-                        <div class="summary-divider"></div>
-
-                        {{-- Total --}}
-                        <div class="summary-total-row">
-                            <div class="total-label">الإجمالي الكلي</div>
-                            <div class="total-value">
-                                <span id="totalVal">0</span>
-                                <span style="font-size:14px; font-weight:600; color:var(--gray-muted); font-family: var(--font-arabic);">ر.س</span>
-                            </div>
+                        {{-- Yearly Discount --}}
+                        <div class="summary-row" id="yearlyDiscRow"
+                             style="{{ $cart->yearly_discount > 0 ? '' : 'display:none' }}">
+                            <span class="s-label">خصم سنوي</span>
+                            <span class="s-value discount" id="yearlyDiscVal">
+                                {!! $sarIcon !!}
+                                <span id="yearlyDiscNum">{{ number_format($cart->yearly_discount, 0) }}</span>
+                                <span>−</span>
+                            </span>
                         </div>
+                    </div>
 
-                        {{-- Checkout Button --}}
-                        <a href="" id="checkoutBtn"
-                            class="checkout-btn" style="text-decoration:none;">
+                    <div class="summary-divider"></div>
+
+                    {{-- Total --}}
+                    <div class="summary-total-row">
+                        <div class="total-label">الإجمالي الكلي</div>
+                        <div class="total-value">
+                            {!! $sarIcon !!}
+                            <span id="totalVal">{{ number_format($cart->total, 0) }}</span>
+                        </div>
+                    </div>
+
+                    <form action="{{ route('checkout.process') }}" method="POST">
+                        @csrf
+                        <button type="submit" class="checkout-btn">
                             <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
                                 stroke="currentColor" stroke-width="2.5">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M5 12h14M12 5l7 7-7 7"/>
                             </svg>
                             إتمام الطلب والدفع
-                        </a>
+                        </button>
+                    </form>
 
-                        <a href="{{ url('/') }}#programs" class="continue-btn" style="display:flex;align-items:center;justify-content:center;text-decoration:none;">
-                            مواصلة التسوق
-                        </a>
+                    <a href="{{ url('/') }}#programs" class="continue-btn">
+                        مواصلة التسوق
+                    </a>
 
-                        {{-- Guarantee --}}
-                        <div class="guarantee-badge">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
-                                stroke="#16a34a" stroke-width="2.5">
-                                <path stroke-linecap="round" stroke-linejoin="round"
-                                    d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-                            </svg>
-                            <span>ضمان استرداد كامل خلال 7 أيام — بدون أي شروط</span>
-                        </div>
-
+                    <div class="guarantee-badge">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+                             stroke="#16a34a" stroke-width="2.5">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                  d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                        </svg>
+                        <span>ضمان استرداد كامل خلال 7 أيام — بدون أي شروط</span>
                     </div>
+
                 </div>
-
             </div>
-        </div>
-    </section>
 
-    <x-web.footer :hidden="false" />
+        </div>
+    </div>
+</section>
+
+<x-web.footer :hidden="false" />
 
 @endsection
 
 
 @section('script')
 <script>
-    // ─── Config ───────────────────────────────────────────────
-    const prices = { pro: 599, starter: 299, family: 1399, elite: 999 };
-    const qtys   = {};
-    let hasCoupon = false;
-    let isYearly  = false;
+const ROUTES = {
+    updateQty:    '{{ route('cart.updateQty') }}',
+    remove:       '{{ route('cart.remove') }}',
+    toggleYearly: '{{ route('cart.toggleYearly') }}',
+    applyCoupon:  '{{ route('cart.applyCoupon') }}',
+};
 
-    // ─── Init: build qtys from rendered items ──────────────────
-    document.querySelectorAll('.cart-item[data-key]').forEach(el => {
-        const key = el.dataset.key;
-        qtys[key]  = 1;
+const CSRF = '{{ csrf_token() }}';
+
+// ─── AJAX Helper ──────────────────────────────────────────────
+async function cartRequest(url, data) {
+    const res = await fetch(url, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': CSRF,
+            'Accept': 'application/json',
+        },
+        body: JSON.stringify(data),
     });
 
-    document.querySelectorAll('[id^="price-"]').forEach(el => {
-        const num = parseFloat(el.textContent.replace(/,/g, ''));
-        el.textContent = formatNum(num);
+    if (!res.ok) throw new Error('Request failed');
+    return res.json();
+}
+
+// ─── Update Summary UI ────────────────────────────────────────
+// ✅ الـ JS بس بيغير الأرقام — الـ SAR icon فاضل في الـ HTML
+function updateSummaryUI(data) {
+    const count = data.count;
+
+    document.getElementById('cartCountBadge').textContent = count + ' عناصر';
+    document.getElementById('totalItemsText').textContent  = count > 0 ? 'إجمالي ' + count + ' خطط' : '';
+
+    document.getElementById('emptyState').classList.toggle('show', count === 0);
+
+    const couponSec = document.getElementById('couponSection');
+    if (couponSec) couponSec.style.display = count === 0 ? 'none' : '';
+
+    // ✅ بس بنغير الـ span الرقم مش الـ element كله
+    document.getElementById('subtotalNum').textContent = formatNum(data.subtotal);
+    document.getElementById('totalVal').textContent    = formatNum(data.total);
+
+    const couponDisc = parseFloat(data.coupon_discount);
+    document.getElementById('discountRow').style.display = couponDisc > 0 ? '' : 'none';
+    document.getElementById('discountNum').textContent   = formatNum(data.coupon_discount);
+
+    const yearlyDisc = parseFloat(data.yearly_discount);
+    document.getElementById('yearlyDiscRow').style.display = yearlyDisc > 0 ? '' : 'none';
+    document.getElementById('yearlyDiscNum').textContent   = formatNum(data.yearly_discount);
+
+    // ─── Update each item ─────────────────────────────────────
+    data.items.forEach(item => {
+        const itemEl = document.getElementById('item-' + item.id);
+        if (!itemEl) return;
+
+        // ✅ بس بنغير الرقم
+        const priceEl = document.getElementById('price-' + item.id);
+        if (priceEl) priceEl.textContent = formatNum(item.final_price);
+
+        // ✅ بس بنغير الـ period (شهر/سنة) مش الـ SAR icon
+        const periodEl = itemEl.querySelector('.unit-period');
+        if (periodEl) periodEl.textContent = data.is_yearly ? 'سنة' : 'شهر';
+
+        const origEl = document.getElementById('original-price-' + item.id);
+        if (origEl) {
+            origEl.textContent = formatNum(item.original_price);
+            origEl.style.display = data.is_yearly ? '' : 'none';
+        }
+
+        // qty
+        const qtyEl = document.getElementById('qty-' + item.id);
+        if (qtyEl) qtyEl.textContent = item.quantity;
+
+        // qty buttons
+        const [minusBtn, plusBtn] = itemEl.querySelectorAll('.qty-btn');
+        if (minusBtn) {
+            minusBtn.disabled = item.quantity <= 1;
+            minusBtn.setAttribute('onclick', `changeQty(${item.id}, ${item.quantity - 1})`);
+        }
+        if (plusBtn) {
+            plusBtn.setAttribute('onclick', `changeQty(${item.id}, ${item.quantity + 1})`);
+        }
     });
+}
 
-    // ─── Helpers ───────────────────────────────────────────────
-    function getSubtotal() {
-        return Object.entries(qtys).reduce((sum, [key, qty]) => {
-            return sum + (prices[key] || 0) * qty;
-        }, 0);
+// ─── Format Number ────────────────────────────────────────────
+function formatNum(n) {
+    const num = parseFloat(String(n).replace(/,/g, ''));
+    return new Intl.NumberFormat('en-US').format(Math.round(num));
+}
+
+// ─── Change Quantity ──────────────────────────────────────────
+async function changeQty(itemId, newQty) {
+    if (newQty < 1) return;
+
+    const itemEl = document.getElementById('item-' + itemId);
+    if (itemEl) itemEl.classList.add('loading');
+
+    try {
+        const data = await cartRequest(ROUTES.updateQty, {
+            item_id:  itemId,
+            quantity: newQty,
+        });
+        updateSummaryUI(data);
+    } catch (e) {
+        console.error('Failed to update qty', e);
+    } finally {
+        if (itemEl) itemEl.classList.remove('loading');
     }
+}
 
-    function formatNum(n) {
-        return new Intl.NumberFormat('ar-EG').format(n);
-    }
+// ─── Remove Item ──────────────────────────────────────────────
+async function removeItem(itemId) {
+    const itemEl = document.getElementById('item-' + itemId);
+    if (itemEl) itemEl.classList.add('removing');
 
-    function updateSummary() {
-        const visibleItems = document.querySelectorAll('.cart-item:not(.removing)');
-        const count = visibleItems.length;
-
-        // Header badges
-        document.getElementById('cartCountBadge').textContent = count + ' عناصر';
-        document.getElementById('totalItemsText').textContent  = count > 0 ? 'إجمالي ' + count + ' خطط' : '';
-
-        // Empty state
-        document.getElementById('emptyState').classList.toggle('show', count === 0);
-        const couponSec = document.getElementById('couponSection');
-        if (couponSec) couponSec.style.display = count === 0 ? 'none' : '';
-
-        // Calculations
-        let sub        = getSubtotal();
-        let total      = sub;
-        let couponDisc = 0;
-        let yearlyDisc = 0;
-
-        if (hasCoupon && count > 0) {
-            couponDisc = Math.round(sub * 0.1);
-            total     -= couponDisc;
-            document.getElementById('discountRow').style.display = '';
-            document.getElementById('discountVal').textContent   = '−' + formatNum(couponDisc) + ' ر.س';
-        } else {
-            document.getElementById('discountRow').style.display = 'none';
-        }
-
-        if (isYearly && count > 0) {
-            yearlyDisc = Math.round(total * 0.25);
-            total     -= yearlyDisc;
-            document.getElementById('yearlyDiscRow').style.display = '';
-            document.getElementById('yearlyDiscVal').textContent    = '−' + formatNum(yearlyDisc) + ' ر.س';
-        } else {
-            document.getElementById('yearlyDiscRow').style.display = 'none';
-        }
-
-        document.getElementById('subtotalVal').textContent = formatNum(sub) + ' ر.س';
-        document.getElementById('totalVal').textContent    = formatNum(total);
-    }
-
-    // ─── Qty ───────────────────────────────────────────────────
-    function changeQty(key, delta) {
-        if (qtys[key] === undefined) return;
-        qtys[key] = Math.max(1, qtys[key] + delta);
-        document.getElementById('qty-'   + key).textContent = qtys[key];
-        document.getElementById('price-' + key).textContent = formatNum(prices[key] * qtys[key]);
-        updateSummary();
-    }
-
-    // ─── Remove ────────────────────────────────────────────────
-    function removeItem(key) {
-        const el = document.getElementById('item-' + key);
-        if (!el) return;
-        el.classList.add('removing');
+    try {
+        const data = await cartRequest(ROUTES.remove, { item_id: itemId });
         setTimeout(() => {
-            el.remove();
-            delete qtys[key];
-            updateSummary();
+            itemEl?.remove();
+            updateSummaryUI(data);
         }, 350);
+    } catch (e) {
+        if (itemEl) itemEl.classList.remove('removing');
+        console.error('Failed to remove item', e);
     }
+}
 
-    // ─── Coupon ────────────────────────────────────────────────
-    const VALID_COUPONS = ['MFB10', 'MINDFITBRO', 'WELCOME', 'EID2025'];
+// ─── Toggle Yearly ────────────────────────────────────────────
+async function toggleYearly() {
+    const btn      = document.getElementById('yearlyToggle');
+    const isYearly = !btn.classList.contains('on');
 
-    function applyCoupon() {
-        const input = document.getElementById('couponInput');
-        const val   = input.value.trim().toUpperCase();
+    // Optimistic UI
+    btn.classList.toggle('on', isYearly);
+    document.getElementById('toggleText').textContent = isYearly ? 'سنوي' : 'شهري';
 
-        if (VALID_COUPONS.includes(val)) {
-            hasCoupon = true;
-            document.getElementById('couponSuccess').classList.add('show');
+    try {
+        const data = await cartRequest(ROUTES.toggleYearly, { is_yearly: isYearly });
+        updateSummaryUI(data);
+    } catch (e) {
+        // Revert on failure
+        btn.classList.toggle('on', !isYearly);
+        document.getElementById('toggleText').textContent = !isYearly ? 'سنوي' : 'شهري';
+        console.error('Failed to toggle yearly', e);
+    }
+}
+
+// ─── Apply Coupon ─────────────────────────────────────────────
+async function applyCoupon() {
+    const input   = document.getElementById('couponInput');
+    const btn     = document.getElementById('couponBtn');
+    const success = document.getElementById('couponSuccess');
+    const error   = document.getElementById('couponError');
+    const code    = input.value.trim();
+
+    if (!code) return;
+
+    btn.disabled    = true;
+    btn.textContent = '...';
+    success.classList.remove('show');
+    error.classList.remove('show');
+    input.style.borderColor = '';
+
+    try {
+        const data = await cartRequest(ROUTES.applyCoupon, { coupon_code: code });
+
+        if (data.coupon_valid) {
+            success.classList.add('show');
             input.style.borderColor = 'var(--green)';
-            updateSummary();
-        } else if (val) {
+        } else if (data.coupon_invalid) {
+            error.classList.add('show');
             input.style.borderColor = 'var(--red)';
             input.style.animation   = 'shake 0.3s';
             setTimeout(() => { input.style.animation = ''; }, 400);
         }
+
+        updateSummaryUI(data);
+    } catch (e) {
+        console.error('Failed to apply coupon', e);
+    } finally {
+        btn.disabled    = false;
+        btn.textContent = 'تطبيق';
     }
+}
 
-    document.getElementById('couponInput').addEventListener('keydown', e => {
-        if (e.key === 'Enter') applyCoupon();
-    });
+// ─── Coupon Input Events ──────────────────────────────────────
+document.getElementById('couponInput').addEventListener('keydown', e => {
+    if (e.key === 'Enter') applyCoupon();
+});
 
-    document.getElementById('couponInput').addEventListener('input', function () {
-        this.style.borderColor = '';
-        if (!this.value.trim()) {
-            hasCoupon = false;
-            document.getElementById('couponSuccess').classList.remove('show');
-            updateSummary();
-        }
-    });
+document.getElementById('couponInput').addEventListener('input', function () {
+    this.style.borderColor = '';
+    document.getElementById('couponSuccess').classList.remove('show');
+    document.getElementById('couponError').classList.remove('show');
 
-    // ─── Yearly Toggle ─────────────────────────────────────────
-    function toggleYearly() {
-        isYearly = !isYearly;
-        document.getElementById('yearlyToggle').classList.toggle('on', isYearly);
-        document.getElementById('toggleText').textContent = isYearly ? 'سنوي' : 'شهري';
-        updateSummary();
+    if (!this.value.trim()) {
+        cartRequest(ROUTES.applyCoupon, { coupon_code: null }).catch(() => {});
     }
-
-    // ─── Init ──────────────────────────────────────────────────
-    updateSummary();
+});
 </script>
 @endsection
