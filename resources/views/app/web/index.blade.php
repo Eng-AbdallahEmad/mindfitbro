@@ -72,9 +72,8 @@
     <x-web.navbar :transparent="true" />
 
     {{-- Hero Section --}}
-    <section class="hero relative w-full flex items-center overflow-hidden px-2 xl:px-28 pt-[10rem] lg:pt-[20rem] pb-[5rem] lg:pb-[10rem]">
-        <div class="absolute top-0 left-[149px] w-[195px] h-[34rem] z-20 pointer-events-none
-                    bg-gradient-to-b from-white/30 to-transparent hidden xl:block"></div>
+    <section class="hero relative w-full flex items-center overflow-hidden px-2 lg:px-[1rem] 2xl:px-28 pt-[10rem] lg:pt-[20rem] pb-[5rem] lg:pb-[10rem]">
+        <div class="absolute top-0 left-[149px] w-[195px] h-[34rem] z-20 pointer-events-none bg-gradient-to-b from-white/30 to-transparent hidden 2xl:block"></div>
 
         {{-- Background Layer --}}
         <div class="hero-bg absolute inset-0 z-0"></div>
@@ -83,7 +82,7 @@
         <div class="orb orb-1 absolute z-0 hidden lg:block"></div>
         <div class="orb orb-2 absolute z-0 hidden lg:block"></div>
 
-        <div class="absolute transform -translate-x-[66.8rem] translate-y-[70px] max-w-[195px] hidden xl:block">
+        <div class="absolute transform -translate-x-[66.8rem] translate-y-[70px] max-w-[195px] hidden 2xl:block">
             <p class="text-white text-xl font-black font-arabic">
                 أكثر من <span class="text-[#D4ED57] font-bold">500</span> قصة نجاح
             </p>
@@ -92,7 +91,17 @@
         {{-- Content --}}
         <div class="relative z-10 text-right px-4 lg:px-6 w-full">
             <h2 class="text-white font-semibold font-arabic text-xl lg:text-3xl">رحلتك تبدأ الآن بــــــ</h2>
-            <h1 class="text-white font-black font-display text-[4.2rem] md:text-[12rem] xl:text-[9rem] text-center my-5 lg:my-0 md:whitespace-nowrap">نتـائـج حـقيقية</h1>
+            <div class="relative inline-block">
+
+                <h1 class="text-white font-black font-display text-[4.2rem] md:text-[6rem] lg:text-[7.5rem] xl:text-[8rem] 2xl:text-[9rem] text-center my-5 lg:my-0 md:whitespace-nowrap ipad-mini:text-[4.7rem] ipad-mini-land:text-[6.6rem]">
+                    نتـائـج حـقيقية
+                </h1>
+
+                <h2 class="absolute top-0 right-0 left-0 hidden lg:block text-outline font-black pointer-events-none font-display md:whitespace-nowrap lg:text-[7.5rem] xl:text-[8rem] 2xl:text-[9rem] ipad-mini-land:text-[6.6rem] z-50">
+                    نتـائـج حـقيقية
+                </h2>
+
+            </div>
 
             <div class="absolute top-1/2 left-1/2 md:translate-x-[-70%] xl:translate-x-[-60%] md:translate-y-[-42%] xl:translate-y-[-46%] hidden lg:block md:w-[800px]">
 
@@ -106,16 +115,11 @@
                 <!-- Shadow -->
                 <div class="absolute bottom-[65px] left-1/2 -translate-x-1/2 w-[640px] h-[30px] bg-black blur-xl rounded-full"></div>
 
-                <!-- Outline Text -->
-                <h2 class="absolute md:top-[31%] xl:top-[38%] left-1/2 md:translate-x-[-35.5%] xl:translate-x-[-47.2%] -translate-y-1/2 text-outline font-black text-center pointer-events-none lg:whitespace-nowrap font-display md:text-[12rem] xl:text-[9rem]">
-                    نتـائـج حـقيقية
-                </h2>
-
             </div>
 
-            <h3 class="text-white font-normal font-arabic md:mt-4 xl:mt-0 md:max-w-md xl:max-w-lg text-base lg:text-xl z-50 relative">
-                سواء كنت تسعى لضبط الهرمونات، تحسين صحة الجهاز الهضمي، أو الوصول لقوام مثالي…
-                نقدّم لك تدريبًا احترافيًا قائمًا على العلم، يحقق نتائج حقيقية ومستدامة.
+            <h3 class="text-white font-normal font-arabic md:mt-4 md:max-w-md xl:max-w-lg text-base lg:text-xl z-50 relative">
+                سواء كنت تسعى لتحسين لياقتك، بناء جسم أقوى، أو الوصول لقوام مثالي…
+                نقدّم لك نظام تدريبي احترافي مبني على أسس واضحة يساعدك تحقق نتائج حقيقية ومستدامة.
             </h3>
 
             <div class=" max-w-[18.4rem] mt-8">
@@ -167,7 +171,7 @@
     {{-- Why Us Section --}}
     <section id="our-target" class="bg-white w-full py-16 lg:py-28 px-8 lg:px-20 flex flex-col justify-center">
         <div class="flex flex-col justify-center items-center mb-7">
-            <h2 class="font-display text-3xl lg:text-7xl cursor-default transition-all duration-300 text-textColor hover:text-primary font-semibold mb-4 lg:mb-7">
+            <h2 class="font-display text-3xl ipad-mini:text-4xl ipad-mini-land:text-5xl md:text-6xl xl:text-7xl cursor-default transition-all duration-300 text-textColor hover:text-primary font-semibold mb-4 lg:mb-7">
                 أنت مش لوحدك في الرحلة
             </h2>
             <p class="font-arabic font-bold text-textColor text-sm lg:text-xl flex items-center justify-center gap-1 text-center leading-relaxed">
@@ -269,8 +273,8 @@
         </div>
 
         <div class="my-9 lg:my-24 text-center">
-            <h2 class="font-display text-3xl lg:text-7xl cursor-default transition-all duration-300 text-textColor hover:text-primary font-semibold mb-4 lg:mb-7">خد بالك</h2>
-            <p class="font-arabic font-bold text-textColor text-xl lg:text-5xl">مش كل البرامج شبه بعض… شوف الفرق</p>
+            <h2 class="font-display text-3xl lg:text-7xl cursor-default transition-all duration-300 text-textColor hover:text-primary font-semibold mb-4 lg:mb-7 ipad-mini:text-4xl ipad-mini-land:text-5xl">خد بالك</h2>
+            <p class="font-arabic font-bold text-textColor text-xl lg:text-5xl ipad-mini-land:text-3xl">مش كل البرامج شبه بعض… شوف الفرق</p>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -371,7 +375,7 @@
         <div class="flex flex-col-reverse md:flex-row-reverse gap-8 items-start">
 
             <!-- RIGHT: Slider -->
-            <div class="w-full md:w-[420px] xl:w-[750px] flex-shrink-0 mx-auto md:mx-0">
+            <div class="w-full md:w-[420px] xl:w-[750px] flex-shrink-0 mx-auto md:mx-0 ipad-mini:w-[320px]">
 
                 <div class="swiper mySwiper2 w-full md:w-[100%] xl:w-[70%] h-[310px] lg:h-[550px] aspect-[9/16] rounded-2xl overflow-hidden shadow-2xl">
 
@@ -421,7 +425,7 @@
 
                 <!-- Heading -->
                 <div>
-                    <h2 class="font-display text-3xl lg:text-7xl cursor-default transition-all duration-300 text-textColor hover:text-primary font-semibold mb-4 lg:mb-7">
+                    <h2 class="font-display text-3xl lg:text-7xl cursor-default transition-all duration-300 text-textColor hover:text-primary font-semibold mb-4 lg:mb-7 ipad-mini-land:text-5xl">
                         مش بنقدّم تمارين وبس…
                     </h2>
                     <p class="text-base leading-relaxed text-[#1C1C1C] font-arabic">
@@ -437,7 +441,7 @@
                         onclick="toggleAccordion(this)">
                         <div class="flex items-center justify-between gap-4 p-4">
                             <span class="acc-title text-base lg:text-lg font-bold text-accent transition">
-                                التقييم الشامل
+                                نكتشف وضعك الحالي
                             </span>
 
                             <div class="acc-btn flex h-[34px] w-[34px] shrink-0 items-center justify-center rounded-full bg-accent">
@@ -451,7 +455,7 @@
                         </div>
 
                         <div class="acc-desc block px-4 pb-4 text-sm leading-relaxed text-white">
-                            ابدأ بتحليل صحي شامل لتحديد المجالات الرئيسية التي تحتاج إلى تحسين، ووضع خارطة طريق لتحولك الكامل.
+                            نعرف جسمك، أسلوب حياتك، ونقطة البداية.
                         </div>
                     </div>
 
@@ -459,7 +463,7 @@
                     <div class="accordion-item cursor-pointer overflow-hidden rounded-[14px] bg-white transition duration-300 hover:shadow-lg font-arabic" onclick="toggleAccordion(this)">
                         <div class="flex items-center justify-between gap-4 p-4">
                             <span class="acc-title text-base lg:text-lg font-bold text-textColor transition">
-                                خطة مخصصة حسب أهدافك
+                                نرسم طريقك الخاص
                             </span>
 
                             <div class="acc-btn flex h-[34px] w-[34px] shrink-0 items-center justify-center rounded-full bg-accent">
@@ -473,7 +477,7 @@
                         </div>
 
                         <div class="acc-desc hidden px-4 pb-4 text-sm leading-relaxed text-gray-600">
-                            نصمّم لك برنامجًا متكاملًا يتناسب تمامًا مع أهدافك وأسلوب حياتك وقدراتك الجسدية.
+                           خطة مصممة ليك فقط حسب هدفك.
                         </div>
                     </div>
 
@@ -481,7 +485,7 @@
                     <div class="accordion-item cursor-pointer overflow-hidden rounded-[14px] bg-white transition duration-300 hover:shadow-lg font-arabic" onclick="toggleAccordion(this)">
                         <div class="flex items-center justify-between gap-4 p-4">
                             <span class="acc-title text-base lg:text-lg font-bold text-textColor transition">
-                                تحليل المختبر والعلامات الحيوية
+                                نبدأ التغيير الحقيقي
                             </span>
 
                             <div class="acc-btn flex h-[34px] w-[34px] shrink-0 items-center justify-center rounded-full bg-accent">
@@ -495,7 +499,7 @@
                         </div>
 
                         <div class="acc-desc hidden px-4 pb-4 text-sm leading-relaxed text-gray-600">
-                            نحلّل جذور المشكلة عبر فحوصات معملية دقيقة لضمان تدخل صحيح وفعّال.
+                            تدريب + عادات + التزام.
                         </div>
                     </div>
 
@@ -503,7 +507,7 @@
                     <div class="accordion-item cursor-pointer overflow-hidden rounded-[14px] bg-white transition duration-300 hover:shadow-lg font-arabic" onclick="toggleAccordion(this)">
                         <div class="flex items-center justify-between gap-4 p-4">
                             <span class="acc-title text-base lg:text-lg font-bold text-textColor transition">
-                                تدريب متخصص مخصص لك
+                                نوصلك للنسخة الأقوى منك
                             </span>
 
                             <div class="acc-btn flex h-[34px] w-[34px] shrink-0 items-center justify-center rounded-full bg-accent">
@@ -517,7 +521,7 @@
                         </div>
 
                         <div class="acc-desc hidden px-4 pb-4 text-sm leading-relaxed text-gray-600">
-                            مدرب شخصي متفرغ لمتابعتك، يحفّزك ويعدّل خطتك باستمرار لضمان أفضل النتائج.
+                           نتائج مستمرة مش مؤقتة.
                         </div>
                     </div>
 
@@ -609,7 +613,7 @@
         </div>
 
         {{-- Our Message --}}
-        <div class="mt-8 lg:mt-14 px-3 lg:px-24">
+        <div class="mt-8 lg:mt-14 px-3 lg:px-24 ipad-mini-land:px-3">
             <div class="container px-5 lg:px-52 py-10 lg:py-28 bg-primary shadow-xl rounded-[20px] relative overflow-hidden text-center">
 
                 {{-- Decorative Lines --}}

@@ -34,6 +34,10 @@ export default {
                 marquee: "marquee 22s linear infinite",
                 "marquee-partners": "marquee-partners 28s linear infinite",
             },
+            screens: {
+                'ipad-mini': {'min': '768px', 'max': '1023px'},
+                'ipad-mini-land': {'min': '1024px', 'max': '1179px', 'orientation': 'landscape'},
+            },
         },
     },
     plugins: [],
