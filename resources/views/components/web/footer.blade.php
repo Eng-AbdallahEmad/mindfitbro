@@ -2,6 +2,8 @@
     'hidden' => false,
 ])
 
+@php $isRtl = app()->getLocale() === 'ar'; @endphp
+
 {{-- ═══════════════════════════════════════════
     Footer Section — MindFitBro
 ═══════════════════════════════════════════ --}}
@@ -29,7 +31,7 @@
                         <img src="{{ asset('assets/logo/mindfitbro.png') }}" alt="MindFitBro Logo" class="w-52 mb-2">
                     </a>
                     <p class="font-arabic text-sm leading-relaxed text-white/60 max-w-[220px]">
-                        مش برنامج… ده أسلوب حياة. بنبني عقلية منضبطة وجسم أقوى مع مجتمع بيدعمك.
+                        {{ __('messages.footer.tagline') }}
                     </p>
                 </div>
 
@@ -46,11 +48,11 @@
                                     <g id="Dribbble-Light-Preview" transform="translate(-340.000000, -7439.000000)" fill="currentColor">
                                         <g id="icons" transform="translate(56.000000, 160.000000)">
                                             <path d="M289.869652,7279.12273 C288.241769,7279.19618 286.830805,7279.5942 285.691486,7280.72871 C284.548187,7281.86918 284.155147,7283.28558 284.081514,7284.89653 C284.035742,7285.90201 283.768077,7293.49818 284.544207,7295.49028 C285.067597,7296.83422 286.098457,7297.86749 287.454694,7298.39256 C288.087538,7298.63872 288.809936,7298.80547 289.869652,7298.85411 C298.730467,7299.25511 302.015089,7299.03674 303.400182,7295.49028 C303.645956,7294.859 303.815113,7294.1374 303.86188,7293.08031 C304.26686,7284.19677 303.796207,7282.27117 302.251908,7280.72871 C301.027016,7279.50685 299.5862,7278.67508 289.869652,7279.12273 M289.951245,7297.06748 C288.981083,7297.0238 288.454707,7296.86201 288.103459,7296.72603 C287.219865,7296.3826 286.556174,7295.72155 286.214876,7294.84312 C285.623823,7293.32944 285.819846,7286.14023 285.872583,7284.97693 C285.924325,7283.83745 286.155174,7282.79624 286.959165,7281.99226 C287.954203,7280.99968 289.239792,7280.51332 297.993144,7280.90837 C299.135448,7280.95998 300.179243,7281.19026 300.985224,7281.99226 C301.980262,7282.98483 302.473801,7284.28014 302.071806,7292.99991 C302.028024,7293.96767 301.865833,7294.49274 301.729513,7294.84312 C300.829003,7297.15085 298.757333,7297.47145 289.951245,7297.06748 M298.089663,7283.68956 C298.089663,7284.34665 298.623998,7284.88065 299.283709,7284.88065 C299.943419,7284.88065 300.47875,7284.34665 300.47875,7283.68956 C300.47875,7283.03248 299.943419,7282.49847 299.283709,7282.49847 C298.623998,7282.49847 298.089663,7283.03248 298.089663,7283.68956 M288.862673,7288.98792 C288.862673,7291.80286 291.150266,7294.08479 293.972194,7294.08479 C296.794123,7294.08479 299.081716,7291.80286 299.081716,7288.98792 C299.081716,7286.17298 296.794123,7283.89205 293.972194,7283.89205 C291.150266,7283.89205 288.862673,7286.17298 288.862673,7288.98792 M290.655732,7288.98792 C290.655732,7287.16159 292.140329,7285.67967 293.972194,7285.67967 C295.80406,7285.67967 297.288657,7287.16159 297.288657,7288.98792 C297.288657,7290.81525 295.80406,7292.29716 293.972194,7292.29716 C292.140329,7292.29716 290.655732,7290.81525 290.655732,7288.98792" id="instagram-[#167]">
-                                                </path>
-                                            </g>
+                                            </path>
                                         </g>
                                     </g>
                                 </g>
+                            </g>
                         </svg>
                     </a>
                     {{-- TikTok --}}
@@ -80,22 +82,22 @@
             @if (!$hidden)
                 {{-- ── Column 2: Quick Links ── --}}
                 <div class="flex flex-col gap-5 font-arabic">
-                    <h4 class="text-white font-black text-base relative pb-3 after:content-[''] after:absolute after:bottom-0 after:right-0 after:w-8 after:h-[2px] after:bg-[#D4ED57] after:rounded-full">
-                        روابط سريعة
+                    <h4 class="text-white font-black text-base relative pb-3 after:content-[''] after:absolute after:bottom-0 after:{{ $isRtl ? 'right' : 'left' }}-0 after:w-8 after:h-[2px] after:bg-[#D4ED57] after:rounded-full">
+                        {{ __('messages.footer.quick_links') }}
                     </h4>
                     <ul class="flex flex-col gap-3.5">
                         @foreach([
-                            ['label' => 'الرئيسية',         'href' => route('home')],
-                            ['label' => 'برامجنا التدريبية', 'href' => route('home') . '#programs'],
-                            ['label' => 'نتائج عملاؤنا',     'href' => route('home') . '#before-after'],
-                            ['label' => 'آراء المشتركين',    'href' => route('home') . '#testimonials'],
-                            ['label' => 'تواصل معنا',        'href' => route('home') . '#contact'],
-                            ['label' => 'حاسبة السعرات الحرارية', 'href' => route('calorie-calculator')],
+                            ['label' => __('messages.nav.home'),                        'href' => route('home')],
+                            ['label' => __('messages.footer.training_programs'),        'href' => route('home') . '#programs'],
+                            ['label' => __('messages.footer.client_results'),           'href' => route('home') . '#before-after'],
+                            ['label' => __('messages.footer.subscriber_reviews'),       'href' => route('home') . '#testimonials'],
+                            ['label' => __('messages.footer.contact_us'),               'href' => route('home') . '#contact'],
+                            ['label' => __('messages.footer.calorie_calculator'),       'href' => route('calorie-calculator')],
                         ] as $link)
                         <li>
                             <a href="{{ $link['href'] }}"
                                 class="group flex items-center gap-2 text-sm text-white/60 hover:text-white transition-colors duration-300 w-fit">
-                                <span class="material-symbols-rounded !text-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300 group-hover:text-accent flex-shrink-0">arrow_back_ios</span>
+                                <span class="material-symbols-rounded !text-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300 group-hover:text-accent flex-shrink-0">{{ $isRtl ? 'arrow_back_ios' : 'arrow_forward_ios' }}</span>
                                 {{ $link['label'] }}
                             </a>
                         </li>
@@ -106,14 +108,14 @@
 
             {{-- ── Column 3: Plans ── --}}
             <div class="flex flex-col gap-5 font-arabic">
-                <h4 class="text-white font-black text-base relative pb-3 after:content-[''] after:absolute after:bottom-0 after:right-0 after:w-8 after:h-[2px] after:bg-[#D4ED57] after:rounded-full">
-                    الباقات
+                <h4 class="text-white font-black text-base relative pb-3 after:content-[''] after:absolute after:bottom-0 after:{{ $isRtl ? 'right' : 'left' }}-0 after:w-8 after:h-[2px] after:bg-[#D4ED57] after:rounded-full">
+                    {{ __('messages.footer.plans') }}
                 </h4>
                 <ul class="flex flex-col gap-4">
                     @foreach([
-                        ['name' => 'ستارتر',       'price' => '299', 'icon' => 'bolt'],
-                        ['name' => 'برو',           'price' => '599', 'icon' => 'star'],
-                        ['name' => 'إيليت',         'price' => '999', 'icon' => 'emoji_events'],
+                        ['name' => __('messages.footer.starter'), 'price' => '299', 'icon' => 'bolt'],
+                        ['name' => __('messages.footer.pro'),     'price' => '599', 'icon' => 'star'],
+                        ['name' => __('messages.footer.elite'),   'price' => '999', 'icon' => 'emoji_events'],
                     ] as $plan)
                     <li>
                         <a href="{{ route('home') }}#programs"
@@ -139,17 +141,23 @@
                 </ul>
                 <a href="{{ route('home') }}#programs"
                     class="group mt-1 font-arabic text-textColor bg-accent px-4 py-2.5 rounded-full text-sm font-black flex justify-center items-center gap-2 transition-all duration-300 hover:bg-yellow-300 w-fit">
-                    أشترك الآن
-                    <svg class="transition-transform duration-300 group-hover:-translate-x-1" width="18" height="10" viewBox="0 0 29 14" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M0.000447464 5.68288V8.31848H1.36843L1.36822 5.68288H0.000447464ZM2.80722 2.71685C2.60162 2.71685 2.40833 2.7969 2.26296 2.94233C2.11758 3.08773 2.03755 3.28102 2.03756 3.4866L2.03772 5.34545L2.03785 5.34811L2.03772 5.35076L2.03813 10.5141C2.03819 10.9384 2.38346 11.2836 2.80778 11.2836H4.10235L4.10172 2.71684L2.80722 2.71685ZM6.81911 0.22537C6.67374 0.0800182 6.48051 1.07288e-06 6.27496 1.07288e-06L5.54063 0.000130946C5.11631 0.00017794 4.77111 0.345439 4.77111 0.769769L4.7719 11.616L4.77202 11.6184L4.7719 11.6207L4.77202 13.2304C4.77202 13.436 4.8521 13.6292 4.9975 13.7746C5.14287 13.9199 5.3361 14 5.54167 14L6.27581 13.9999C6.70015 13.9998 7.04538 13.6545 7.04535 13.2302L7.04508 8.65474L7.04498 8.65282L7.04508 8.65088L7.04461 0.76958C7.04459 0.564018 6.96451 0.370721 6.81911 0.22537ZM7.71443 5.68239L7.71458 8.31799L28.5106 8.31717L28.5107 5.68156L7.71443 5.68239Z" fill="#202020"/>
-                    </svg>
+                    {{ __('messages.footer.subscribe_now') }}
+                    @if($isRtl)
+                        <svg class="transition-transform duration-300 group-hover:-translate-x-2" width="26" height="14" viewBox="0 0 29 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M0.000447464 5.68288V8.31848H1.36843L1.36822 5.68288H0.000447464ZM2.80722 2.71685C2.60162 2.71685 2.40833 2.7969 2.26296 2.94233C2.11758 3.08773 2.03755 3.28102 2.03756 3.4866L2.03772 5.34545L2.03785 5.34811L2.03772 5.35076L2.03813 10.5141C2.03819 10.9384 2.38346 11.2836 2.80778 11.2836H4.10235L4.10172 2.71684L2.80722 2.71685ZM6.81911 0.22537C6.67374 0.0800182 6.48051 1.07288e-06 6.27496 1.07288e-06L5.54063 0.000130946C5.11631 0.00017794 4.77111 0.345439 4.77111 0.769769L4.7719 11.616L4.77202 11.6184L4.7719 11.6207L4.77202 13.2304C4.77202 13.436 4.8521 13.6292 4.9975 13.7746C5.14287 13.9199 5.3361 14 5.54167 14L6.27581 13.9999C6.70015 13.9998 7.04538 13.6545 7.04535 13.2302L7.04508 8.65474L7.04498 8.65282L7.04508 8.65088L7.04461 0.76958C7.04459 0.564018 6.96451 0.370721 6.81911 0.22537ZM7.71443 5.68239L7.71458 8.31799L28.5106 8.31717L28.5107 5.68156L7.71443 5.68239Z" fill="#202020"/>
+                        </svg>
+                    @else
+                        <svg class="transition-transform duration-300 group-hover:translate-x-2" width="26" height="14" viewBox="0 0 29 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M28.5103 8.31712V5.68152H27.1423L27.1425 8.31712H28.5103ZM25.7035 11.2832C25.9091 11.2832 26.1024 11.2031 26.2478 11.0577C26.3932 10.9123 26.4732 10.719 26.4732 10.5134L26.473 8.65455L26.4729 8.65189L26.473 8.64924L26.4726 3.48591C26.4726 3.06162 26.1273 2.71639 25.703 2.71639H24.4084L24.409 11.2832L25.7035 11.2832ZM21.6916 13.7746C21.837 13.92 22.0302 14 22.2358 14L22.9701 13.9999C23.3944 13.9998 23.7396 13.6546 23.7396 13.2302L23.7388 2.38397L23.7387 2.38162L23.7388 2.37927L23.7387 0.76964C23.7387 0.564042 23.6586 0.370757 23.5132 0.225405C23.3679 0.0800539 23.1746 0 22.9691 0L22.2349 0.000129431C21.8106 0.000164676 21.4654 0.345474 21.4654 0.769816L21.4657 5.34526L21.4658 5.34718L21.4657 5.34912L21.4661 13.2304C21.4662 13.436 21.5462 13.6293 21.6916 13.7746ZM20.7963 8.31762L20.7962 5.68201L0.000188134 5.68283L0 8.31844L20.7963 8.31762Z" fill="#202020"/>
+                        </svg>
+                    @endif
                 </a>
             </div>
 
-            {{-- ── Column 4: .... + Contact ── --}}
+            {{-- ── Column 4: Contact ── --}}
             <div class="flex flex-col gap-5 font-arabic">
-                <h4 class="text-white font-black text-base relative pb-3 after:content-[''] after:absolute after:bottom-0 after:right-0 after:w-8 after:h-[2px] after:bg-[#D4ED57] after:rounded-full">
-                    ابقى على تواصل
+                <h4 class="text-white font-black text-base relative pb-3 after:content-[''] after:absolute after:bottom-0 after:{{ $isRtl ? 'right' : 'left' }}-0 after:w-8 after:h-[2px] after:bg-[#D4ED57] after:rounded-full">
+                    {{ __('messages.footer.stay_connected') }}
                 </h4>
 
                 {{-- Mini Contact Info --}}
@@ -170,33 +178,11 @@
                         <div class="w-8 h-8 rounded-[8px] bg-white/10 flex items-center justify-center flex-shrink-0">
                             <span class="material-symbols-rounded text-[#D4ED57]/60" style="font-size:16px">location_on</span>
                         </div>
-                        الرياض، المملكة العربية السعودية
+                        {{ __('messages.footer.location') }}
                     </div>
                 </div>
 
                 <hr class="border-white/10">
-
-                {{-- الرقم الضريبي والسجل التجاري --}}
-                {{-- <div class="flex flex-col gap-3">
-                    <div class="flex items-center gap-3 text-sm text-white/60">
-                        <div class="w-8 h-8 rounded-[8px] bg-white/10 flex items-center justify-center flex-shrink-0">
-                            <span class="material-symbols-rounded text-[#D4ED57]/60" style="font-size:16px">receipt_long</span>
-                        </div>
-                        <div class="flex flex-col gap-0.5">
-                            <span class="text-[10px] text-white/30 font-bold">الرقم الضريبي</span>
-                            <span>3xxxxxxxxxx</span>
-                        </div>
-                    </div>
-                    <div class="flex items-center gap-3 text-sm text-white/60">
-                        <div class="w-8 h-8 rounded-[8px] bg-white/10 flex items-center justify-center flex-shrink-0">
-                            <span class="material-symbols-rounded text-[#D4ED57]/60" style="font-size:16px">corporate_fare</span>
-                        </div>
-                        <div class="flex flex-col gap-0.5">
-                            <span class="text-[10px] text-white/30 font-bold">السجل التجاري</span>
-                            <span>10xxxxxxxx</span>
-                        </div>
-                    </div>
-                </div> --}}
 
             </div>
 
@@ -210,7 +196,7 @@
 
             {{-- Copyright --}}
             <p class="text-xs text-white/30 font-medium">
-                © {{ date('Y') }} MindFitBro — جميع الحقوق محفوظة
+                © {{ date('Y') }} MindFitBro — {{ __('messages.footer.copyright') }}
             </p>
 
             {{-- Middle: Guarantee Badge --}}
@@ -220,9 +206,9 @@
 
             {{-- Legal Links --}}
             <div class="flex items-center gap-5 text-xs text-white/30">
-                <a href="{{ route('privacy-policy') }}" class="hover:text-white/60 transition-colors duration-300">سياسة الخصوصية</a>
+                <a href="{{ route('privacy-policy') }}" class="hover:text-white/60 transition-colors duration-300">{{ __('messages.footer.privacy') }}</a>
                 <span class="text-white/10">|</span>
-                <a href="{{ route('terms-of-service') }}" class="hover:text-white/60 transition-colors duration-300">الشروط والأحكام</a>
+                <a href="{{ route('terms-of-service') }}" class="hover:text-white/60 transition-colors duration-300">{{ __('messages.footer.terms') }}</a>
             </div>
 
         </div>

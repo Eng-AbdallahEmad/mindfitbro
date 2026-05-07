@@ -1,6 +1,6 @@
 @extends('layouts.web.app')
 
-@section('title', 'تسجيل الدخول')
+@section('title', __('messages.login.title'))
 
 @section('style')
 <style>
@@ -56,7 +56,7 @@
         outline: none;
         transition: border-color .2s, box-shadow .2s;
         font-family: 'Cairo', sans-serif;
-        text-align: right;
+        text-align: {{ app()->getLocale() === 'ar' ? 'right' : 'left' }};
     }
     .auth-input:focus {
         border-color: #174DAD;
@@ -68,7 +68,7 @@
     .pass-wrap { position: relative; }
     .pass-toggle {
         position: absolute;
-        left: 14px;
+        {{ app()->getLocale() === 'ar' ? 'left' : 'right' }}: 14px;
         top: 50%;
         transform: translateY(-50%);
         color: #9ca3af;
@@ -143,6 +143,10 @@
 
 @section('content')
 
+@php
+    $isRtl = app()->getLocale() === 'ar';
+@endphp
+
 <div class="min-h-screen flex flex-col lg:flex-row">
 
     {{-- ══════════════ LEFT PANEL (decorative) ══════════════ --}}
@@ -152,7 +156,7 @@
         <div class="orb orb-2"></div>
 
         {{-- Logo --}}
-        <a href="{{ url('/') }}" class="relative z-10">
+        <a href="{{ url('/') }}" class="relative z-10 mb-5">
             <img src="{{ asset('assets/logo/mindfitbro.png') }}" alt="MindFitBro" class="w-[250px] object-contain">
         </a>
 
@@ -160,13 +164,13 @@
         <div class="relative z-10 flex flex-col items-center gap-8">
 
             <div>
-                <h2 class="font-display text-center text-3xl xl:text-5xl text-white font-black leading-tight mb-4">
-                    رحلتك نحو
-                    <span class="text-accent">أقوى نسخة</span>
-                    منك
+                <h2 class="font-display text-center text-3xl xl:text-4xl text-white font-black leading-tight mb-4">
+                    {{ __('messages.login.journey_heading') }}
+                    <span class="text-accent">{{ __('messages.login.strongest_version') }}</span>
+                    {{ __('messages.login.of_you') }}
                 </h2>
                 <p class="font-arabic text-center text-white/70 text-base leading-relaxed max-w-sm">
-                    سجّل دخولك وتابع خطتك، تقدمك، وتواصل مع كوتشك في أي وقت
+                    {{ __('messages.login.panel_subtitle') }}
                 </p>
             </div>
 
@@ -178,8 +182,8 @@
                         <span class="material-symbols-rounded text-accent" style="font-size:20px;font-variation-settings:'FILL' 1">groups</span>
                     </div>
                     <div class="font-arabic">
-                        <p class="text-white font-black text-sm">+5,000 عضو نشط</p>
-                        <p class="text-white/50 text-xs">ينضمون لرحلتهم يومياً</p>
+                        <p class="text-white font-black text-sm">{{ __('messages.login.active_members') }}</p>
+                        <p class="text-white/50 text-xs">{{ __('messages.login.join_daily') }}</p>
                     </div>
                 </div>
 
@@ -188,8 +192,8 @@
                         <span class="material-symbols-rounded text-accent" style="font-size:20px;font-variation-settings:'FILL' 1">star</span>
                     </div>
                     <div class="font-arabic">
-                        <p class="text-white font-black text-sm">تقييم 4.9 / 5</p>
-                        <p class="text-white/50 text-xs">من أكثر من 10,000 تقييم</p>
+                        <p class="text-white font-black text-sm">{{ __('messages.login.rating') }}</p>
+                        <p class="text-white/50 text-xs">{{ __('messages.login.rating_count') }}</p>
                     </div>
                 </div>
 
@@ -199,7 +203,7 @@
         {{-- Bottom quote --}}
         <div class="relative z-10">
             <p class="font-arabic text-white/40 text-xs leading-relaxed">
-                "لأن MindFitBro مش برنامج، ده أسلوب حياة"
+                {{ __('messages.login.quote') }}
             </p>
         </div>
 
@@ -218,16 +222,16 @@
             </div>
 
             {{-- Heading --}}
-            <div class="mb-8 text-right">
+            <div class="mb-8 {{ $isRtl ? 'text-right' : 'text-left' }}">
                 <span class="inline-block bg-accent text-darkBg text-[11px] font-black tracking-widest px-4 py-1.5 rounded-full font-arabic mb-3">
-                    أهلاً بك من جديد 👋
+                    {{ __('messages.login.welcome_back') }}
                 </span>
                 <h1 class="font-display text-3xl lg:text-4xl font-black text-textColor">
-                    تسجيل الدخول
+                    {{ __('messages.login.title') }}
                 </h1>
                 <p class="font-arabic text-gray-400 text-sm mt-1">
-                    مش عندك حساب؟
-                    <a href="{{ route('register') }}" class="text-primary font-bold hover:underline">سجّل دلوقتي</a>
+                    {{ __('messages.login.no_account') }}
+                    <a href="{{ route('register') }}" class="text-primary font-bold hover:underline">{{ __('messages.login.register_now') }}</a>
                 </p>
             </div>
 
@@ -255,15 +259,15 @@
             <form method="POST" action="{{ route('login.post') }}" class="flex flex-col gap-5">
                 @csrf
 
-                {{-- user name --}}
+                {{-- Username --}}
                 <div class="flex flex-col gap-2">
-                    <label for="username" class="text-sm font-black text-textColor font-arabic">اسم المستخدم</label>
+                    <label for="username" class="text-sm font-black text-textColor font-arabic {{ app()->getLocale() === 'ar' ? 'text-right' : 'text-left' }}">{{ __('messages.login.username_label') }}</label>
                     <input
                         type="text"
                         name="username"
                         id="username"
                         value="{{ old('username') }}"
-                        placeholder="مثال: proteams123"
+                        placeholder="{{ __('messages.login.username_placeholder') }}"
                         autofocus
                         class="auth-input @error('username') border-red-400 @enderror"
                     >
@@ -274,12 +278,12 @@
 
                 {{-- Password --}}
                 <div class="flex flex-col gap-2">
-                    <div class="flex flex-row-reverse items-center justify-between">
+                    <div class="flex {{ $isRtl ? 'flex-row' : 'flex-row-reverse' }} items-center justify-between">
                         <a href="{{ route('password.request') }}"
                             class="text-xs text-primary font-bold font-arabic hover:underline">
-                            نسيت كلمة السر؟
+                            {{ __('messages.login.forgot_password') }}
                         </a>
-                        <label for="password" class="text-sm font-black text-textColor font-arabic">كلمة السر</label>
+                        <label for="password" class="text-sm font-black text-textColor font-arabic">{{ __('messages.login.password_label') }}</label>
                     </div>
                     <div class="pass-wrap">
                         <input
@@ -303,15 +307,15 @@
                 <div class="flex items-center justify-start gap-2 font-arabic">
                     <input type="checkbox" name="remember" id="remember" class="custom-check">
                     <label class="text-sm font-semibold text-gray-500 cursor-pointer select-none" for="remember">
-                        ابقى متسجل دخول
+                        {{ __('messages.login.remember_me') }}
                     </label>
                 </div>
 
                 {{-- Submit --}}
                 <button type="submit"
                     class="group font-arabic text-textColor bg-accent px-5 py-3.5 rounded-full text-base font-black flex justify-center items-center gap-2 transition hover:bg-yellow-300 w-full mt-1">
-                    دخول
-                    <svg class="transition-transform duration-300 group-hover:-translate-x-2"
+                    {{ __('messages.login.submit') }}
+                    <svg class="transition-transform duration-300 {{ $isRtl ? 'group-hover:-translate-x-2' : 'group-hover:translate-x-2 rotate-180' }}"
                         width="22" height="12" viewBox="0 0 29 14" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path d="M0.000447464 5.68288V8.31848H1.36843L1.36822 5.68288H0.000447464ZM2.80722 2.71685C2.60162 2.71685 2.40833 2.7969 2.26296 2.94233C2.11758 3.08773 2.03755 3.28102 2.03756 3.4866L2.03772 5.34545L2.03785 5.34811L2.03772 5.35076L2.03813 10.5141C2.03819 10.9384 2.38346 11.2836 2.80778 11.2836H4.10235L4.10172 2.71684L2.80722 2.71685ZM6.81911 0.22537C6.67374 0.0800182 6.48051 1.07288e-06 6.27496 1.07288e-06L5.54063 0.000130946C5.11631 0.00017794 4.77111 0.345439 4.77111 0.769769L4.7719 11.616L4.77202 11.6184L4.7719 11.6207L4.77202 13.2304C4.77202 13.436 4.8521 13.6292 4.9975 13.7746C5.14287 13.9199 5.3361 14 5.54167 14L6.27581 13.9999C6.70015 13.9998 7.04538 13.6545 7.04535 13.2302L7.04508 8.65474L7.04498 8.65282L7.04508 8.65088L7.04461 0.76958C7.04459 0.564018 6.96451 0.370721 6.81911 0.22537ZM7.71443 5.68239L7.71458 8.31799L28.5106 8.31717L28.5107 5.68156L7.71443 5.68239Z" fill="#202020"/>
                     </svg>
@@ -322,7 +326,7 @@
             {{-- Bottom Trust --}}
             <p class="flex items-center justify-center gap-2 text-gray-400 text-xs font-arabic font-semibold mt-8">
                 <span class="material-symbols-rounded text-green-500" style="font-size:16px">lock</span>
-                بياناتك محمية بالكامل — SSL 256-bit
+                {{ __('messages.login.ssl_note') }}
             </p>
 
         </div>

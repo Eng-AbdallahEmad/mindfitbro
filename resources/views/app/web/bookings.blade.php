@@ -339,7 +339,7 @@
                                         <span class="flex items-center gap-1 font-arabic">
                                             <span class="material-symbols-rounded"
                                                   style="font-size:13px;font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 20">{{ $plan->icon ?? 'star' }}</span>
-                                            {{ $plan->name }}
+                                            {{ __('messages.plans_data.'.$plan->key.'.name', [], null) ?: $plan->name }}
                                         </span>
                                     @endif
 

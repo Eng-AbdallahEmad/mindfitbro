@@ -25,14 +25,26 @@ export default {
                     "100%": { transform: "translateX(50%)" },
                 },
 
+                "marquee-ltr": {
+                    "0%": { transform: "translateX(0)" },
+                    "100%": { transform: "translateX(-50%)" },
+                },
+
                 "marquee-partners": {
                     "0%": { transform: "translateX(0)" },
                     "100%": { transform: "translateX(50%)" },
                 },
+
+                "marquee-partners-ltr": {
+                    "0%": { transform: "translateX(0)" },
+                    "100%": { transform: "translateX(-50%)" },
+                },
             },
             animation: {
                 marquee: "marquee 22s linear infinite",
+                "marquee-ltr": "marquee-ltr 22s linear infinite",
                 "marquee-partners": "marquee-partners 28s linear infinite",
+                "marquee-partners-ltr": "marquee-partners-ltr 28s linear infinite",
             },
             screens: {
                 'ipad-mini': {'min': '768px', 'max': '1023px'},

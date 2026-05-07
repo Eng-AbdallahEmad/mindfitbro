@@ -1,6 +1,6 @@
 @extends('layouts.web.app')
 
-@section('title', 'تم الطلب بنجاح')
+@section('title', __('messages.checkout_success.title'))
 
 @section('style')
 <style>
@@ -551,7 +551,7 @@
 
     $plans   = $subscription->plans_snapshot ?? [];
     $isYearly = $subscription->is_yearly;
-    $period   = $isYearly ? 'سنة' : 'شهر';
+    $periodWord = $isYearly ? __('messages.checkout_success.period_yearly_word') : __('messages.checkout_success.period_monthly_word');
 @endphp
 
 <x-web.navbar :transparent="false" />
@@ -581,8 +581,8 @@
                 </div>
             </div>
 
-            <h1 class="header-title font-display">تم استلام طلبك! 🎉</h1>
-            <p class="header-sub">سيتم تفعيل اشتراكك بعد تأكيد الدفع</p>
+            <h1 class="header-title font-display">{{ __('messages.checkout_success.header_title') }}</h1>
+            <p class="header-sub">{{ __('messages.checkout_success.header_sub') }}</p>
         </div>
 
         {{-- ── Body ── --}}
@@ -590,10 +590,10 @@
 
             {{-- Order ID --}}
             <div class="order-id-badge">
-                <span class="order-id-label">رقم الطلب</span>
+                <span class="order-id-label">{{ __('messages.checkout_success.order_id_label') }}</span>
                 <span class="order-id-value">
                     #{{ str_pad($subscription->id, 6, '0', STR_PAD_LEFT) }}
-                    <button class="copy-btn" id="copyBtn" title="نسخ">
+                    <button class="copy-btn" id="copyBtn" title="{{ __('messages.checkout_success.copy_title') }}">
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
                              stroke="currentColor" stroke-width="2.5"
                              stroke-linecap="round" stroke-linejoin="round">
@@ -606,10 +606,10 @@
 
             {{-- Status --}}
             <div class="status-row">
-                <span class="status-label">حالة الطلب</span>
+                <span class="status-label">{{ __('messages.checkout_success.status_label') }}</span>
                 <span class="status-badge {{ $subscription->status === 'active' ? 'active' : 'waiting' }}">
                     <span class="status-dot"></span>
-                    {{ $subscription->status === 'active' ? 'مفعّل' : 'في انتظار التأكيد' }}
+                    {{ $subscription->status === 'active' ? __('messages.checkout_success.status_active') : __('messages.checkout_success.status_waiting') }}
                 </span>
             </div>
 
@@ -617,7 +617,7 @@
 
             {{-- Plans --}}
             @if(!empty($plans))
-            <div class="section-label">الباقات المشتراة</div>
+            <div class="section-label">{{ __('messages.checkout_success.plans_label') }}</div>
             <div class="plans-list">
                 @foreach($plans as $plan)
                 <div class="plan-row">
@@ -651,13 +651,13 @@
                 </svg>
                 @if ($subscription->status === 'waiting')
                     <span class="period-text">
-                        يرجى تحديد موعد مناسب لعقد اجتماع عبر الإنترنت لمناقشة الخطة المقترحة وآلية التنفيذ.
+                        {{ __('messages.checkout_success.period_meeting') }}
                     </span>
                 @else
                     <span class="period-text">
-                        من <span>{{ $subscription->start_date->format('d M Y') }}</span>
-                        إلى <span>{{ $subscription->end_date->format('d M Y') }}</span>
-                        — اشتراك <span>{{ $isYearly ? 'سنوي' : 'شهري' }}</span>
+                        {{ __('messages.checkout_success.period_from') }} <span>{{ $subscription->start_date->format('d M Y') }}</span>
+                        {{ __('messages.checkout_success.period_to') }} <span>{{ $subscription->end_date->format('d M Y') }}</span>
+                        — <span>{{ $periodWord }}</span>
                     </span>
                 @endif
             </div>
@@ -665,7 +665,7 @@
             {{-- Summary --}}
             <div class="summary-rows">
                 <div class="s-row">
-                    <span class="s-row-label">المجموع قبل الخصم</span>
+                    <span class="s-row-label">{{ __('messages.checkout_success.subtotal_label') }}</span>
                     <span class="s-row-value">
                         {!! $sarIcon !!}
                         {{ number_format($subscription->total + $subscription->coupon_discount + $subscription->yearly_discount, 0) }}
@@ -674,7 +674,7 @@
 
                 @if($subscription->yearly_discount > 0)
                 <div class="s-row">
-                    <span class="s-row-label">خصم سنوي</span>
+                    <span class="s-row-label">{{ __('messages.checkout_success.yearly_disc_label') }}</span>
                     <span class="s-row-value green">
                         − {!! $sarIcon !!}
                         {{ number_format($subscription->yearly_discount, 0) }}
@@ -685,7 +685,7 @@
                 @if($subscription->coupon_discount > 0)
                 <div class="s-row">
                     <span class="s-row-label">
-                        خصم الكوبون
+                        {{ __('messages.checkout_success.coupon_disc_label') }}
                         @if($subscription->coupon_code)
                             <span style="background:var(--accent);color:var(--text);font-size:10px;font-weight:900;padding:1px 8px;border-radius:20px;margin-right:4px;">
                                 {{ $subscription->coupon_code }}
@@ -702,7 +702,7 @@
 
             {{-- Total --}}
             <div class="total-row">
-                <span class="total-label">إجمالي المدفوع</span>
+                <span class="total-label">{{ __('messages.checkout_success.total_label') }}</span>
                 <span class="total-value">
                     {!! str_replace('fill="currentColor"', 'fill="#D4ED57"', $sarIcon) !!}
                     {{ number_format($subscription->total, 0) }}
@@ -717,14 +717,14 @@
                     <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
                     <polyline points="9 22 9 12 15 12 15 22"/>
                 </svg>
-                الذهاب إلى لوحة التحكم
+                {{ __('messages.checkout_success.cta_dashboard') }}
             </a>
 
             <a href="{{ route('booking.show', $subscription->id) }}" class="btn-primary flex items-center justify-center gap-2">
                 <span class="material-symbols-rounded text-[18px]">
                     calendar_month
                 </span>
-                احجز جلستك الأولى
+                {{ __('messages.checkout_success.cta_book') }}
             </a>
 
             <a href="{{ url('/') }}#programs" class="btn-secondary">
@@ -734,7 +734,7 @@
                     <line x1="19" y1="12" x2="5" y2="12"/>
                     <polyline points="12 19 5 12 12 5"/>
                 </svg>
-                تصفح المزيد من الباقات
+                {{ __('messages.checkout_success.cta_browse') }}
             </a>
 
         </div>
@@ -742,7 +742,7 @@
 </section>
 
 {{-- Toast --}}
-<div class="toast" id="toast">تم نسخ رقم الطلب ✓</div>
+<div class="toast" id="toast">{{ __('messages.checkout_success.toast_copied') }}</div>
 
 <x-web.footer :hidden="false" />
 @endsection

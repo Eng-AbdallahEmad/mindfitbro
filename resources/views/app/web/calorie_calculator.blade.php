@@ -1,6 +1,6 @@
 @extends('layouts.web.app')
 
-@section('title', 'حاسبة السعرات الحرارية')
+@section('title', __('messages.calculator.title'))
 
 @section('style')
 <style>
@@ -154,13 +154,13 @@
 
     <div class="relative z-10 text-center w-full">
         <span class="inline-block bg-accent text-darkBg text-[11px] font-black tracking-widest px-5 py-1.5 rounded-full font-arabic mb-5">
-            مجاناً 100%
+            {{ __('messages.calculator.free_badge') }}
         </span>
         <h1 class="text-white font-black font-display text-5xl lg:text-[7rem] leading-tight mb-4">
-            حاسبة السعرات
+            {{ __('messages.calculator.hero_title') }}
         </h1>
         <p class="text-white/80 font-arabic text-base lg:text-xl max-w-xl mx-auto leading-relaxed">
-            احسب احتياجك اليومي من السعرات الحرارية والماكروز في ثواني بناءً على بياناتك الحقيقية
+            {{ __('messages.calculator.hero_sub') }}
         </p>
     </div>
 </section>
@@ -184,8 +184,8 @@
 
         {{-- ─ Step Labels ─ --}}
         <div class="text-center mb-6 font-arabic">
-            <p class="text-xs font-bold text-gray-400 tracking-widest uppercase mb-1">
-                خطوة <span x-text="currentStep"></span> من 5
+            <p class="text-xs font-bold text-gray-400 tracking-widest uppercase mb-1"
+                x-text="{{ json_encode(__('messages.calculator.step_label')) }}.replace(':step', currentStep)">
             </p>
             <h2 class="text-xl lg:text-3xl font-black text-textColor font-display"
                 x-text="steps[currentStep - 1].title">
@@ -202,26 +202,26 @@
             <div class="calc-step p-7 lg:p-10" :class="{ active: currentStep === 1 }">
 
                 {{-- Gender --}}
-                <p class="text-sm font-black text-textColor mb-3 font-arabic">الجنس</p>
+                <p class="text-sm font-black text-textColor mb-3 font-arabic">{{ __('messages.calculator.gender_label') }}</p>
                 <div class="grid grid-cols-2 gap-4 mb-7">
                     <div class="option-card" :class="{ selected: form.gender === 'male' }"
                         @click="form.gender = 'male'">
                         <div class="opt-icon">
                             <span class="material-symbols-rounded" style="font-size:20px">male</span>
                         </div>
-                        <span class="font-black text-sm text-textColor font-arabic">ذكر</span>
+                        <span class="font-black text-sm text-textColor font-arabic">{{ __('messages.calculator.male') }}</span>
                     </div>
                     <div class="option-card" :class="{ selected: form.gender === 'female' }"
                         @click="form.gender = 'female'">
                         <div class="opt-icon">
                             <span class="material-symbols-rounded" style="font-size:20px">female</span>
                         </div>
-                        <span class="font-black text-sm text-textColor font-arabic">أنثى</span>
+                        <span class="font-black text-sm text-textColor font-arabic">{{ __('messages.calculator.female') }}</span>
                     </div>
                 </div>
 
                 {{-- Age --}}
-                <p class="text-sm font-black text-textColor mb-3 font-arabic">العمر</p>
+                <p class="text-sm font-black text-textColor mb-3 font-arabic">{{ __('messages.calculator.age_label') }}</p>
                 <div class="flex items-center gap-4 mb-2">
                     <input
                         type="range" min="10" max="90"
@@ -234,7 +234,7 @@
                         <input type="number" min="10" max="90"
                             class="num-input w-10 text-center font-black text-textColor text-base bg-transparent outline-none"
                             x-model="form.age">
-                        <span class="text-xs text-gray-400 font-arabic">سنة</span>
+                        <span class="text-xs text-gray-400 font-arabic">{{ __('messages.calculator.age_unit') }}</span>
                     </div>
                 </div>
 
@@ -244,7 +244,7 @@
             <div class="calc-step p-7 lg:p-10" :class="{ active: currentStep === 2 }">
 
                 {{-- Height --}}
-                <p class="text-sm font-black text-textColor mb-3 font-arabic">الطول</p>
+                <p class="text-sm font-black text-textColor mb-3 font-arabic">{{ __('messages.calculator.height_label') }}</p>
                 <div class="flex items-center gap-4 mb-6">
                     <input
                         type="range" min="140" max="220"
@@ -256,12 +256,12 @@
                         <input type="number" min="140" max="220"
                             class="num-input w-12 text-center font-black text-textColor text-base bg-transparent outline-none"
                             x-model="form.height">
-                        <span class="text-xs text-gray-400 font-arabic">سم</span>
+                        <span class="text-xs text-gray-400 font-arabic">{{ __('messages.calculator.height_unit') }}</span>
                     </div>
                 </div>
 
                 {{-- Weight --}}
-                <p class="text-sm font-black text-textColor mb-3 font-arabic">الوزن الحالي</p>
+                <p class="text-sm font-black text-textColor mb-3 font-arabic">{{ __('messages.calculator.weight_label') }}</p>
                 <div class="flex items-center gap-4 mb-6">
                     <input
                         type="range" min="40" max="200"
@@ -273,14 +273,14 @@
                         <input type="number" min="40" max="200"
                             class="num-input w-12 text-center font-black text-textColor text-base bg-transparent outline-none"
                             x-model="form.weight">
-                        <span class="text-xs text-gray-400 font-arabic">كجم</span>
+                        <span class="text-xs text-gray-400 font-arabic">{{ __('messages.calculator.weight_unit') }}</span>
                     </div>
                 </div>
 
                 {{-- BMI Preview --}}
                 <div class="rounded-2xl bg-[#EFF5FF] p-4 flex items-center justify-between font-arabic mt-2">
                     <div>
-                        <p class="text-xs font-bold text-gray-400 mb-0.5">مؤشر كتلة الجسم (BMI)</p>
+                        <p class="text-xs font-bold text-gray-400 mb-0.5">{{ __('messages.calculator.bmi_index') }}</p>
                         <p class="text-2xl font-black text-textColor font-display" x-text="bmi()"></p>
                     </div>
                     <span class="px-4 py-1.5 rounded-full text-xs font-black"
@@ -354,11 +354,11 @@
                         <div class="absolute inset-0 flex flex-col items-center justify-center font-arabic">
                             <span class="text-3xl font-black text-textColor font-display"
                                 x-text="animatedCalories"></span>
-                            <span class="text-xs text-gray-400 font-bold">سعر / يوم</span>
+                            <span class="text-xs text-gray-400 font-bold">{{ __('messages.calculator.cal_per_day') }}</span>
                         </div>
                     </div>
                     <p class="text-textColor font-black text-lg mt-3 font-arabic"
-                        x-text="(currentGoal()?.label ?? '') + ' — احتياجك اليومي'">
+                        x-text="(currentGoal()?.label ?? '') + ' — {{ __('messages.calculator.daily_need') }}'">
                     </p>
                 </div>
 
@@ -368,10 +368,10 @@
                     {{-- Protein --}}
                     <div>
                         <div class="flex justify-between mb-1 font-arabic">
-                            <span class="text-sm font-black text-textColor">بروتين</span>
+                            <span class="text-sm font-black text-textColor">{{ __('messages.calculator.protein') }}</span>
                             <span class="text-sm font-bold text-gray-400">
-                                <span x-text="macros().protein"></span> جم &nbsp;·&nbsp;
-                                <span x-text="macros().proteinCal"></span> سعر
+                                <span x-text="macros().protein"></span> {{ __('messages.calculator.gram') }} &nbsp;·&nbsp;
+                                <span x-text="macros().proteinCal"></span> {{ __('messages.calculator.cal') }}
                             </span>
                         </div>
                         <div class="h-2 rounded-full bg-[#EFF5FF] overflow-hidden">
@@ -382,10 +382,10 @@
                     {{-- Carbs --}}
                     <div>
                         <div class="flex justify-between mb-1 font-arabic">
-                            <span class="text-sm font-black text-textColor">كربوهيدرات</span>
+                            <span class="text-sm font-black text-textColor">{{ __('messages.calculator.carbs') }}</span>
                             <span class="text-sm font-bold text-gray-400">
-                                <span x-text="macros().carbs"></span> جم &nbsp;·&nbsp;
-                                <span x-text="macros().carbsCal"></span> سعر
+                                <span x-text="macros().carbs"></span> {{ __('messages.calculator.gram') }} &nbsp;·&nbsp;
+                                <span x-text="macros().carbsCal"></span> {{ __('messages.calculator.cal') }}
                             </span>
                         </div>
                         <div class="h-2 rounded-full bg-[#EFF5FF] overflow-hidden">
@@ -396,10 +396,10 @@
                     {{-- Fat --}}
                     <div>
                         <div class="flex justify-between mb-1 font-arabic">
-                            <span class="text-sm font-black text-textColor">دهون</span>
+                            <span class="text-sm font-black text-textColor">{{ __('messages.calculator.fat') }}</span>
                             <span class="text-sm font-bold text-gray-400">
-                                <span x-text="macros().fat"></span> جم &nbsp;·&nbsp;
-                                <span x-text="macros().fatCal"></span> سعر
+                                <span x-text="macros().fat"></span> {{ __('messages.calculator.gram') }} &nbsp;·&nbsp;
+                                <span x-text="macros().fatCal"></span> {{ __('messages.calculator.cal') }}
                             </span>
                         </div>
                         <div class="h-2 rounded-full bg-[#EFF5FF] overflow-hidden">
@@ -414,24 +414,24 @@
                     <div class="rounded-2xl bg-[#EFF5FF] p-4 text-center">
                         <p class="text-xs text-gray-400 font-bold mb-1">BMR</p>
                         <p class="font-black text-textColor font-display text-lg" x-text="bmr()"></p>
-                        <p class="text-[10px] text-gray-400">سعر أساسي</p>
+                        <p class="text-[10px] text-gray-400">{{ __('messages.calculator.bmr_label') }}</p>
                     </div>
                     <div class="rounded-2xl bg-[#EFF5FF] p-4 text-center">
                         <p class="text-xs text-gray-400 font-bold mb-1">TDEE</p>
                         <p class="font-black text-textColor font-display text-lg" x-text="tdee()"></p>
-                        <p class="text-[10px] text-gray-400">إجمالي الحرق</p>
+                        <p class="text-[10px] text-gray-400">{{ __('messages.calculator.tdee_label') }}</p>
                     </div>
                     <div class="rounded-2xl bg-[#EFF5FF] p-4 text-center">
                         <p class="text-xs text-gray-400 font-bold mb-1">BMI</p>
                         <p class="font-black text-textColor font-display text-lg" x-text="bmi()"></p>
-                        <p class="text-[10px] text-gray-400">كتلة الجسم</p>
+                        <p class="text-[10px] text-gray-400">{{ __('messages.calculator.bmi_body') }}</p>
                     </div>
                 </div>
 
                 {{-- CTA --}}
                 <a href="{{ route('home') }}#programs"
                     class="group font-arabic text-textColor bg-accent px-5 py-3 rounded-full text-base font-black flex justify-center items-center gap-2 transition hover:bg-yellow-300 w-full">
-                    اشترك دلوقتي واحصل على خطتك
+                    {{ __('messages.calculator.cta_subscribe') }}
                     <svg class="transition-transform duration-300 group-hover:-translate-x-2"
                         width="22" height="12" viewBox="0 0 29 14" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path d="M0.000447464 5.68288V8.31848H1.36843L1.36822 5.68288H0.000447464ZM2.80722 2.71685C2.60162 2.71685 2.40833 2.7969 2.26296 2.94233C2.11758 3.08773 2.03755 3.28102 2.03756 3.4866L2.03772 5.34545L2.03785 5.34811L2.03772 5.35076L2.03813 10.5141C2.03819 10.9384 2.38346 11.2836 2.80778 11.2836H4.10235L4.10172 2.71684L2.80722 2.71685ZM6.81911 0.22537C6.67374 0.0800182 6.48051 1.07288e-06 6.27496 1.07288e-06L5.54063 0.000130946C5.11631 0.00017794 4.77111 0.345439 4.77111 0.769769L4.7719 11.616L4.77202 11.6184L4.7719 11.6207L4.77202 13.2304C4.77202 13.436 4.8521 13.6292 4.9975 13.7746C5.14287 13.9199 5.3361 14 5.54167 14L6.27581 13.9999C6.70015 13.9998 7.04538 13.6545 7.04535 13.2302L7.04508 8.65474L7.04498 8.65282L7.04508 8.65088L7.04461 0.76958C7.04459 0.564018 6.96451 0.370721 6.81911 0.22537ZM7.71443 5.68239L7.71458 8.31799L28.5106 8.31717L28.5107 5.68156L7.71443 5.68239Z" fill="#202020"/>
@@ -441,7 +441,7 @@
                 {{-- Reset --}}
                 <button @click="reset()"
                     class="w-full mt-3 text-sm font-bold text-gray-400 font-arabic hover:text-primary transition">
-                    ↩ احسب مرة تانية
+                    {{ __('messages.calculator.reset_btn') }}
                 </button>
 
             </div>
@@ -454,14 +454,14 @@
                     x-show="currentStep > 1"
                     class="font-arabic text-sm font-bold text-gray-400 hover:text-textColor transition flex items-center gap-1">
                     <span class="material-symbols-rounded" style="font-size:18px">arrow_forward</span>
-                    رجوع
+                    {{ __('messages.calculator.back_btn') }}
                 </button>
                 <div x-show="currentStep === 1"></div>
 
                 <button @click="next()"
                     :disabled="!canProceed()"
                     class="group font-arabic text-textColor bg-accent px-6 py-2.5 rounded-full text-sm font-black flex items-center gap-2 transition hover:bg-yellow-300 disabled:opacity-40 disabled:cursor-not-allowed">
-                    <span x-text="currentStep === 4 ? 'احسب دلوقتي' : 'التالي'"></span>
+                    <span x-text="currentStep === 4 ? calcTrans.calculate_btn : calcTrans.next_btn"></span>
                     <svg class="transition-transform duration-300 group-hover:-translate-x-1.5"
                         width="20" height="10" viewBox="0 0 29 14" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path d="M0.000447464 5.68288V8.31848H1.36843L1.36822 5.68288H0.000447464ZM2.80722 2.71685C2.60162 2.71685 2.40833 2.7969 2.26296 2.94233C2.11758 3.08773 2.03755 3.28102 2.03756 3.4866L2.03772 5.34545L2.03785 5.34811L2.03772 5.35076L2.03813 10.5141C2.03819 10.9384 2.38346 11.2836 2.80778 11.2836H4.10235L4.10172 2.71684L2.80722 2.71685ZM6.81911 0.22537C6.67374 0.0800182 6.48051 1.07288e-06 6.27496 1.07288e-06L5.54063 0.000130946C5.11631 0.00017794 4.77111 0.345439 4.77111 0.769769L4.7719 11.616L4.77202 11.6184L4.7719 11.6207L4.77202 13.2304C4.77202 13.436 4.8521 13.6292 4.9975 13.7746C5.14287 13.9199 5.3361 14 5.54167 14L6.27581 13.9999C6.70015 13.9998 7.04538 13.6545 7.04535 13.2302L7.04508 8.65474L7.04498 8.65282L7.04508 8.65088L7.04461 0.76958C7.04459 0.564018 6.96451 0.370721 6.81911 0.22537ZM7.71443 5.68239L7.71458 8.31799L28.5106 8.31717L28.5107 5.68156L7.71443 5.68239Z" fill="#202020"/>
@@ -476,7 +476,7 @@
         {{-- Trust Bar --}}
         <p class="flex items-center justify-center gap-2 text-gray-400 text-xs font-arabic font-semibold mt-6">
             <span class="material-symbols-rounded text-green-500" style="font-size:16px">verified_user</span>
-            الحسابات مبنية على معادلة Mifflin-St Jeor المعتمدة طبياً
+            {{ __('messages.calculator.trust_bar') }}
         </p>
 
     </div>
@@ -490,12 +490,22 @@
 
 @section('script')
 <script>
+const calcTrans = {
+    calculate_btn: @json(__('messages.calculator.calculate_btn')),
+    next_btn:      @json(__('messages.calculator.next_btn')),
+    bmi_underweight: @json(__('messages.calculator.bmi_underweight')),
+    bmi_normal:      @json(__('messages.calculator.bmi_normal')),
+    bmi_overweight:  @json(__('messages.calculator.bmi_overweight')),
+    bmi_obese:       @json(__('messages.calculator.bmi_obese')),
+};
+
 function calorieCalc() {
     return {
 
         currentStep: 1,
         animatedCalories: 0,
         ringPct: 0,
+        calcTrans: calcTrans,
 
         form: {
             gender  : '',
@@ -506,28 +516,11 @@ function calorieCalc() {
             goal    : '',
         },
 
-        steps: [
-            { title: 'الجنس والعمر',         sub: 'معلوماتك الأساسية' },
-            { title: 'الطول والوزن',         sub: 'قيس بالسنتيمتر والكيلوجرام' },
-            { title: 'مستوى النشاط',         sub: 'كام مرة بتتحرك في الأسبوع؟' },
-            { title: 'هدفك الرئيسي',         sub: 'إيه اللي عايز توصله؟' },
-        ],
+        steps: @json(__('messages.calculator.steps')),
 
-        activityLevels: [
-            { key:'sedentary',   label:'خامل تقريباً',          desc:'مكتب وبدون رياضة',              icon:'chair',            factor:1.2   },
-            { key:'light',       label:'نشاط خفيف',             desc:'تمرين 1-3 أيام في الأسبوع',     icon:'directions_walk',  factor:1.375 },
-            { key:'moderate',    label:'نشاط متوسط',            desc:'تمرين 3-5 أيام في الأسبوع',     icon:'fitness_center',   factor:1.55  },
-            { key:'active',      label:'نشاط عالي',             desc:'تمرين 6-7 أيام في الأسبوع',     icon:'directions_run',   factor:1.725 },
-            { key:'veryactive',  label:'نشاط مكثف جداً',        desc:'تمرين مرتين في اليوم',          icon:'local_fire_department', factor:1.9 },
-        ],
+        activityLevels: @json(__('messages.calculator.activity_levels')),
 
-        goals: [
-            { key:'lose_fast',   label:'خسارة سريعة',   icon:'trending_down',  desc:'عجز 750 سعر — مناسب للوزن الزائد الكبير مع متابعة متخصصة',        adj:-750 },
-            { key:'lose',        label:'إنقاص الوزن',   icon:'trending_down',  desc:'عجز 500 سعر — خسارة صحية ½ كجم أسبوعياً بدون إرهاق',              adj:-500 },
-            { key:'maintain',    label:'الحفاظ على الوزن',icon:'balance',       desc:'سعراتك = طاقتك — حافظ على وزنك الحالي وحسّن تركيبة جسمك',        adj:0    },
-            { key:'gain',        label:'زيادة العضلات', icon:'trending_up',    desc:'فائض 300 سعر — بناء عضلي تدريجي مع الحد الأدنى من الدهون',        adj:300  },
-            { key:'gain_fast',   label:'زيادة سريعة',   icon:'trending_up',    desc:'فائض 500 سعر — مناسب للنحيفين اللي صعب عليهم يزنوا',              adj:500  },
-        ],
+        goals: @json(__('messages.calculator.goals')),
 
         canProceed() {
             if (this.currentStep === 1) return this.form.gender !== '';
@@ -544,10 +537,10 @@ function calorieCalc() {
 
         bmiLabel() {
             const b = parseFloat(this.bmi());
-            if (b < 18.5) return 'نقص في الوزن';
-            if (b < 25)   return 'وزن طبيعي';
-            if (b < 30)   return 'وزن زائد';
-            return 'سمنة';
+            if (b < 18.5) return calcTrans.bmi_underweight;
+            if (b < 25)   return calcTrans.bmi_normal;
+            if (b < 30)   return calcTrans.bmi_overweight;
+            return calcTrans.bmi_obese;
         },
 
         bmiClass() {

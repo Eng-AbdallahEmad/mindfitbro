@@ -2,6 +2,13 @@
 
 @section('title', 'Home')
 
+@php
+    $isRtl      = app()->getLocale() === 'ar';
+    $alignStart = $isRtl ? 'text-right' : 'text-left';
+    $perMonth        = __('messages.programs.per_month');
+    $perMonthYearly  = __('messages.programs.per_month_yearly');
+@endphp
+
 @section('style')
     <style>
 
@@ -44,7 +51,6 @@
         .text-outline {
             color: transparent;
             -webkit-text-stroke: 2px rgba(255,255,255,1);
-            /* text-shadow: 0 0 20px rgba(255,255,255,0.15); */
         }
 
         .mySwiper,
@@ -84,32 +90,33 @@
 
         <div class="absolute transform -translate-x-[66.8rem] translate-y-[70px] max-w-[195px] hidden 2xl:block">
             <p class="text-white text-xl font-black font-arabic">
-                أكثر من <span class="text-[#D4ED57] font-bold">500</span> قصة نجاح
+                {!! __('messages.hero.success_count', ['count' => '<span class="text-[#D4ED57] font-bold">500</span>']) !!}
             </p>
         </div>
 
         {{-- Content --}}
-        <div class="relative z-10 text-right px-4 lg:px-6 w-full">
-            <h2 class="text-white font-semibold font-arabic text-xl lg:text-3xl">رحلتك تبدأ الآن بــــــ</h2>
+        <div class="relative z-10 {{ $alignStart }} px-4 lg:px-6 w-full">
+            <h2 class="text-white font-semibold font-arabic text-xl lg:text-3xl">{{ __('messages.hero.subtitle') }}</h2>
             <div class="relative inline-block">
 
-                <h1 class="text-white font-black font-display text-[4.2rem] md:text-[6rem] lg:text-[7.5rem] xl:text-[8rem] 2xl:text-[9rem] text-center my-5 lg:my-0 md:whitespace-nowrap ipad-mini:text-[4.7rem] ipad-mini-land:text-[6.6rem]">
-                    نتـائـج حـقيقية
+                <h1 class="text-white font-black font-display text-[4.2rem] md:text-[6rem] {{ $isRtl ? 'lg:text-[7.5rem] xl:text-[8rem] 2xl:text-[9rem]' : 'lg:text-[9rem] xl:text-[10.5rem] 2xl:text-[12rem]' }} text-center my-5 lg:my-0 md:whitespace-nowrap ipad-mini:text-[4.7rem] ipad-mini-land:text-[6.6rem]">
+                    {{ __('messages.hero.title') }}
                 </h1>
 
-                <h2 class="absolute top-0 right-0 left-0 hidden lg:block text-outline font-black pointer-events-none font-display md:whitespace-nowrap lg:text-[7.5rem] xl:text-[8rem] 2xl:text-[9rem] ipad-mini-land:text-[6.6rem] z-50">
-                    نتـائـج حـقيقية
+                <h2 class="absolute top-0 right-0 left-0 hidden lg:block text-outline font-black pointer-events-none font-display md:whitespace-nowrap {{ $isRtl ? 'lg:text-[7.5rem] xl:text-[8rem] 2xl:text-[9rem]' : 'lg:text-[9rem] xl:text-[10.5rem] 2xl:text-[12rem]' }} ipad-mini-land:text-[6.6rem] z-50">
+                    {{ __('messages.hero.title') }}
                 </h2>
 
             </div>
 
-            <div class="absolute top-1/2 left-1/2 md:translate-x-[-70%] xl:translate-x-[-60%] md:translate-y-[-42%] xl:translate-y-[-46%] hidden lg:block md:w-[800px]">
+            <div class="absolute top-1/2 left-1/2 {{ $isRtl ? 'md:translate-x-[-70%] xl:translate-x-[-60%]' : 'md:translate-x-[-70%] xl:translate-x-[-30%]' }} {{ $isRtl ? 'md:translate-y-[-42%] xl:translate-y-[-46%]' : 'md:translate-y-[-42%] xl:translate-y-[-45%]' }} hidden lg:block {{ $isRtl ? 'md:w-[800px]' : 'md:w-[900px]' }}">
 
                 <!-- Image -->
                 <img
                 class="w-full"
                 src="{{ asset('assets/imgs/hero.png') }}"
                 alt="{{ config('app.name', 'laravel') }}"
+                fetchpriority="high"
                 >
 
                 <!-- Shadow -->
@@ -118,17 +125,21 @@
             </div>
 
             <h3 class="text-white font-normal font-arabic md:mt-4 md:max-w-md xl:max-w-lg text-base lg:text-xl z-50 relative">
-                سواء كنت تسعى لتحسين لياقتك، بناء جسم أقوى، أو الوصول لقوام مثالي…
-                نقدّم لك نظام تدريبي احترافي مبني على أسس واضحة يساعدك تحقق نتائج حقيقية ومستدامة.
+                {{ __('messages.hero.description') }}
             </h3>
 
             <div class=" max-w-[18.4rem] mt-8">
                 <a href="#programs" class="group font-arabic text-textColor bg-accent px-5 py-3 rounded-full text-sm lg:text-base font-black flex justify-center items-center gap-2 transition">
-                    أستكشف برامجنا التدريبيه
-                    <svg class="transition-transform duration-300 group-hover:-translate-x-2"
-                        width="26" height="14" viewBox="0 0 29 14" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M0.000447464 5.68288V8.31848H1.36843L1.36822 5.68288H0.000447464ZM2.80722 2.71685C2.60162 2.71685 2.40833 2.7969 2.26296 2.94233C2.11758 3.08773 2.03755 3.28102 2.03756 3.4866L2.03772 5.34545L2.03785 5.34811L2.03772 5.35076L2.03813 10.5141C2.03819 10.9384 2.38346 11.2836 2.80778 11.2836H4.10235L4.10172 2.71684L2.80722 2.71685ZM6.81911 0.22537C6.67374 0.0800182 6.48051 1.07288e-06 6.27496 1.07288e-06L5.54063 0.000130946C5.11631 0.00017794 4.77111 0.345439 4.77111 0.769769L4.7719 11.616L4.77202 11.6184L4.7719 11.6207L4.77202 13.2304C4.77202 13.436 4.8521 13.6292 4.9975 13.7746C5.14287 13.9199 5.3361 14 5.54167 14L6.27581 13.9999C6.70015 13.9998 7.04538 13.6545 7.04535 13.2302L7.04508 8.65474L7.04498 8.65282L7.04508 8.65088L7.04461 0.76958C7.04459 0.564018 6.96451 0.370721 6.81911 0.22537ZM7.71443 5.68239L7.71458 8.31799L28.5106 8.31717L28.5107 5.68156L7.71443 5.68239Z" fill="#202020"/>
-                    </svg>
+                    {{ __('messages.hero.cta') }}
+                    @if($isRtl)
+                        <svg class="transition-transform duration-300 group-hover:-translate-x-2" width="26" height="14" viewBox="0 0 29 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M0.000447464 5.68288V8.31848H1.36843L1.36822 5.68288H0.000447464ZM2.80722 2.71685C2.60162 2.71685 2.40833 2.7969 2.26296 2.94233C2.11758 3.08773 2.03755 3.28102 2.03756 3.4866L2.03772 5.34545L2.03785 5.34811L2.03772 5.35076L2.03813 10.5141C2.03819 10.9384 2.38346 11.2836 2.80778 11.2836H4.10235L4.10172 2.71684L2.80722 2.71685ZM6.81911 0.22537C6.67374 0.0800182 6.48051 1.07288e-06 6.27496 1.07288e-06L5.54063 0.000130946C5.11631 0.00017794 4.77111 0.345439 4.77111 0.769769L4.7719 11.616L4.77202 11.6184L4.7719 11.6207L4.77202 13.2304C4.77202 13.436 4.8521 13.6292 4.9975 13.7746C5.14287 13.9199 5.3361 14 5.54167 14L6.27581 13.9999C6.70015 13.9998 7.04538 13.6545 7.04535 13.2302L7.04508 8.65474L7.04498 8.65282L7.04508 8.65088L7.04461 0.76958C7.04459 0.564018 6.96451 0.370721 6.81911 0.22537ZM7.71443 5.68239L7.71458 8.31799L28.5106 8.31717L28.5107 5.68156L7.71443 5.68239Z" fill="#202020"/>
+                        </svg>
+                    @else
+                        <svg class="transition-transform duration-300 group-hover:translate-x-2" width="26" height="14" viewBox="0 0 29 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M28.5103 8.31712V5.68152H27.1423L27.1425 8.31712H28.5103ZM25.7035 11.2832C25.9091 11.2832 26.1024 11.2031 26.2478 11.0577C26.3932 10.9123 26.4732 10.719 26.4732 10.5134L26.473 8.65455L26.4729 8.65189L26.473 8.64924L26.4726 3.48591C26.4726 3.06162 26.1273 2.71639 25.703 2.71639H24.4084L24.409 11.2832L25.7035 11.2832ZM21.6916 13.7746C21.837 13.92 22.0302 14 22.2358 14L22.9701 13.9999C23.3944 13.9998 23.7396 13.6546 23.7396 13.2302L23.7388 2.38397L23.7387 2.38162L23.7388 2.37927L23.7387 0.76964C23.7387 0.564042 23.6586 0.370757 23.5132 0.225405C23.3679 0.0800539 23.1746 0 22.9691 0L22.2349 0.000129431C21.8106 0.000164676 21.4654 0.345474 21.4654 0.769816L21.4657 5.34526L21.4658 5.34718L21.4657 5.34912L21.4661 13.2304C21.4662 13.436 21.5462 13.6293 21.6916 13.7746ZM20.7963 8.31762L20.7962 5.68201L0.000188134 5.68283L0 8.31844L20.7963 8.31762Z" fill="#202020"/>
+                        </svg>
+                    @endif
                 </a>
             </div>
         </div>
@@ -138,17 +149,10 @@
     {{-- Marquee / Ticker Section --}}
     <section class="bg-lightBg border-y border-gray-200 py-[14px] overflow-hidden w-full group">
             @php
-                $items = [
-                    'خصومات إبريل 40%',
-                    'عروض العيد لسه مخلصتش',
-                    'جاهز للجاي...؟',
-                    'يلا ننزل الكرش اللي عندك',
-                    'مش ناوي تعمل فورمة العيد؟',
-                    'العيد خلص بس عروضنا لسه مخلصتش',
-                ];
+                $items = __('messages.marquee.items');
             @endphp
 
-        <div class="flex w-max animate-marquee group-hover:[animation-play-state:paused]">
+        <div class="flex w-max {{ $isRtl ? "animate-marquee" : "animate-marquee-ltr" }} group-hover:[animation-play-state:paused]">
 
             @foreach(array_merge($items, $items) as $item)
                 <span class="flex items-center gap-[28px] px-[28px] whitespace-nowrap text-[14px] font-bold text-textColor tracking-[0.01em] font-arabic">
@@ -172,16 +176,16 @@
     <section id="our-target" class="bg-white w-full py-16 lg:py-28 px-8 lg:px-20 flex flex-col justify-center">
         <div class="flex flex-col justify-center items-center mb-7">
             <h2 class="font-display text-3xl ipad-mini:text-4xl ipad-mini-land:text-5xl md:text-6xl xl:text-7xl cursor-default transition-all duration-300 text-textColor hover:text-primary font-semibold mb-4 lg:mb-7">
-                أنت مش لوحدك في الرحلة
+                {{ __('messages.why_us.title') }}
             </h2>
             <p class="font-arabic font-bold text-textColor text-sm lg:text-xl flex items-center justify-center gap-1 text-center leading-relaxed">
-                كل هدف له طريق… ومع مجتمع MindFitBro مش بس هتمشيه، أنت هتكسّره لحد ما تبقى أقوى نسخة من نفسك
+                {{ __('messages.why_us.subtitle') }}
 
                 <lottie-player
                     src="{{ asset('assets/lotties/Muscle.json') }}"
                     background="transparent"
                     speed="1"
-                    class="w-[40px] h-[40px] translate-y-[-9px] hidden lg:block"
+                    class="w-[40px] h-[40px] translate-y-[-9px] hidden lg:block {{ $isRtl ? '' : 'scale-x-[-1]' }}"
                     loop
                     autoplay>
                 </lottie-player>
@@ -192,18 +196,14 @@
             <div class="swiper-wrapper">
                 <div class="swiper-slide">
                     <div class="video-card relative w-full h-full rounded-2xl overflow-hidden bg-black">
-                        <!-- الثمبنيل + زر التشغيل -->
                         <div class="video-overlay absolute inset-0 z-10 transition-all duration-700 opacity-100">
                             <img
                                 src="{{ asset('assets/imgs/video-thumb-1.jpg') }}"
                                 alt="Video Thumbnail"
                                 class="w-full h-full object-cover"
+                                loading="lazy"
                             >
-
-                            <!-- طبقة غامقة خفيفة -->
                             <div class="absolute inset-0 bg-black/30"></div>
-
-                            <!-- زر التشغيل -->
                             <a
                                 href="https://drive.google.com/file/d/1_uI2GML9pVNSK-3oa1JuXqbuXRBhwf13/view?usp=sharing"
                                 target="_blank"
@@ -213,23 +213,18 @@
                                 </svg>
                             </a>
                         </div>
-
                     </div>
                 </div>
                 <div class="swiper-slide">
                     <div class="video-card relative w-full h-full rounded-2xl overflow-hidden bg-black">
-                        <!-- الثمبنيل + زر التشغيل -->
                         <div class="video-overlay absolute inset-0 z-10 transition-all duration-700 opacity-100">
                             <img
                                 src="{{ asset('assets/imgs/video-thumb-1.jpg') }}"
                                 alt="Video Thumbnail"
                                 class="w-full h-full object-cover"
+                                loading="lazy"
                             >
-
-                            <!-- طبقة غامقة خفيفة -->
                             <div class="absolute inset-0 bg-black/30"></div>
-
-                            <!-- زر التشغيل -->
                             <a
                                 href="https://drive.google.com/file/d/1_uI2GML9pVNSK-3oa1JuXqbuXRBhwf13/view?usp=sharing"
                                 target="_blank"
@@ -239,23 +234,18 @@
                                 </svg>
                             </a>
                         </div>
-
                     </div>
                 </div>
                 <div class="swiper-slide">
                     <div class="video-card relative w-full h-full rounded-2xl overflow-hidden bg-black">
-                        <!-- الثمبنيل + زر التشغيل -->
                         <div class="video-overlay absolute inset-0 z-10 transition-all duration-700 opacity-100">
                             <img
                                 src="{{ asset('assets/imgs/video-thumb-1.jpg') }}"
                                 alt="Video Thumbnail"
                                 class="w-full h-full object-cover"
+                                loading="lazy"
                             >
-
-                            <!-- طبقة غامقة خفيفة -->
                             <div class="absolute inset-0 bg-black/30"></div>
-
-                            <!-- زر التشغيل -->
                             <a
                                 href="https://drive.google.com/file/d/1_uI2GML9pVNSK-3oa1JuXqbuXRBhwf13/view?usp=sharing"
                                 target="_blank"
@@ -265,7 +255,6 @@
                                 </svg>
                             </a>
                         </div>
-
                     </div>
                 </div>
             </div>
@@ -273,83 +262,66 @@
         </div>
 
         <div class="my-9 lg:my-24 text-center">
-            <h2 class="font-display text-3xl lg:text-7xl cursor-default transition-all duration-300 text-textColor hover:text-primary font-semibold mb-4 lg:mb-7 ipad-mini:text-4xl ipad-mini-land:text-5xl">خد بالك</h2>
-            <p class="font-arabic font-bold text-textColor text-xl lg:text-5xl ipad-mini-land:text-3xl">مش كل البرامج شبه بعض… شوف الفرق</p>
+            <h2 class="font-display text-3xl lg:text-7xl cursor-default transition-all duration-300 text-textColor hover:text-primary font-semibold mb-4 lg:mb-7 ipad-mini:text-4xl ipad-mini-land:text-5xl">{{ __('messages.why_us.note_title') }}</h2>
+            <p class="font-arabic font-bold text-textColor text-xl lg:text-5xl ipad-mini-land:text-3xl">{{ __('messages.why_us.note_subtitle') }}</p>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
 
             <!-- Card 1 -->
             <div class="relative rounded-2xl p-8 pt-12 flex flex-col items-center text-center transition-all duration-300 hover:-translate-y-1 bg-primary hover:bg-primaryDark font-arabic border-4 border-white hover:border-accent">
-
-                <!-- Badge -->
                 <div class="absolute top-[-1.55rem] left-1/2 -translate-x-1/2 whitespace-nowrap px-6 py-2.5 rounded-full font-black text-lg text-textColor bg-accent">
-                +2,500 <span class="font-bold text-base">عضو نشط</span>
+                +2,500 <span class="font-bold text-base">{{ __('messages.why_us.card1.badge') }}</span>
                 </div>
-
-                <!-- Icon -->
                 <div class="w-20 h-20 rounded-2xl flex items-center justify-center mb-6 mt-4 bg-[rgba(255,255,255,0.12)]">
                 <svg class="w-10 h-10 text-accent" fill="none" stroke="currentColor" stroke-width="1.6" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round"
                     d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z" />
                 </svg>
                 </div>
-
-                <h3 class="text-xl font-black mb-3 text-white">مجتمع بيخليك تلتزم</h3>
+                <h3 class="text-xl font-black mb-3 text-white">{{ __('messages.why_us.card1.title') }}</h3>
                 <p class="text-sm leading-relaxed text-[rgba(255,255,255,0.7)]">
-                    لما تكون وسط ناس عندها نفس هدفك، الاستمرار بيبقى أسهل
-                    والنتيجة بتكون أسرع.
+                    {{ __('messages.why_us.card1.desc') }}
                 </p>
             </div>
 
             <!-- Card 2 -->
             <div class="relative rounded-2xl p-8 pt-12 flex flex-col items-center text-center transition-all duration-300 hover:-translate-y-1 bg-primary hover:bg-primaryDark font-arabic border-4 border-white hover:border-accent">
-
-                <!-- Badge -->
                 <div class="absolute top-[-1.55rem] left-1/2 -translate-x-1/2 whitespace-nowrap px-6 py-2.5 rounded-full font-black text-lg text-textColor bg-accent">
-                +20,000 <span class="font-bold text-base">خطة تدريب</span>
+                +20,000 <span class="font-bold text-base">{{ __('messages.why_us.card2.badge') }}</span>
                 </div>
-
-                <!-- Icon -->
                 <div class="w-20 h-20 rounded-2xl flex items-center justify-center mb-6 mt-4 bg-[rgba(255,255,255,0.12)]">
                 <svg class="w-10 h-10 text-accent" fill="none" stroke="currentColor" stroke-width="1.6" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round"
                     d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                 </svg>
                 </div>
-
-                <h3 class="text-xl font-black mb-3 text-white">خطط ذكية مش عشوائية</h3>
+                <h3 class="text-xl font-black mb-3 text-white">{{ __('messages.why_us.card2.title') }}</h3>
                 <p class="text-sm leading-relaxed text-[rgba(255,255,255,0.7)]">
-                    كل برنامج معمول علشان يخدم هدفك تحديدًا مش مجرد جدول وخلاص.
+                    {{ __('messages.why_us.card2.desc') }}
                 </p>
             </div>
 
             <!-- Card 3 -->
             <div class="relative rounded-2xl p-8 pt-12 flex flex-col items-center text-center transition-all duration-300 hover:-translate-y-1 bg-primary hover:bg-primaryDark font-arabic border-4 border-white hover:border-accent">
-
-                <!-- Badge -->
                 <div class="absolute top-[-1.55rem] left-1/2 -translate-x-1/2 whitespace-nowrap px-6 py-2.5 rounded-full font-black text-lg text-textColor bg-accent">
-                +10,000 <span class="font-bold text-base">قصة نجاح</span>
+                +10,000 <span class="font-bold text-base">{{ __('messages.why_us.card3.badge') }}</span>
                 </div>
-
-                <!-- Icon -->
                 <div class="w-20 h-20 rounded-2xl flex items-center justify-center mb-6 mt-4 bg-[rgba(255,255,255,0.12)]">
                 <svg class="w-10 h-10 text-accent" fill="none" stroke="currentColor" stroke-width="1.6" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round"
                     d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
                 </div>
-
-                <h3 class="text-xl font-black mb-3 text-white">تغيير حقيقي مش مؤقت</h3>
+                <h3 class="text-xl font-black mb-3 text-white">{{ __('messages.why_us.card3.title') }}</h3>
                 <p class="text-sm leading-relaxed text-[rgba(255,255,255,0.7)]">
-                    هتبني أسلوب حياة يخليك محافظ على تقدمك مش ترجع لنقطة الصفر.
+                    {{ __('messages.why_us.card3.desc') }}
                 </p>
             </div>
 
         </div>
 
         <div class="flex justify-center my-11">
-
               <div class="relative group">
                 <a href="#programs"
                 class="relative inline-block p-px font-semibold leading-6 text-white bg-textColor shadow-2xl cursor-pointer rounded-2xl shadow-emerald-900 transition-all duration-300 ease-in-out hover:scale-105 active:scale-95 hover:shadow-primary"
@@ -359,10 +331,16 @@
                     ></span>
                     <span class="relative z-10 block px-6 py-3 rounded-2xl bg-textColor">
                         <div class="relative z-10 flex items-center gap-2">
-                            <span class="transition-all duration-500 group-hover:-translate-x-1.5 group-hover:text-accent font-arabic text-xl">أشتــرك الأن</span>
-                            <svg class="w-7 h-7 transition-all duration-500 group-hover:-translate-x-1.5 group-hover:text-accent" viewBox="0 0 29 14" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                            <span class="transition-all duration-500 {{ $isRtl ? 'group-hover:-translate-x-1.5' : 'group-hover:translate-x-1.5' }} group-hover:text-accent font-arabic text-xl">{{ __('messages.why_us.subscribe_now') }}</span>
+                            @if ($isRtl)
+                                <svg class="w-7 h-7 transition-all duration-500 group-hover:-translate-x-1.5 group-hover:text-accent" viewBox="0 0 29 14" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
                                 <path d="M0.000447464 5.68288V8.31848H1.36843L1.36822 5.68288H0.000447464ZM2.80722 2.71685C2.60162 2.71685 2.40833 2.7969 2.26296 2.94233C2.11758 3.08773 2.03755 3.28102 2.03756 3.4866L2.03772 5.34545L2.03785 5.34811L2.03772 5.35076L2.03813 10.5141C2.03819 10.9384 2.38346 11.2836 2.80778 11.2836H4.10235L4.10172 2.71684L2.80722 2.71685ZM6.81911 0.22537C6.67374 0.0800182 6.48051 1.07288e-06 6.27496 1.07288e-06L5.54063 0.000130946C5.11631 0.00017794 4.77111 0.345439 4.77111 0.769769L4.7719 11.616L4.77202 11.6184L4.7719 11.6207L4.77202 13.2304C4.77202 13.436 4.8521 13.6292 4.9975 13.7746C5.14287 13.9199 5.3361 14 5.54167 14L6.27581 13.9999C6.70015 13.9998 7.04538 13.6545 7.04535 13.2302L7.04508 8.65474L7.04498 8.65282L7.04508 8.65088L7.04461 0.76958C7.04459 0.564018 6.96451 0.370721 6.81911 0.22537ZM7.71443 5.68239L7.71458 8.31799L28.5106 8.31717L28.5107 5.68156L7.71443 5.68239Z"/>
                             </svg>
+                            @else
+                                <svg class="w-7 h-7 transition-all duration-500 group-hover:translate-x-1.5 group-hover:text-accent" viewBox="0 0 29 14" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M28.5103 8.31712V5.68152H27.1423L27.1425 8.31712H28.5103ZM25.7035 11.2832C25.9091 11.2832 26.1024 11.2031 26.2478 11.0577C26.3932 10.9123 26.4732 10.719 26.4732 10.5134L26.473 8.65455L26.4729 8.65189L26.473 8.64924L26.4726 3.48591C26.4726 3.06162 26.1273 2.71639 25.703 2.71639H24.4084L24.409 11.2832L25.7035 11.2832ZM21.6916 13.7746C21.837 13.92 22.0302 14 22.2358 14L22.9701 13.9999C23.3944 13.9998 23.7396 13.6546 23.7396 13.2302L23.7388 2.38397L23.7387 2.38162L23.7388 2.37927L23.7387 0.76964C23.7387 0.564042 23.6586 0.370757 23.5132 0.225405C23.3679 0.0800539 23.1746 0 22.9691 0L22.2349 0.000129431C21.8106 0.000164676 21.4654 0.345474 21.4654 0.769816L21.4657 5.34526L21.4658 5.34718L21.4657 5.34912L21.4661 13.2304C21.4662 13.436 21.5462 13.6293 21.6916 13.7746ZM20.7963 8.31762L20.7962 5.68201L0.000188134 5.68283L0 8.31844L20.7963 8.31762Z"/>
+                                </svg>
+                            @endif
                         </div>
                     </span>
                 </a>
@@ -376,48 +354,35 @@
 
             <!-- RIGHT: Slider -->
             <div class="w-full md:w-[420px] xl:w-[750px] flex-shrink-0 mx-auto md:mx-0 ipad-mini:w-[320px]">
-
                 <div class="swiper mySwiper2 w-full md:w-[100%] xl:w-[70%] h-[310px] lg:h-[550px] aspect-[9/16] rounded-2xl overflow-hidden shadow-2xl">
-
                     <div class="swiper-wrapper">
-
-                        <!-- Slide 1 -->
                         <div class="swiper-slide">
                             <div class="relative w-full h-full">
-
                                 <img src="{{ asset('assets/imgs/t1.png') }}"
                                     class="w-full h-full object-cover"
-                                    alt="MindFitBro - Salim Taboubi">
-
+                                    alt="MindFitBro - Salim Taboubi"
+                                    loading="lazy">
                             </div>
                         </div>
-
-                        <!-- Slide 2 -->
                         <div class="swiper-slide">
                             <div class="relative w-full h-full">
-
                                 <img src="{{ asset('assets/imgs/t2.png') }}"
                                     class="w-full h-full object-cover"
-                                    alt="MindFitBro - Ahmed Mostafa">
+                                    alt="MindFitBro - Ahmed Mostafa"
+                                    loading="lazy">
                             </div>
                         </div>
-
-                        <!-- Slide 3 -->
                         <div class="swiper-slide">
                             <div class="relative w-full h-full">
-
                                 <img src="{{ asset('assets/imgs/t3.png') }}"
                                     class="w-full h-full object-cover"
-                                    alt="MindFitBro - Mahmoud Ahab">
+                                    alt="MindFitBro - Mahmoud Ahab"
+                                    loading="lazy">
                             </div>
                         </div>
                     </div>
-
-                    <!-- Pagination -->
                     <div class="swiper-pagination"></div>
-
                 </div>
-
             </div>
 
             <!-- LEFT: Content -->
@@ -426,10 +391,10 @@
                 <!-- Heading -->
                 <div>
                     <h2 class="font-display text-3xl lg:text-7xl cursor-default transition-all duration-300 text-textColor hover:text-primary font-semibold mb-4 lg:mb-7 ipad-mini-land:text-5xl">
-                        مش بنقدّم تمارين وبس…
+                        {{ __('messages.services.title') }}
                     </h2>
                     <p class="text-base leading-relaxed text-[#1C1C1C] font-arabic">
-                        إحنا بنبني نظام يخليك أقوى ذهنيًا وجسديًا وكل خطة مبنية على العلم ومصممة علشان توصلك لنتيجة حقيقية تدوم
+                        {{ __('messages.services.desc') }}
                     </p>
                 </div>
 
@@ -441,9 +406,8 @@
                         onclick="toggleAccordion(this)">
                         <div class="flex items-center justify-between gap-4 p-4">
                             <span class="acc-title text-base lg:text-lg font-bold text-accent transition">
-                                نكتشف وضعك الحالي
+                                {{ __('messages.services.step1') }}
                             </span>
-
                             <div class="acc-btn flex h-[34px] w-[34px] shrink-0 items-center justify-center rounded-full bg-accent">
                                 <svg class="h-[18px] w-[18px] -rotate-90 text-[#1C1C1C] transition"
                                     xmlns="http://www.w3.org/2000/svg"
@@ -453,9 +417,8 @@
                                 </svg>
                             </div>
                         </div>
-
                         <div class="acc-desc block px-4 pb-4 text-sm leading-relaxed text-white">
-                            نعرف جسمك، أسلوب حياتك، ونقطة البداية.
+                            {{ __('messages.services.step1_desc') }}
                         </div>
                     </div>
 
@@ -463,9 +426,8 @@
                     <div class="accordion-item cursor-pointer overflow-hidden rounded-[14px] bg-white transition duration-300 hover:shadow-lg font-arabic" onclick="toggleAccordion(this)">
                         <div class="flex items-center justify-between gap-4 p-4">
                             <span class="acc-title text-base lg:text-lg font-bold text-textColor transition">
-                                نرسم طريقك الخاص
+                                {{ __('messages.services.step2') }}
                             </span>
-
                             <div class="acc-btn flex h-[34px] w-[34px] shrink-0 items-center justify-center rounded-full bg-accent">
                                 <svg class="h-[18px] w-[18px] text-[#1C1C1C] transition"
                                     xmlns="http://www.w3.org/2000/svg"
@@ -475,9 +437,8 @@
                                 </svg>
                             </div>
                         </div>
-
                         <div class="acc-desc hidden px-4 pb-4 text-sm leading-relaxed text-gray-600">
-                           خطة مصممة ليك فقط حسب هدفك.
+                           {{ __('messages.services.step2_desc') }}
                         </div>
                     </div>
 
@@ -485,9 +446,8 @@
                     <div class="accordion-item cursor-pointer overflow-hidden rounded-[14px] bg-white transition duration-300 hover:shadow-lg font-arabic" onclick="toggleAccordion(this)">
                         <div class="flex items-center justify-between gap-4 p-4">
                             <span class="acc-title text-base lg:text-lg font-bold text-textColor transition">
-                                نبدأ التغيير الحقيقي
+                                {{ __('messages.services.step3') }}
                             </span>
-
                             <div class="acc-btn flex h-[34px] w-[34px] shrink-0 items-center justify-center rounded-full bg-accent">
                                 <svg class="h-[18px] w-[18px] text-[#1C1C1C] transition"
                                     xmlns="http://www.w3.org/2000/svg"
@@ -497,9 +457,8 @@
                                 </svg>
                             </div>
                         </div>
-
                         <div class="acc-desc hidden px-4 pb-4 text-sm leading-relaxed text-gray-600">
-                            تدريب + عادات + التزام.
+                            {{ __('messages.services.step3_desc') }}
                         </div>
                     </div>
 
@@ -507,9 +466,8 @@
                     <div class="accordion-item cursor-pointer overflow-hidden rounded-[14px] bg-white transition duration-300 hover:shadow-lg font-arabic" onclick="toggleAccordion(this)">
                         <div class="flex items-center justify-between gap-4 p-4">
                             <span class="acc-title text-base lg:text-lg font-bold text-textColor transition">
-                                نوصلك للنسخة الأقوى منك
+                                {{ __('messages.services.step4') }}
                             </span>
-
                             <div class="acc-btn flex h-[34px] w-[34px] shrink-0 items-center justify-center rounded-full bg-accent">
                                 <svg class="h-[18px] w-[18px] text-[#1C1C1C] transition"
                                     xmlns="http://www.w3.org/2000/svg"
@@ -519,22 +477,26 @@
                                 </svg>
                             </div>
                         </div>
-
                         <div class="acc-desc hidden px-4 pb-4 text-sm leading-relaxed text-gray-600">
-                           نتائج مستمرة مش مؤقتة.
+                           {{ __('messages.services.step4_desc') }}
                         </div>
                     </div>
 
                 </div>
 
-                <div class=" max-w-[20.2rem] mt-4 lg:mt-8">
+                <div class=" {{ $isRtl ? "max-w-[20.5rem]" : "max-w-[32rem]" }} mt-4 lg:mt-8">
                     <a href="#programs"
                     class="group font-arabic text-textColor bg-accent px-5 py-3 rounded-full text-sm lg:text-base font-black flex justify-center items-center gap-2 transition">
-                        احجز مكانك وابدأ التحول الآن
-                        <svg class="transition-transform duration-300 group-hover:-translate-x-2"
-                            width="26" height="14" viewBox="0 0 29 14" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M0.000447464 5.68288V8.31848H1.36843L1.36822 5.68288H0.000447464ZM2.80722 2.71685C2.60162 2.71685 2.40833 2.7969 2.26296 2.94233C2.11758 3.08773 2.03755 3.28102 2.03756 3.4866L2.03772 5.34545L2.03785 5.34811L2.03772 5.35076L2.03813 10.5141C2.03819 10.9384 2.38346 11.2836 2.80778 11.2836H4.10235L4.10172 2.71684L2.80722 2.71685ZM6.81911 0.22537C6.67374 0.0800182 6.48051 1.07288e-06 6.27496 1.07288e-06L5.54063 0.000130946C5.11631 0.00017794 4.77111 0.345439 4.77111 0.769769L4.7719 11.616L4.77202 11.6184L4.7719 11.6207L4.77202 13.2304C4.77202 13.436 4.8521 13.6292 4.9975 13.7746C5.14287 13.9199 5.3361 14 5.54167 14L6.27581 13.9999C6.70015 13.9998 7.04538 13.6545 7.04535 13.2302L7.04508 8.65474L7.04498 8.65282L7.04508 8.65088L7.04461 0.76958C7.04459 0.564018 6.96451 0.370721 6.81911 0.22537ZM7.71443 5.68239L7.71458 8.31799L28.5106 8.31717L28.5107 5.68156L7.71443 5.68239Z" fill="#202020"/>
-                        </svg>
+                        {{ __('messages.services.cta') }}
+                        @if($isRtl)
+                            <svg class="transition-transform duration-300 group-hover:-translate-x-2" width="26" height="14" viewBox="0 0 29 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M0.000447464 5.68288V8.31848H1.36843L1.36822 5.68288H0.000447464ZM2.80722 2.71685C2.60162 2.71685 2.40833 2.7969 2.26296 2.94233C2.11758 3.08773 2.03755 3.28102 2.03756 3.4866L2.03772 5.34545L2.03785 5.34811L2.03772 5.35076L2.03813 10.5141C2.03819 10.9384 2.38346 11.2836 2.80778 11.2836H4.10235L4.10172 2.71684L2.80722 2.71685ZM6.81911 0.22537C6.67374 0.0800182 6.48051 1.07288e-06 6.27496 1.07288e-06L5.54063 0.000130946C5.11631 0.00017794 4.77111 0.345439 4.77111 0.769769L4.7719 11.616L4.77202 11.6184L4.7719 11.6207L4.77202 13.2304C4.77202 13.436 4.8521 13.6292 4.9975 13.7746C5.14287 13.9199 5.3361 14 5.54167 14L6.27581 13.9999C6.70015 13.9998 7.04538 13.6545 7.04535 13.2302L7.04508 8.65474L7.04498 8.65282L7.04508 8.65088L7.04461 0.76958C7.04459 0.564018 6.96451 0.370721 6.81911 0.22537ZM7.71443 5.68239L7.71458 8.31799L28.5106 8.31717L28.5107 5.68156L7.71443 5.68239Z" fill="#202020"/>
+                            </svg>
+                        @else
+                            <svg class="transition-transform duration-300 group-hover:translate-x-2" width="26" height="14" viewBox="0 0 29 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M28.5103 8.31712V5.68152H27.1423L27.1425 8.31712H28.5103ZM25.7035 11.2832C25.9091 11.2832 26.1024 11.2031 26.2478 11.0577C26.3932 10.9123 26.4732 10.719 26.4732 10.5134L26.473 8.65455L26.4729 8.65189L26.473 8.64924L26.4726 3.48591C26.4726 3.06162 26.1273 2.71639 25.703 2.71639H24.4084L24.409 11.2832L25.7035 11.2832ZM21.6916 13.7746C21.837 13.92 22.0302 14 22.2358 14L22.9701 13.9999C23.3944 13.9998 23.7396 13.6546 23.7396 13.2302L23.7388 2.38397L23.7387 2.38162L23.7388 2.37927L23.7387 0.76964C23.7387 0.564042 23.6586 0.370757 23.5132 0.225405C23.3679 0.0800539 23.1746 0 22.9691 0L22.2349 0.000129431C21.8106 0.000164676 21.4654 0.345474 21.4654 0.769816L21.4657 5.34526L21.4658 5.34718L21.4657 5.34912L21.4661 13.2304C21.4662 13.436 21.5462 13.6293 21.6916 13.7746ZM20.7963 8.31762L20.7962 5.68201L0.000188134 5.68283L0 8.31844L20.7963 8.31762Z" fill="#202020"/>
+                            </svg>
+                        @endif
                     </a>
                 </div>
             </div>
@@ -558,24 +520,23 @@
         {{-- Header --}}
         <div class="flex flex-col items-center gap-3 text-center px-6">
             <h2 class="font-display text-3xl lg:text-7xl cursor-default transition-all duration-300 text-textColor hover:text-primary font-semibold mb-4 lg:mb-7">
-                نتائــج حـــقيقية
+                {{ __('messages.before_after.title') }}
             </h2>
             <p class="font-arabic font-bold text-textColor text-base lg:text-xl flex items-center justify-center gap-1 text-center leading-relaxed">
                 <lottie-player
                     src="{{ asset('assets/lotties/Muscle.json') }}"
                     background="transparent"
                     speed="1"
-                    class="w-[40px] h-[40px] translate-y-[-9px] scale-x-[-1]"
+                    class="w-[40px] h-[40px] translate-y-[-9px] {{ $isRtl ? 'scale-x-[-1]' : '' }}"
                     loop
                     autoplay>
                 </lottie-player>
-                أبطالنا… نتائجهم تتكلم — MindFitBro
-
+                {{ __('messages.before_after.subtitle') }}
                 <lottie-player
                     src="{{ asset('assets/lotties/Muscle.json') }}"
                     background="transparent"
                     speed="1"
-                    class="w-[40px] h-[40px] translate-y-[-9px]"
+                    class="w-[40px] h-[40px] translate-y-[-9px] {{ $isRtl ? '' : 'scale-x-[-1]' }}"
                     loop
                     autoplay>
                 </lottie-player>
@@ -593,6 +554,7 @@
                                 src="{{ $client['image'] }}"
                                 alt="{{ $client['name'] }}"
                                 class="w-full h-full object-cover object-top"
+                                loading="lazy"
                             />
                         </div>
                     </div>
@@ -616,41 +578,22 @@
         <div class="mt-8 lg:mt-14 px-3 lg:px-24 ipad-mini-land:px-3">
             <div class="container px-5 lg:px-52 py-10 lg:py-28 bg-primary shadow-xl rounded-[20px] relative overflow-hidden text-center">
 
-                {{-- Decorative Lines --}}
-                <img src="{{ asset('assets/icons/line1.svg') }}"
-                    alt=""
-                    class="absolute bottom-[-35px] right-[-20px]">
+                <img src="{{ asset('assets/icons/line1.svg') }}" alt="" class="absolute bottom-[-35px] right-[-20px]" loading="lazy">
+                <img src="{{ asset('assets/icons/line2.svg') }}" alt="" class="absolute top-[-35px] left-[-20px]" loading="lazy">
 
-                <img src="{{ asset('assets/icons/line2.svg') }}"
-                    alt=""
-                    class="absolute top-[-35px] left-[-20px]">
-
-                {{-- Title --}}
                 <h4 class="font-arabic mb-6 text-2xl lg:text-4xl font-black text-accent tracking-wide z-10">
-                    رســالــتنا
+                    {{ __('messages.before_after.mission_title') }}
                 </h4>
 
-                {{-- Main Heading --}}
                 <h3 class="font-display mb-6 text-[1.72rem] lg:text-[2.6rem] leading-snug text-white z-10">
-                    في MindFitBro، مهمتنا مش بس إنك تتمرن…
-                    <span class="text-accent">مهمتنا إنك تتحول</span>
+                    {!! __('messages.before_after.mission_heading') !!}
                 </h3>
 
-                {{-- Description --}}
                 <p class="font-arabic text-base lg:text-lg text-white/90 leading-relaxed max-w-3xl mx-auto z-10">
-                    بنبني عقلية منضبطة تقودك للاستمرار
-                    <span class="text-accent font-bold">(Mind)</span>،
-                    ونحوّلها لقوة وأداء حقيقي على أرض الواقع
-                    <span class="text-accent font-bold">(Fit)</span>،
-                    وسط مجتمع بيدعمك ويدفعك للأمام
-                    <span class="text-accent font-bold">(Bro)</span>.
-
-                    من خلال خبرتنا مع آلاف المشتركين، فهمنا كل التحديات اللي بتواجهك،
-                    علشان نقدملك نظام واضح يخليك تلتزم وتوصل لأقوى نسخة منك
-                    جسديًا وذهنيًا وتستمر عليها…
+                    {!! __('messages.before_after.mission_desc') !!}
 
                     <span class="block mt-4 text-white font-bold">
-                        لأن MindFitBro مش برنامج، ده أسلوب حياة.
+                        {{ __('messages.before_after.mission_tagline') }}
                     </span>
                 </p>
 
@@ -665,19 +608,19 @@
         {{-- Header --}}
         <div class="flex flex-col items-center gap-3 text-center px-6">
             <span class="bg-accent text-darkBg text-[11px] font-black tracking-widest px-5 py-1.5 rounded-full font-arabic">
-                الأسعار والباقات
+                {{ __('messages.programs.badge') }}
             </span>
             <h2 class="font-display text-4xl lg:text-7xl font-semibold text-textColor">
-                اختار الباقة <span class="text-primary">المناسبة ليك</span>
+                {{ __('messages.programs.title') }} <span class="text-primary">{{ __('messages.programs.title_highlight') }}</span>
             </h2>
             <p class="text-[#1c1c1c] text-sm lg:text-base max-w-sm font-arabic font-medium leading-relaxed">
-                كل الباقات بتشمل وصول كامل للكوتش وخطة مخصصة
+                {{ __('messages.programs.subtitle') }}
             </p>
         </div>
 
         {{-- Toggle --}}
         <div class="flex items-center gap-4">
-            <span class="font-arabic font-bold text-sm transition-colors duration-300" :class="!yearly ? 'text-primary' : 'text-gray-400'">شهري</span>
+            <span class="font-arabic font-bold text-sm transition-colors duration-300" :class="!yearly ? 'text-primary' : 'text-gray-400'">{{ __('messages.programs.monthly') }}</span>
 
             <button @click="yearly = !yearly"
                 class="relative w-14 h-7 rounded-full transition-colors duration-300"
@@ -686,8 +629,8 @@
                     :class="yearly ? 'translate-x-7' : 'translate-x-0'"></div>
             </button>
 
-            <span class="font-arabic font-bold text-sm transition-colors duration-300" :class="yearly ? 'text-primary' : 'text-gray-400'">سنوي</span>
-            <span class="bg-accent text-darkBg text-[11px] font-black px-3 py-1 rounded-full font-arabic">وفّر 25%</span>
+            <span class="font-arabic font-bold text-sm transition-colors duration-300" :class="yearly ? 'text-primary' : 'text-gray-400'">{{ __('messages.programs.yearly') }}</span>
+            <span class="bg-accent text-darkBg text-[11px] font-black px-3 py-1 rounded-full font-arabic">{{ __('messages.programs.save_25') }}</span>
         </div>
 
         @php
@@ -701,7 +644,7 @@
         {{-- Cards --}}
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-[980px] w-full px-6">
             @foreach($plans as $plan)
-            <div class="relative rounded-[24px] p-8 border font-arabic text-right transition-all duration-300 hover:-translate-y-2
+            <div class="relative rounded-[24px] p-8 border font-arabic {{ $alignStart }} transition-all duration-300 hover:-translate-y-2
                 {{ $plan['popular']
                     ? 'border-[2.5px] border-primary bg-[#F0F5FF] shadow-[0_20px_48px_rgba(23,77,173,0.15)]'
                     : 'border-gray-200 bg-white hover:shadow-xl' }}">
@@ -709,7 +652,7 @@
                 @if($plan['popular'])
                 <div class="absolute -top-4 left-1/2 -translate-x-1/2 bg-primary text-white text-xs font-black px-5 py-1.5 rounded-full whitespace-nowrap font-arabic flex items-center gap-1">
                     <span class="material-symbols-rounded text-accent" style="font-size:14px">workspace_premium</span>
-                    الأكثر طلباً
+                    {{ __('messages.programs.popular') }}
                 </div>
                 @endif
 
@@ -717,8 +660,8 @@
                     <span class="material-symbols-rounded text-[26px] {{ $plan->icon_color }}">{{ $plan->icon }}</span>
                 </div>
 
-                <h3 class="text-xl font-black text-textColor mb-2">{{ $plan->name }}</h3>
-                <p class="text-gray-400 text-sm leading-relaxed mb-6">{{ $plan->desc }}</p>
+                <h3 class="text-xl font-black text-textColor mb-2">{{ __('messages.plans_data.'.$plan->key.'.name', [], null) ?: $plan->name }}</h3>
+                <p class="text-gray-400 text-sm leading-relaxed mb-6">{{ __('messages.plans_data.'.$plan->key.'.desc', [], null) ?: $plan->desc }}</p>
 
                 <div class="flex items-baseline gap-1.5 mb-1 text-gray-400">
                     {!! $sarIcon !!}
@@ -726,13 +669,13 @@
                         x-text="yearly ? Math.round({{ $plan->price }} * {{ $plan->yearly_discount_rate }}) : {{ $plan->price }}">
                         {{ $plan->price }}
                     </span>
-                    <span class="text-sm" x-text="yearly ? '/شهر (سنوي)' : '/شهر'">/شهر</span>
+                    <span class="text-sm" x-text="yearly ? '{{ $perMonthYearly }}' : '{{ $perMonth }}'">{{ $perMonth }}</span>
                 </div>
 
                 <div class="h-5 mb-4">
                     <div x-show="yearly" x-transition class="flex items-center gap-1 text-xs text-gray-300 font-arabic">
-                        السعر الأصلي: {!! $sarIcon !!}
-                        <span>{{ number_format($plan->price, 2) }}/شهر</span>
+                        {{ __('messages.programs.original_price') }} {!! $sarIcon !!}
+                        <span>{{ number_format($plan->price, 2) }}{{ $perMonth }}</span>
                     </div>
                 </div>
 
@@ -741,38 +684,30 @@
                 <ul class="flex flex-col gap-3 mb-8">
                     @foreach($plan->features as $feat)
                         <li class="flex items-center gap-3 text-sm font-semibold {{ $feat->pivot->is_included ? 'text-textColor' : 'text-gray-300' }}">
-
                             @if($feat->pivot->is_included)
-                                <span class="material-symbols-rounded text-green-500 flex-shrink-0" style="font-size:18px">
-                                    check_circle
-                                </span>
+                                <span class="material-symbols-rounded text-green-500 flex-shrink-0" style="font-size:18px">check_circle</span>
                             @else
-                                <span class="material-symbols-rounded text-gray-300 flex-shrink-0" style="font-size:18px">
-                                    cancel
-                                </span>
+                                <span class="material-symbols-rounded text-gray-300 flex-shrink-0" style="font-size:18px">cancel</span>
                             @endif
-
-                            {{ $feat->name }}
+                            {{ __('messages.features_data.'.$feat->key, [], null) ?: $feat->name }}
                         </li>
                     @endforeach
                 </ul>
 
-                {{-- {{ dd($subscription) }} --}}
-
                 @if($subscription)
                     <button type="button"
                             class="block w-full py-3 rounded-[14px] font-black text-sm text-center font-arabic {{ $plan->btn_class }} opacity-75 cursor-not-allowed">
-                        أنت مشترك بالفعل ✓
+                        {{ __('messages.programs.already_subscribed') }}
                     </button>
                 @elseif($cart && $cart->items->count())
                     <a href="{{ route('cart.index') }}"
                             class="block w-full py-3 rounded-[14px] font-black text-sm text-center transition-all duration-300 font-arabic {{ $plan->btn_class }}">
-                        أكمل الدفع →
+                        {{ __('messages.programs.complete_payment') }}
                     </a>
                 @elseif (auth()->check() && auth()->user()->role === 'coach')
                         <button type="button"
                             class="block w-full py-3 rounded-[14px] font-black text-sm text-center font-arabic {{ $plan->btn_class }} opacity-75 cursor-not-allowed">
-                            أنت مدرب، لا يمكنك الاشتراك في الباقات
+                            {{ __('messages.programs.coach_cant_subscribe') }}
                         </button>
                 @else
                     <form method="POST" action="{{ route('cart.add') }}">
@@ -781,7 +716,7 @@
                         <input type="hidden" name="quantity" value="1">
                         <button type="submit"
                                 class="block w-full py-3 rounded-[14px] font-black text-sm text-center transition-all duration-300 font-arabic {{ $plan->btn_class }}">
-                            اشترك دلوقتي
+                            {{ __('messages.programs.subscribe_now') }}
                         </button>
                     </form>
                 @endif
@@ -791,73 +726,52 @@
 
         @if($familyOffer)
             <div class="w-full max-w-[980px] px-6 mx-auto">
-                <div class="relative rounded-[24px] border-2 border-dashed border-accent bg-gradient-to-l from-[#fffde8] to-[#f0f5ff] overflow-hidden font-arabic" dir="rtl">
+                <div class="relative rounded-[24px] border-2 border-dashed border-accent bg-gradient-to-l from-[#fffde8] to-[#f0f5ff] overflow-hidden font-arabic" dir="{{ $isRtl ? 'rtl' : 'ltr' }}">
 
-                    {{-- شريط العرض المحدود --}}
                     <div class="w-full bg-accent flex items-center justify-center gap-2 py-2 px-4">
                         <span class="material-symbols-rounded text-darkBg" style="font-size:16px;font-variation-settings:'FILL' 1">timer</span>
-                        <p class="text-darkBg text-xs font-black tracking-widest">⚡ عرض محدود</p>
+                        <p class="text-darkBg text-xs font-black tracking-widest">{{ __('messages.programs.limited_offer') }}</p>
                         <span class="material-symbols-rounded text-darkBg" style="font-size:16px;font-variation-settings:'FILL' 1">timer</span>
                     </div>
 
                     <div class="flex flex-col lg:flex-row items-center gap-8 p-8">
 
-                        {{-- Right: Info --}}
-                        <div class="flex-1 text-right">
-
-                            {{-- Icon + Name --}}
+                        <div class="flex-1 {{ $alignStart }}">
                             <div class="flex items-center gap-3 mb-4 flex-row justify-start">
                                 <div class="w-12 h-12 rounded-2xl flex items-center justify-center bg-accent/20">
                                     <span class="material-symbols-rounded text-[26px] text-amber-600" style="font-variation-settings:'FILL' 1">family_restroom</span>
                                 </div>
                                 <div>
-                                    <h3 class="text-2xl font-black text-textColor leading-none">باقة العائلة</h3>
-                                    <span class="text-xs font-bold text-amber-600 bg-amber-100 px-2 py-0.5 rounded-full">لـ 4 أفراد</span>
+                                    <h3 class="text-2xl font-black text-textColor leading-none">{{ __('messages.programs.family_name') }}</h3>
+                                    <span class="text-xs font-bold text-amber-600 bg-amber-100 px-2 py-0.5 rounded-full">{{ __('messages.programs.family_for') }}</span>
                                 </div>
                             </div>
 
                             <p class="text-gray-500 text-sm leading-relaxed mb-6 max-w-md">
-                                باقة مخصصة للعائلة كلها — كل فرد بياخد خطة تدريب وتغذية مخصصة ليه، مع متابعة يومية وجلسات فيديو شهرية لكل الأفراد.
+                                {{ __('messages.programs.family_desc') }}
                             </p>
 
-                            {{-- Features Grid --}}
                             <div class="grid grid-cols-2 gap-x-6 gap-y-2.5 mb-6">
-                                @php
-                                $familyFeatures = [
-                                    ['text' => 'خطط تدريب لـ 4 أفراد',       'check' => true],
-                                    ['text' => 'برامج غذائية مخصصة',          'check' => true],
-                                    ['text' => 'متابعة يومية للجميع',         'check' => true],
-                                    ['text' => 'جلسات فيديو أسبوعية',         'check' => true],
-                                    ['text' => 'تحليل مختبري لكل الأفراد',    'check' => true],
-                                    ['text' => 'تقارير تقدم شهرية',           'check' => true],
-                                ];
-                                @endphp
-
-                                @foreach($familyFeatures as $feat)
+                                @foreach(__('messages.programs.family_features') as $feat)
                                 <div class="flex items-center gap-2 text-sm font-semibold text-textColor">
                                     <span class="material-symbols-rounded text-green-500 flex-shrink-0" style="font-size:16px;font-variation-settings:'FILL' 1">check_circle</span>
-                                    {{ $feat['text'] }}
+                                    {{ $feat }}
                                 </div>
                                 @endforeach
                             </div>
-
                         </div>
 
-                        {{-- Divider --}}
                         <div class="hidden lg:block w-px self-stretch bg-accent/30 mx-2"></div>
 
-                        {{-- Left: Price + CTA --}}
                         <div class="flex flex-col items-center gap-4 min-w-[220px]">
 
-                            {{-- Saving Badge --}}
                             <span class="bg-green-100 text-green-700 text-xs font-black px-4 py-1.5 rounded-full flex items-center gap-1">
                                 <span class="material-symbols-rounded" style="font-size:14px;font-variation-settings:'FILL' 1">savings</span>
-                                وفّر 40% مقارنةً بالباقات الفردية
+                                {{ __('messages.programs.save_40') }}
                             </span>
 
-                            {{-- Price --}}
                             <div class="text-center">
-                                <p class="text-xs text-gray-400 font-arabic mb-1">السعر بدل</p>
+                                <p class="text-xs text-gray-400 font-arabic mb-1">{{ __('messages.programs.instead_price') }}</p>
                                 <p class="text-gray-300 text-lg font-bold line-through font-display mb-1">
                                     {!! $sarIcon !!} 2,396
                                 </p>
@@ -869,26 +783,24 @@
                                     </span>
                                 </div>
                                 <span class="text-sm text-gray-400 font-arabic"
-                                    x-text="yearly ? '/شهر (سنوي)' : '/شهر'">/شهر</span>
+                                    x-text="yearly ? '{{ $perMonthYearly }}' : '{{ $perMonth }}'">{{ $perMonth }}</span>
                             </div>
 
-                            {{-- Original yearly price --}}
                             <div class="h-4">
                                 <p class="text-xs text-gray-300 font-arabic flex items-center gap-1"
                                     x-show="yearly" x-transition>
-                                    السعر الأصلي: {!! $sarIcon !!} 1,399/شهر
+                                    {{ __('messages.programs.original_price') }} {!! $sarIcon !!} 1,399{{ $perMonth }}
                                 </p>
                             </div>
 
-                            {{-- CTA --}}
                             <a href="#"
                                 class="w-full py-3.5 rounded-[14px] font-black text-sm text-center transition-all duration-300 font-arabic bg-accent text-darkBg hover:bg-yellow-300 flex items-center justify-center gap-2">
                                 <span class="material-symbols-rounded" style="font-size:16px;font-variation-settings:'FILL' 1">family_restroom</span>
-                                اشترك في باقة العائلة
+                                {{ __('messages.programs.subscribe_family') }}
                             </a>
 
                             <p class="text-gray-400 text-[11px] font-arabic text-center">
-                                العرض ساري لفترة محدودة فقط
+                                {{ __('messages.programs.offer_limited_time') }}
                             </p>
 
                         </div>
@@ -902,7 +814,7 @@
         {{-- Guarantee --}}
         <p class="flex items-center gap-2 text-gray-400 text-sm font-arabic font-semibold px-3 lg:px-0">
             <span class="material-symbols-rounded text-green-500" style="font-size:20px">verified_user</span>
-            ضمان استرداد كامل خلال 7 أيام — بدون أي شروط
+            {{ __('messages.programs.guarantee') }}
         </p>
 
     </section>
@@ -960,13 +872,13 @@
         {{-- Header --}}
         <div class="flex flex-col items-center gap-3 text-center px-6">
             <span class="bg-accent text-darkBg text-[11px] font-black tracking-widest px-5 py-1.5 rounded-full font-arabic">
-                آراء عملاؤنا
+                {{ __('messages.testimonials.badge') }}
             </span>
             <h2 class="font-display text-4xl lg:text-7xl font-semibold text-textColor">
-                بيقولوا إيه <span class="text-primary">عننا؟</span>
+                {{ __('messages.testimonials.title') }} <span class="text-primary">{{ __('messages.testimonials.title_highlight') }}</span>
             </h2>
             <p class="text-gray-500 text-sm lg:text-base max-w-sm font-arabic font-medium leading-relaxed">
-                مش كلامنا — ده كلام ناس زيك غيّرت حياتها معانا
+                {{ __('messages.testimonials.subtitle') }}
             </p>
         </div>
 
@@ -980,7 +892,7 @@
                     data-count="500" dir="ltr">
                     500+
                 </span>
-                <span class="text-gray-500 text-xs lg:text-sm font-medium">عميل راضي</span>
+                <span class="text-gray-500 text-xs lg:text-sm font-medium">{{ __('messages.testimonials.happy_clients') }}</span>
             </div>
 
             <div class="w-px bg-gray-200 self-stretch hidden md:block"></div>
@@ -1009,7 +921,7 @@
                     data-decimals="0">
                     100%
                 </span>
-                <span class="text-gray-500 text-xs lg:text-sm font-arabic font-medium">نسبة الرضا</span>
+                <span class="text-gray-500 text-xs lg:text-sm font-arabic font-medium">{{ __('messages.testimonials.satisfaction_rate') }}</span>
             </div>
 
         </div>
@@ -1019,35 +931,28 @@
             <div class="columns-1 md:columns-2 lg:columns-3 gap-6 space-y-6">
 
                 @foreach($testimonials as $i => $t)
-                <div class="break-inside-avoid rounded-[20px] p-6 border font-arabic text-right transition-all duration-300 hover:-translate-y-1
+                <div class="break-inside-avoid rounded-[20px] p-6 border font-arabic {{ $alignStart }} transition-all duration-300 hover:-translate-y-1
                     {{ $i === 1
                         ? 'bg-primary border-primary shadow-[0_20px_48px_rgba(23,77,173,0.18)]'
                         : 'bg-white border-gray-100 hover:shadow-xl hover:border-gray-200' }}">
 
-                    {{-- Quote Icon --}}
                     <div class="mb-4">
                         <span class="material-symbols-rounded {{ $i === 1 ? 'text-accent' : 'text-primary' }}" style="font-size:32px;font-variation-settings:'FILL' 1">format_quote</span>
                     </div>
 
-                    {{-- Text --}}
                     <p class="text-sm leading-relaxed mb-6 {{ $i === 1 ? 'text-white/90' : 'text-gray-500' }}">
                         {{ $t['text'] }}
                     </p>
 
-                    {{-- Divider --}}
                     <hr class="{{ $i === 1 ? 'border-white/20' : 'border-gray-100' }} mb-5">
 
-                    {{-- Author --}}
                     <div class="flex items-center gap-3">
-
-                        {{-- Avatar --}}
                         <img
                             src="{{ $t['avatar'] }}"
                             alt="{{ $t['name'] }}"
                             class="w-11 h-11 rounded-full object-cover object-top flex-shrink-0 border-2 {{ $i === 1 ? 'border-accent/50' : 'border-gray-100' }}"
+                            loading="lazy"
                         />
-
-                        {{-- Info --}}
                         <div class="flex flex-col flex-1">
                             <span class="font-black text-sm {{ $i === 1 ? 'text-white' : 'text-textColor' }}">
                                 {{ $t['name'] }}
@@ -1056,8 +961,6 @@
                                 {{ $t['title'] }}
                             </span>
                         </div>
-
-                        {{-- Stars --}}
                         <div class="flex gap-0.5 flex-shrink-0">
                             @for($s = 0; $s < $t['rating']; $s++)
                             <span class="material-symbols-rounded text-amber-400" style="font-size:14px;font-variation-settings:'FILL' 1">star</span>
@@ -1066,7 +969,6 @@
                             <span class="material-symbols-rounded text-gray-300" style="font-size:14px;font-variation-settings:'FILL' 1">star</span>
                             @endfor
                         </div>
-
                     </div>
 
                 </div>
@@ -1077,24 +979,25 @@
 
         {{-- CTA --}}
         <div class="flex flex-col items-center gap-4 text-center font-arabic">
-            <p class="text-gray-500 text-sm font-medium">جاهز تبدأ رحلتك؟</p>
+            <p class="text-gray-500 text-sm font-medium">{{ __('messages.testimonials.ready_cta') }}</p>
             <a href="#programs"
                 class="group font-arabic text-textColor bg-accent px-6 py-3 rounded-full text-base font-black flex justify-center items-center gap-2 transition hover:bg-yellow-300">
-                انضم لآلاف المشتركين دلوقتي
-                <svg class="transition-transform duration-300 group-hover:-translate-x-2"
-                    width="22" height="12" viewBox="0 0 29 14" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M0.000447464 5.68288V8.31848H1.36843L1.36822 5.68288H0.000447464ZM2.80722 2.71685C2.60162 2.71685 2.40833 2.7969 2.26296 2.94233C2.11758 3.08773 2.03755 3.28102 2.03756 3.4866L2.03772 5.34545L2.03785 5.34811L2.03772 5.35076L2.03813 10.5141C2.03819 10.9384 2.38346 11.2836 2.80778 11.2836H4.10235L4.10172 2.71684L2.80722 2.71685ZM6.81911 0.22537C6.67374 0.0800182 6.48051 1.07288e-06 6.27496 1.07288e-06L5.54063 0.000130946C5.11631 0.00017794 4.77111 0.345439 4.77111 0.769769L4.7719 11.616L4.77202 11.6184L4.7719 11.6207L4.77202 13.2304C4.77202 13.436 4.8521 13.6292 4.9975 13.7746C5.14287 13.9199 5.3361 14 5.54167 14L6.27581 13.9999C6.70015 13.9998 7.04538 13.6545 7.04535 13.2302L7.04508 8.65474L7.04498 8.65282L7.04508 8.65088L7.04461 0.76958C7.04459 0.564018 6.96451 0.370721 6.81911 0.22537ZM7.71443 5.68239L7.71458 8.31799L28.5106 8.31717L28.5107 5.68156L7.71443 5.68239Z" fill="#202020"/>
-                </svg>
+                {{ __('messages.testimonials.join_now') }}
+                @if($isRtl)
+                    <svg class="transition-transform duration-300 group-hover:-translate-x-2" width="26" height="14" viewBox="0 0 29 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M0.000447464 5.68288V8.31848H1.36843L1.36822 5.68288H0.000447464ZM2.80722 2.71685C2.60162 2.71685 2.40833 2.7969 2.26296 2.94233C2.11758 3.08773 2.03755 3.28102 2.03756 3.4866L2.03772 5.34545L2.03785 5.34811L2.03772 5.35076L2.03813 10.5141C2.03819 10.9384 2.38346 11.2836 2.80778 11.2836H4.10235L4.10172 2.71684L2.80722 2.71685ZM6.81911 0.22537C6.67374 0.0800182 6.48051 1.07288e-06 6.27496 1.07288e-06L5.54063 0.000130946C5.11631 0.00017794 4.77111 0.345439 4.77111 0.769769L4.7719 11.616L4.77202 11.6184L4.7719 11.6207L4.77202 13.2304C4.77202 13.436 4.8521 13.6292 4.9975 13.7746C5.14287 13.9199 5.3361 14 5.54167 14L6.27581 13.9999C6.70015 13.9998 7.04538 13.6545 7.04535 13.2302L7.04508 8.65474L7.04498 8.65282L7.04508 8.65088L7.04461 0.76958C7.04459 0.564018 6.96451 0.370721 6.81911 0.22537ZM7.71443 5.68239L7.71458 8.31799L28.5106 8.31717L28.5107 5.68156L7.71443 5.68239Z" fill="#202020"/>
+                    </svg>
+                @else
+                    <svg class="transition-transform duration-300 group-hover:translate-x-2" width="26" height="14" viewBox="0 0 29 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M28.5103 8.31712V5.68152H27.1423L27.1425 8.31712H28.5103ZM25.7035 11.2832C25.9091 11.2832 26.1024 11.2031 26.2478 11.0577C26.3932 10.9123 26.4732 10.719 26.4732 10.5134L26.473 8.65455L26.4729 8.65189L26.473 8.64924L26.4726 3.48591C26.4726 3.06162 26.1273 2.71639 25.703 2.71639H24.4084L24.409 11.2832L25.7035 11.2832ZM21.6916 13.7746C21.837 13.92 22.0302 14 22.2358 14L22.9701 13.9999C23.3944 13.9998 23.7396 13.6546 23.7396 13.2302L23.7388 2.38397L23.7387 2.38162L23.7388 2.37927L23.7387 0.76964C23.7387 0.564042 23.6586 0.370757 23.5132 0.225405C23.3679 0.0800539 23.1746 0 22.9691 0L22.2349 0.000129431C21.8106 0.000164676 21.4654 0.345474 21.4654 0.769816L21.4657 5.34526L21.4658 5.34718L21.4657 5.34912L21.4661 13.2304C21.4662 13.436 21.5462 13.6293 21.6916 13.7746ZM20.7963 8.31762L20.7962 5.68201L0.000188134 5.68283L0 8.31844L20.7963 8.31762Z" fill="#202020"/>
+                    </svg>
+                @endif
             </a>
         </div>
 
     </section>
 
-    {{-- ═══════════════════════════════════════════
-     Partners Section
-     للتحكم: غيّر $showPartners = true / false
-    ═══════════════════════════════════════════ --}}
-
+    {{-- Partners Section --}}
     @php $showPartners = true; @endphp
 
     @if($showPartners)
@@ -1102,27 +1005,21 @@
 
             @php
                 $partners = [
-                    [
-                        'name' => 'برو تيمز',
-                        'logo' => asset('assets/logo/pro2.png'),
-                    ],
-                    [
-                        'name' => 'برو تيمز',
-                        'logo' => asset('assets/logo/pro3.png'),
-                    ],
+                    ['name' => 'برو تيمز', 'logo' => asset('assets/logo/pro2.png')],
+                    ['name' => 'برو تيمز', 'logo' => asset('assets/logo/pro3.png')],
                 ];
             @endphp
 
             {{-- Header --}}
             <div class="flex flex-col items-center gap-3 text-center px-6">
                 <span class="bg-accent text-darkBg text-[11px] font-black tracking-widest px-5 py-1.5 rounded-full font-arabic">
-                    شركاؤنا
+                    {{ __('messages.partners.badge') }}
                 </span>
                 <h2 class="font-display text-4xl lg:text-7xl font-semibold text-textColor">
-                    بنتشارك مع <span class="text-primary">الأفضل</span>
+                    {{ __('messages.partners.title') }} <span class="text-primary">{{ __('messages.partners.title_highlight') }}</span>
                 </h2>
                 <p class="text-gray-400 text-sm lg:text-base max-w-sm font-arabic font-medium leading-relaxed mt-6">
-                    شركاؤنا من أكبر العلامات التجارية في عالم اللياقة والصحة
+                    {{ __('messages.partners.subtitle') }}
                 </p>
             </div>
 
@@ -1133,7 +1030,7 @@
 
                 <div
                     id="partnersTrack"
-                    class="flex w-max items-center gap-8 animate-marquee-partners will-change-transform [backface-visibility:hidden] [transform:translateZ(0)]"
+                    class="flex w-max items-center gap-8 {{ $isRtl ? 'animate-marquee-partners' : 'animate-marquee-partners-ltr' }} will-change-transform [backface-visibility:hidden] [transform:translateZ(0)]"
                     dir="ltr"
                 >
                     @foreach($partners as $partner)
@@ -1147,6 +1044,7 @@
                                 src="{{ $partner['logo'] }}"
                                 alt="{{ $partner['name'] }}"
                                 class="h-8 w-auto object-contain grayscale group-hover:grayscale-0 opacity-50 group-hover:opacity-100 transition-all duration-300"
+                                loading="lazy"
                             />
                             <span class="text-[11px] font-bold text-gray-400 group-hover:text-primary font-arabic transition-colors duration-300">
                                 {{ $partner['name'] }}
@@ -1162,23 +1060,23 @@
                 <div class="flex flex-col items-center gap-1">
                     <span class="font-display text-xl md:text-4xl font-semibold text-textColor"
                         data-count="20" data-suffix="+">20+</span>
-                    <span class="text-gray-400 text-sm font-medium">شريك معتمد</span>
+                    <span class="text-gray-400 text-sm font-medium">{{ __('messages.partners.certified') }}</span>
                 </div>
 
                 <div class="w-px bg-gray-200 self-stretch hidden md:block"></div>
 
                 <div class="flex flex-col items-center gap-1">
                     <span class="font-display text-xl md:text-4xl font-semibold text-textColor"
-                        data-count="8" data-suffix=" دول">8 دول</span>
-                    <span class="text-gray-400 text-sm font-medium">نطاق التغطية</span>
+                        data-count="8" data-suffix="{{ __('messages.partners.countries_suffix') }}">8{{ __('messages.partners.countries_suffix') }}</span>
+                    <span class="text-gray-400 text-sm font-medium">{{ __('messages.partners.coverage') }}</span>
                 </div>
 
                 <div class="w-px bg-gray-200 self-stretch hidden md:block"></div>
 
                 <div class="flex flex-col items-center gap-1">
                     <span class="font-display text-xl md:text-4xl font-semibold text-textColor"
-                        data-count="3" data-suffix=" سنوات">3 سنوات</span>
-                    <span class="text-gray-400 text-sm font-medium">من الشراكة</span>
+                        data-count="3" data-suffix="{{ __('messages.partners.years_suffix') }}">3{{ __('messages.partners.years_suffix') }}</span>
+                    <span class="text-gray-400 text-sm font-medium">{{ __('messages.partners.partnership_years') }}</span>
                 </div>
 
             </div>
@@ -1192,13 +1090,13 @@
         {{-- Header --}}
         <div class="flex flex-col items-center gap-3 text-center px-6">
             <span class="bg-accent text-darkBg text-[11px] font-black tracking-widest px-5 py-1.5 rounded-full font-arabic">
-                تواصل معنا
+                {{ __('messages.contact.badge') }}
             </span>
             <h2 class="font-display text-4xl lg:text-7xl font-semibold text-textColor">
-                خليك على تواصل <span class="text-primary">معانا</span>
+                {{ __('messages.contact.title') }} <span class="text-primary">{{ __('messages.contact.title_highlight') }}</span>
             </h2>
             <p class="text-gray-500 text-sm lg:text-base max-w-sm font-arabic font-medium leading-relaxed">
-                فريقنا جاهز يرد عليك في أقرب وقت ويساعدك تبدأ رحلتك
+                {{ __('messages.contact.subtitle') }}
             </p>
         </div>
 
@@ -1210,8 +1108,8 @@
                 <div class="w-14 h-14 rounded-[14px] bg-[#EFF5FF] flex items-center justify-center">
                     <span class="material-symbols-rounded text-primary" style="font-size:28px">call</span>
                 </div>
-                <span class="text-lg font-black text-textColor">اتصل بينا</span>
-                <span class="text-xs text-gray-400 font-semibold leading-relaxed">متاح من 9 صبح لـ 10 بالليل</span>
+                <span class="text-lg font-black text-textColor">{{ __('messages.contact.phone_title') }}</span>
+                <span class="text-xs text-gray-400 font-semibold leading-relaxed">{{ __('messages.contact.phone_hours') }}</span>
                 <span class="text-sm font-bold text-primary" dir="ltr">+966593035979</span>
             </div>
 
@@ -1221,9 +1119,9 @@
                 <div class="w-14 h-14 rounded-[14px] bg-[#EFF5FF] flex items-center justify-center">
                     <span class="material-symbols-rounded text-primary" style="font-size:28px">chat</span>
                 </div>
-                <span class="text-lg font-black text-textColor">واتساب</span>
-                <span class="text-xs text-gray-400 font-semibold leading-relaxed">رد فوري خلال دقائق</span>
-                <span class="text-sm font-bold text-primary">ابدأ محادثة دلوقتي</span>
+                <span class="text-lg font-black text-textColor">{{ __('messages.contact.whatsapp_title') }}</span>
+                <span class="text-xs text-gray-400 font-semibold leading-relaxed">{{ __('messages.contact.whatsapp_hours') }}</span>
+                <span class="text-sm font-bold text-primary">{{ __('messages.contact.whatsapp_cta') }}</span>
             </a>
 
             {{-- Email --}}
@@ -1231,8 +1129,8 @@
                 <div class="w-14 h-14 rounded-[14px] bg-[#EFF5FF] flex items-center justify-center">
                     <span class="material-symbols-rounded text-primary" style="font-size:28px">mail</span>
                 </div>
-                <span class="text-lg font-black text-textColor">البريد الإلكتروني</span>
-                <span class="text-xs text-gray-400 font-semibold leading-relaxed">بنرد خلال 24 ساعة</span>
+                <span class="text-lg font-black text-textColor">{{ __('messages.contact.email_title') }}</span>
+                <span class="text-xs text-gray-400 font-semibold leading-relaxed">{{ __('messages.contact.email_hours') }}</span>
                 <a href="mailto:info@mindfitbro.com" class="text-sm font-bold text-primary hover:underline">info@mindfitbro.com</a>
             </div>
 
@@ -1245,9 +1143,9 @@
             <div class="rounded-[24px] bg-primary p-10 flex flex-col gap-8 font-arabic">
 
                 <div>
-                    <h3 class="text-2xl font-black text-white mb-2">إيه اللي بتستنى؟</h3>
+                    <h3 class="text-2xl font-black text-white mb-2">{{ __('messages.contact.info_title') }}</h3>
                     <p class="text-sm leading-relaxed text-white/70">
-                        فريق MindFitBro موجود علشان يجاوب على كل أسئلتك ويساعدك تختار الباقة المناسبة ليك
+                        {{ __('messages.contact.info_desc') }}
                     </p>
                 </div>
 
@@ -1259,8 +1157,8 @@
                             <span class="material-symbols-rounded text-accent" style="font-size:22px">schedule</span>
                         </div>
                         <div>
-                            <p class="text-[11px] text-white/50 font-semibold mb-0.5">ساعات العمل</p>
-                            <p class="text-sm font-bold text-white">السبت – الخميس، 9ص – 10م</p>
+                            <p class="text-[11px] text-white/50 font-semibold mb-0.5">{{ __('messages.contact.hours_label') }}</p>
+                            <p class="text-sm font-bold text-white">{{ __('messages.contact.hours_value') }}</p>
                         </div>
                     </div>
 
@@ -1270,8 +1168,8 @@
                             <span class="material-symbols-rounded text-accent" style="font-size:22px">location_on</span>
                         </div>
                         <div>
-                            <p class="text-[11px] text-white/50 font-semibold mb-0.5">موقعنا</p>
-                            <p class="text-sm font-bold text-white">الرياض، المملكة العربية السعودية</p>
+                            <p class="text-[11px] text-white/50 font-semibold mb-0.5">{{ __('messages.contact.location_label') }}</p>
+                            <p class="text-sm font-bold text-white">{{ __('messages.contact.location_value') }}</p>
                         </div>
                     </div>
 
@@ -1281,7 +1179,7 @@
                             <span class="material-symbols-rounded text-accent" style="font-size:22px">call</span>
                         </div>
                         <div>
-                            <p class="text-[11px] text-white/50 font-semibold mb-0.5">رقم التواصل</p>
+                            <p class="text-[11px] text-white/50 font-semibold mb-0.5">{{ __('messages.contact.phone_label') }}</p>
                             <p class="text-sm font-bold text-white" dir="ltr">+966 593 035 979</p>
                         </div>
                     </div>
@@ -1290,40 +1188,22 @@
 
                 {{-- Socials --}}
                 <div class="mt-auto">
-                    <p class="text-[11px] text-white/40 font-semibold mb-3">تابعنا على</p>
+                    <p class="text-[11px] text-white/40 font-semibold mb-3">{{ __('messages.contact.follow_us') }}</p>
                     <div class="flex gap-2.5">
                         <a href="#" class="w-10 h-10 rounded-[10px] bg-white/10 border border-white/20 flex items-center justify-center hover:bg-accent/20 transition-colors duration-200">
                             <svg viewBox="0 0 20 20" width="20" height="20" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" fill="currentColor" class="text-accent">
-                                <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
-                                <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
-                                <g id="SVGRepo_iconCarrier">
-                                    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-                                        <g id="Dribbble-Light-Preview" transform="translate(-340.000000, -7439.000000)" fill="currentColor">
-                                            <g id="icons" transform="translate(56.000000, 160.000000)">
-                                                <path d="M289.869652,7279.12273 C288.241769,7279.19618 286.830805,7279.5942 285.691486,7280.72871 C284.548187,7281.86918 284.155147,7283.28558 284.081514,7284.89653 C284.035742,7285.90201 283.768077,7293.49818 284.544207,7295.49028 C285.067597,7296.83422 286.098457,7297.86749 287.454694,7298.39256 C288.087538,7298.63872 288.809936,7298.80547 289.869652,7298.85411 C298.730467,7299.25511 302.015089,7299.03674 303.400182,7295.49028 C303.645956,7294.859 303.815113,7294.1374 303.86188,7293.08031 C304.26686,7284.19677 303.796207,7282.27117 302.251908,7280.72871 C301.027016,7279.50685 299.5862,7278.67508 289.869652,7279.12273 M289.951245,7297.06748 C288.981083,7297.0238 288.454707,7296.86201 288.103459,7296.72603 C287.219865,7296.3826 286.556174,7295.72155 286.214876,7294.84312 C285.623823,7293.32944 285.819846,7286.14023 285.872583,7284.97693 C285.924325,7283.83745 286.155174,7282.79624 286.959165,7281.99226 C287.954203,7280.99968 289.239792,7280.51332 297.993144,7280.90837 C299.135448,7280.95998 300.179243,7281.19026 300.985224,7281.99226 C301.980262,7282.98483 302.473801,7284.28014 302.071806,7292.99991 C302.028024,7293.96767 301.865833,7294.49274 301.729513,7294.84312 C300.829003,7297.15085 298.757333,7297.47145 289.951245,7297.06748 M298.089663,7283.68956 C298.089663,7284.34665 298.623998,7284.88065 299.283709,7284.88065 C299.943419,7284.88065 300.47875,7284.34665 300.47875,7283.68956 C300.47875,7283.03248 299.943419,7282.49847 299.283709,7282.49847 C298.623998,7282.49847 298.089663,7283.03248 298.089663,7283.68956 M288.862673,7288.98792 C288.862673,7291.80286 291.150266,7294.08479 293.972194,7294.08479 C296.794123,7294.08479 299.081716,7291.80286 299.081716,7288.98792 C299.081716,7286.17298 296.794123,7283.89205 293.972194,7283.89205 C291.150266,7283.89205 288.862673,7286.17298 288.862673,7288.98792 M290.655732,7288.98792 C290.655732,7287.16159 292.140329,7285.67967 293.972194,7285.67967 C295.80406,7285.67967 297.288657,7287.16159 297.288657,7288.98792 C297.288657,7290.81525 295.80406,7292.29716 293.972194,7292.29716 C292.140329,7292.29716 290.655732,7290.81525 290.655732,7288.98792" id="instagram-[#167]">
-                                                    </path>
-                                                </g>
-                                            </g>
-                                        </g>
-                                    </g>
+                                <g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+                                <g id="SVGRepo_iconCarrier"><g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd"><g id="Dribbble-Light-Preview" transform="translate(-340.000000, -7439.000000)" fill="currentColor"><g id="icons" transform="translate(56.000000, 160.000000)"><path d="M289.869652,7279.12273 C288.241769,7279.19618 286.830805,7279.5942 285.691486,7280.72871 C284.548187,7281.86918 284.155147,7283.28558 284.081514,7284.89653 C284.035742,7285.90201 283.768077,7293.49818 284.544207,7295.49028 C285.067597,7296.83422 286.098457,7297.86749 287.454694,7298.39256 C288.087538,7298.63872 288.809936,7298.80547 289.869652,7298.85411 C298.730467,7299.25511 302.015089,7299.03674 303.400182,7295.49028 C303.645956,7294.859 303.815113,7294.1374 303.86188,7293.08031 C304.26686,7284.19677 303.796207,7282.27117 302.251908,7280.72871 C301.027016,7279.50685 299.5862,7278.67508 289.869652,7279.12273 M289.951245,7297.06748 C288.981083,7297.0238 288.454707,7296.86201 288.103459,7296.72603 C287.219865,7296.3826 286.556174,7295.72155 286.214876,7294.84312 C285.623823,7293.32944 285.819846,7286.14023 285.872583,7284.97693 C285.924325,7283.83745 286.155174,7282.79624 286.959165,7281.99226 C287.954203,7280.99968 289.239792,7280.51332 297.993144,7280.90837 C299.135448,7280.95998 300.179243,7281.19026 300.985224,7281.99226 C301.980262,7282.98483 302.473801,7284.28014 302.071806,7292.99991 C302.028024,7293.96767 301.865833,7294.49274 301.729513,7294.84312 C300.829003,7297.15085 298.757333,7297.47145 289.951245,7297.06748 M298.089663,7283.68956 C298.089663,7284.34665 298.623998,7284.88065 299.283709,7284.88065 C299.943419,7284.88065 300.47875,7284.34665 300.47875,7283.68956 C300.47875,7283.03248 299.943419,7282.49847 299.283709,7282.49847 C298.623998,7282.49847 298.089663,7283.03248 298.089663,7283.68956 M288.862673,7288.98792 C288.862673,7291.80286 291.150266,7294.08479 293.972194,7294.08479 C296.794123,7294.08479 299.081716,7291.80286 299.081716,7288.98792 C299.081716,7286.17298 296.794123,7283.89205 293.972194,7283.89205 C291.150266,7283.89205 288.862673,7286.17298 288.862673,7288.98792 M290.655732,7288.98792 C290.655732,7287.16159 292.140329,7285.67967 293.972194,7285.67967 C295.80406,7285.67967 297.288657,7287.16159 297.288657,7288.98792 C297.288657,7290.81525 295.80406,7292.29716 293.972194,7292.29716 C292.140329,7292.29716 290.655732,7290.81525 290.655732,7288.98792" id="instagram-[#167]"></path></g></g></g></g>
                             </svg>
                         </a>
                         <a href="#" class="w-10 h-10 rounded-[10px] bg-white/10 border border-white/20 flex items-center justify-center hover:bg-accent/20 transition-colors duration-200">
-                            <svg class="text-accent" fill="currentColor" viewBox="0 0 32 32" width="20" height="20" version="1.1" xmlns="http://www.w3.org/2000/svg">
-                                <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
-                                <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
-                                <g id="SVGRepo_iconCarrier">
-                                    <path d="M16.656 1.029c1.637-0.025 3.262-0.012 4.886-0.025 0.054 2.031 0.878 3.859 2.189 5.213l-0.002-0.002c1.411 1.271 3.247 2.095 5.271 2.235l0.028 0.002v5.036c-1.912-0.048-3.71-0.489-5.331-1.247l0.082 0.034c-0.784-0.377-1.447-0.764-2.077-1.196l0.052 0.034c-0.012 3.649 0.012 7.298-0.025 10.934-0.103 1.853-0.719 3.543-1.707 4.954l0.020-0.031c-1.652 2.366-4.328 3.919-7.371 4.011l-0.014 0c-0.123 0.006-0.268 0.009-0.414 0.009-1.73 0-3.347-0.482-4.725-1.319l0.040 0.023c-2.508-1.509-4.238-4.091-4.558-7.094l-0.004-0.041c-0.025-0.625-0.037-1.25-0.012-1.862 0.49-4.779 4.494-8.476 9.361-8.476 0.547 0 1.083 0.047 1.604 0.136l-0.056-0.008c0.025 1.849-0.050 3.699-0.050 5.548-0.423-0.153-0.911-0.242-1.42-0.242-1.868 0-3.457 1.194-4.045 2.861l-0.009 0.030c-0.133 0.427-0.21 0.918-0.21 1.426 0 0.206 0.013 0.41 0.037 0.61l-0.002-0.024c0.332 2.046 2.086 3.59 4.201 3.59 0.061 0 0.121-0.001 0.181-0.004l-0.009 0c1.463-0.044 2.733-0.831 3.451-1.994l0.010-0.018c0.267-0.372 0.45-0.822 0.511-1.311l0.001-0.014c0.125-2.237 0.075-4.461 0.087-6.698 0.012-5.036-0.012-10.060 0.025-15.083z"></path>
-                                </g>
+                            <svg class="text-accent" fill="currentColor" viewBox="0 0 32 32" width="20" height="20" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M16.656 1.029c1.637-0.025 3.262-0.012 4.886-0.025 0.054 2.031 0.878 3.859 2.189 5.213l-0.002-0.002c1.411 1.271 3.247 2.095 5.271 2.235l0.028 0.002v5.036c-1.912-0.048-3.71-0.489-5.331-1.247l0.082 0.034c-0.784-0.377-1.447-0.764-2.077-1.196l0.052 0.034c-0.012 3.649 0.012 7.298-0.025 10.934-0.103 1.853-0.719 3.543-1.707 4.954l0.020-0.031c-1.652 2.366-4.328 3.919-7.371 4.011l-0.014 0c-0.123 0.006-0.268 0.009-0.414 0.009-1.73 0-3.347-0.482-4.725-1.319l0.040 0.023c-2.508-1.509-4.238-4.091-4.558-7.094l-0.004-0.041c-0.025-0.625-0.037-1.25-0.012-1.862 0.49-4.779 4.494-8.476 9.361-8.476 0.547 0 1.083 0.047 1.604 0.136l-0.056-0.008c0.025 1.849-0.050 3.699-0.050 5.548-0.423-0.153-0.911-0.242-1.42-0.242-1.868 0-3.457 1.194-4.045 2.861l-0.009 0.030c-0.133 0.427-0.21 0.918-0.21 1.426 0 0.206 0.013 0.41 0.037 0.61l-0.002-0.024c0.332 2.046 2.086 3.59 4.201 3.59 0.061 0 0.121-0.001 0.181-0.004l-0.009 0c1.463-0.044 2.733-0.831 3.451-1.994l0.010-0.018c0.267-0.372 0.45-0.822 0.511-1.311l0.001-0.014c0.125-2.237 0.075-4.461 0.087-6.698 0.012-5.036-0.012-10.060 0.025-15.083z"/>
                             </svg>
                         </a>
                         <a href="#" class="w-10 h-10 rounded-[10px] bg-white/10 border border-white/20 flex items-center justify-center hover:bg-accent/20 transition-colors duration-200">
-                            <svg class="text-accent" width="20" height="20" fill="currentColor" viewBox="0 0 32 32" version="1.1" xmlns="http://www.w3.org/2000/svg">
-                                <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
-                                <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
-                                <g id="SVGRepo_iconCarrier">
-                                    <path d="M12.932 20.459v-8.917l7.839 4.459zM30.368 8.735c-0.354-1.301-1.354-2.307-2.625-2.663l-0.027-0.006c-3.193-0.406-6.886-0.638-10.634-0.638-0.381 0-0.761 0.002-1.14 0.007l0.058-0.001c-0.322-0.004-0.701-0.007-1.082-0.007-3.748 0-7.443 0.232-11.070 0.681l0.434-0.044c-1.297 0.363-2.297 1.368-2.644 2.643l-0.006 0.026c-0.4 2.109-0.628 4.536-0.628 7.016 0 0.088 0 0.176 0.001 0.263l-0-0.014c-0 0.074-0.001 0.162-0.001 0.25 0 2.48 0.229 4.906 0.666 7.259l-0.038-0.244c0.354 1.301 1.354 2.307 2.625 2.663l0.027 0.006c3.193 0.406 6.886 0.638 10.634 0.638 0.38 0 0.76-0.002 1.14-0.007l-0.058 0.001c0.322 0.004 0.702 0.007 1.082 0.007 3.749 0 7.443-0.232 11.070-0.681l-0.434 0.044c1.298-0.362 2.298-1.368 2.646-2.643l0.006-0.026c0.399-2.109 0.627-4.536 0.627-7.015 0-0.088-0-0.176-0.001-0.263l0 0.013c0-0.074 0.001-0.162 0.001-0.25 0-2.48-0.229-4.906-0.666-7.259l0.038 0.244z"></path>
-                                </g>
+                            <svg class="text-accent" width="20" height="20" fill="currentColor" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M12.932 20.459v-8.917l7.839 4.459zM30.368 8.735c-0.354-1.301-1.354-2.307-2.625-2.663l-0.027-0.006c-3.193-0.406-6.886-0.638-10.634-0.638-0.381 0-0.761 0.002-1.14 0.007l0.058-0.001c-0.322-0.004-0.701-0.007-1.082-0.007-3.748 0-7.443 0.232-11.070 0.681l0.434-0.044c-1.297 0.363-2.297 1.368-2.644 2.643l-0.006 0.026c-0.4 2.109-0.628 4.536-0.628 7.016 0 0.088 0 0.176 0.001 0.263l-0-0.014c-0 0.074-0.001 0.162-0.001 0.25 0 2.48 0.229 4.906 0.666 7.259l-0.038-0.244c0.354 1.301 1.354 2.307 2.625 2.663l0.027 0.006c3.193 0.406 6.886 0.638 10.634 0.638 0.38 0 0.76-0.002 1.14-0.007l-0.058 0.001c0.322 0.004 0.702 0.007 1.082 0.007 3.749 0 7.443-0.232 11.070-0.681l-0.434 0.044c1.298-0.362 2.298-1.368 2.646-2.643l0.006-0.026c0.399-2.109 0.627-4.536 0.627-7.015 0-0.088-0-0.176-0.001-0.263l0 0.013c0-0.074 0.001-0.162 0.001-0.25 0-2.48-0.229-4.906-0.666-7.259l0.038 0.244z"/>
                             </svg>
                         </a>
                     </div>
@@ -1334,55 +1214,61 @@
             {{-- Form Card --}}
             <div class="rounded-[24px] bg-white border-2 border-white p-10 flex flex-col gap-5 font-arabic">
 
-                <h3 class="text-xl font-black text-textColor">ابعتلنا رسالة</h3>
+                <h3 class="text-xl font-black text-textColor">{{ __('messages.contact.form_title') }}</h3>
 
                 <form action="#" method="POST" class="flex flex-col gap-4">
                     @csrf
 
                     <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
                         <div class="flex flex-col gap-1.5">
-                            <label class="text-[13px] font-bold text-textColor">الاسم الكامل</label>
-                            <input type="text" name="name" placeholder="مثال: عبدالله عماد"
+                            <label class="text-[13px] font-bold text-textColor">{{ __('messages.contact.name') }}</label>
+                            <input type="text" name="name" placeholder="{{ __('messages.contact.name_placeholder') }}"
                                 class="bg-[#F4F7FF] border border-[#e0e8ff] focus:border-primary rounded-xl px-4 py-3 text-sm text-textColor outline-none transition-colors duration-200 font-arabic w-full">
                         </div>
                         <div class="flex flex-col gap-1.5">
-                            <label class="text-[13px] font-bold text-textColor">رقم الجوال</label>
+                            <label class="text-[13px] font-bold text-textColor">{{ __('messages.contact.phone_num') }}</label>
                             <input type="tel" name="phone" placeholder="+966 5xx xxx xxx"
                                 class="bg-[#F4F7FF] border border-[#e0e8ff] focus:border-primary rounded-xl px-4 py-3 text-sm text-textColor outline-none transition-colors duration-200 font-arabic w-full">
                         </div>
                     </div>
 
                     <div class="flex flex-col gap-1.5">
-                        <label class="text-[13px] font-bold text-textColor">البريد الإلكتروني</label>
+                        <label class="text-[13px] font-bold text-textColor">{{ __('messages.contact.email_label') }}</label>
                         <input type="email" name="email" placeholder="example@email.com"
                             class="bg-[#F4F7FF] border border-[#e0e8ff] focus:border-primary rounded-xl px-4 py-3 text-sm text-textColor outline-none transition-colors duration-200 font-arabic w-full">
                     </div>
 
                     <div class="flex flex-col gap-1.5">
-                        <label class="text-[13px] font-bold text-textColor">الباقة اللي بتفكر فيها</label>
+                        <label class="text-[13px] font-bold text-textColor">{{ __('messages.contact.plan_label') }}</label>
                         <select name="plan"
                             class="bg-[#F4F7FF] border border-[#e0e8ff] focus:border-primary rounded-xl px-4 py-3 text-sm text-textColor outline-none transition-colors duration-200 font-arabic w-full">
-                            <option value="">اختار باقة...</option>
-                            <option value="starter">ستارتر — 299 ريال</option>
-                            <option value="pro">برو — 599 ريال</option>
-                            <option value="elite">إيليت — 999 ريال</option>
-                            <option value="family">باقة العائلة — 1,399 ريال</option>
-                            <option value="unknown">مش متأكد لسه</option>
+                            <option value="">{{ __('messages.contact.select_plan') }}</option>
+                            <option value="starter">{{ __('messages.contact.plan_options.starter') }}</option>
+                            <option value="pro">{{ __('messages.contact.plan_options.pro') }}</option>
+                            <option value="elite">{{ __('messages.contact.plan_options.elite') }}</option>
+                            <option value="family">{{ __('messages.contact.plan_options.family') }}</option>
+                            <option value="unknown">{{ __('messages.contact.plan_options.unknown') }}</option>
                         </select>
                     </div>
 
                     <div class="flex flex-col gap-1.5">
-                        <label class="text-[13px] font-bold text-textColor">رسالتك</label>
-                        <textarea name="message" rows="4" placeholder="اكتب سؤالك أو اللي محتاج مساعدة فيه..."
+                        <label class="text-[13px] font-bold text-textColor">{{ __('messages.contact.message') }}</label>
+                        <textarea name="message" rows="4" placeholder="{{ __('messages.contact.message_placeholder') }}"
                             class="bg-[#F4F7FF] border border-[#e0e8ff] focus:border-primary rounded-xl px-4 py-3 text-sm text-textColor outline-none transition-colors duration-200 font-arabic w-full resize-none"></textarea>
                     </div>
 
                     <button type="submit"
                         class="group font-arabic text-textColor bg-accent px-5 py-3 rounded-full text-sm lg:text-base font-black flex justify-center items-center gap-2 transition hover:bg-yellow-300 w-full mt-2">
-                        ابعت رسالتك دلوقتي
-                        <svg class="transition-transform duration-300 group-hover:-translate-x-2" width="26" height="14" viewBox="0 0 29 14" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M0.000447464 5.68288V8.31848H1.36843L1.36822 5.68288H0.000447464ZM2.80722 2.71685C2.60162 2.71685 2.40833 2.7969 2.26296 2.94233C2.11758 3.08773 2.03755 3.28102 2.03756 3.4866L2.03772 5.34545L2.03785 5.34811L2.03772 5.35076L2.03813 10.5141C2.03819 10.9384 2.38346 11.2836 2.80778 11.2836H4.10235L4.10172 2.71684L2.80722 2.71685ZM6.81911 0.22537C6.67374 0.0800182 6.48051 1.07288e-06 6.27496 1.07288e-06L5.54063 0.000130946C5.11631 0.00017794 4.77111 0.345439 4.77111 0.769769L4.7719 11.616L4.77202 11.6184L4.7719 11.6207L4.77202 13.2304C4.77202 13.436 4.8521 13.6292 4.9975 13.7746C5.14287 13.9199 5.3361 14 5.54167 14L6.27581 13.9999C6.70015 13.9998 7.04538 13.6545 7.04535 13.2302L7.04508 8.65474L7.04498 8.65282L7.04508 8.65088L7.04461 0.76958C7.04459 0.564018 6.96451 0.370721 6.81911 0.22537ZM7.71443 5.68239L7.71458 8.31799L28.5106 8.31717L28.5107 5.68156L7.71443 5.68239Z" fill="#202020"/>
-                        </svg>
+                        {{ __('messages.contact.send') }}
+                        @if($isRtl)
+                            <svg class="transition-transform duration-300 group-hover:-translate-x-2" width="26" height="14" viewBox="0 0 29 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M0.000447464 5.68288V8.31848H1.36843L1.36822 5.68288H0.000447464ZM2.80722 2.71685C2.60162 2.71685 2.40833 2.7969 2.26296 2.94233C2.11758 3.08773 2.03755 3.28102 2.03756 3.4866L2.03772 5.34545L2.03785 5.34811L2.03772 5.35076L2.03813 10.5141C2.03819 10.9384 2.38346 11.2836 2.80778 11.2836H4.10235L4.10172 2.71684L2.80722 2.71685ZM6.81911 0.22537C6.67374 0.0800182 6.48051 1.07288e-06 6.27496 1.07288e-06L5.54063 0.000130946C5.11631 0.00017794 4.77111 0.345439 4.77111 0.769769L4.7719 11.616L4.77202 11.6184L4.7719 11.6207L4.77202 13.2304C4.77202 13.436 4.8521 13.6292 4.9975 13.7746C5.14287 13.9199 5.3361 14 5.54167 14L6.27581 13.9999C6.70015 13.9998 7.04538 13.6545 7.04535 13.2302L7.04508 8.65474L7.04498 8.65282L7.04508 8.65088L7.04461 0.76958C7.04459 0.564018 6.96451 0.370721 6.81911 0.22537ZM7.71443 5.68239L7.71458 8.31799L28.5106 8.31717L28.5107 5.68156L7.71443 5.68239Z" fill="#202020"/>
+                            </svg>
+                        @else
+                            <svg class="transition-transform duration-300 group-hover:translate-x-2" width="26" height="14" viewBox="0 0 29 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M28.5103 8.31712V5.68152H27.1423L27.1425 8.31712H28.5103ZM25.7035 11.2832C25.9091 11.2832 26.1024 11.2031 26.2478 11.0577C26.3932 10.9123 26.4732 10.719 26.4732 10.5134L26.473 8.65455L26.4729 8.65189L26.473 8.64924L26.4726 3.48591C26.4726 3.06162 26.1273 2.71639 25.703 2.71639H24.4084L24.409 11.2832L25.7035 11.2832ZM21.6916 13.7746C21.837 13.92 22.0302 14 22.2358 14L22.9701 13.9999C23.3944 13.9998 23.7396 13.6546 23.7396 13.2302L23.7388 2.38397L23.7387 2.38162L23.7388 2.37927L23.7387 0.76964C23.7387 0.564042 23.6586 0.370757 23.5132 0.225405C23.3679 0.0800539 23.1746 0 22.9691 0L22.2349 0.000129431C21.8106 0.000164676 21.4654 0.345474 21.4654 0.769816L21.4657 5.34526L21.4658 5.34718L21.4657 5.34912L21.4661 13.2304C21.4662 13.436 21.5462 13.6293 21.6916 13.7746ZM20.7963 8.31762L20.7962 5.68201L0.000188134 5.68283L0 8.31844L20.7963 8.31762Z" fill="#202020"/>
+                            </svg>
+                        @endif
                     </button>
 
                 </form>
@@ -1399,244 +1285,133 @@
 
 @section('script')
     <script>
-        let swiper;
+        // ─── Register GSAP plugins once ───
+        gsap.registerPlugin(ScrollTrigger, ScrollToPlugin);
 
-        document.addEventListener('DOMContentLoaded', function () {
-
-            // ─── Init Swiper ───
-            swiper = new Swiper(".mySwiper", {
-                loop: true,
-                autoplay: {
-                    delay: 6000,
-                    disableOnInteraction: false,
-                },
-                pagination: {
-                    el: ".swiper-pagination",
-                    dynamicBullets: true,
-                    clickable: true,
-                },
-            });
-
-            // ─── لما السلايد يتغير ───
-            swiper.on('slideChange', () => {
-                swiper.autoplay.start();
-                swiper.allowTouchMove = true;
-            });
-
-        });
-    </script>
-
-    <script>
-        var swiper2 = new Swiper(".mySwiper2", {
-            loop: true,
-            autoplay: {
-                delay: 10000,
-                disableOnInteraction: false,
-            },
-            pagination: {
-                el: ".swiper-pagination",
-                dynamicBullets: true,
-                clickable: true,
-            },
-        });
-    </script>
-
-    <script>
-        const swiper3 = new Swiper('.beforeAfterSwiper', {
-            loop: true,
-            slidesPerView: 2,
-            spaceBetween: 30,
-            speed: 700,
-            grabCursor: true,
-
-            autoplay: {
-                delay: 7000,
-                disableOnInteraction: false
-            },
-
-            breakpoints: {
-                0: {
-                    slidesPerView: 1,
-                    spaceBetween: 16
-                },
-                768: {
-                    slidesPerView: 2,
-                    spaceBetween: 20
-                },
-                1200: {
-                    slidesPerView: 2,
-                    spaceBetween: 30
-                }
-            },
-
-            on: {
-                slideChange() {
-                    document.querySelectorAll('.ba-dot').forEach((d, i) => {
-                        const active = i === this.realIndex;
-                        d.classList.toggle('!w-7', active);
-                        d.classList.toggle('!h-2.5', active);
-                        d.classList.toggle('bg-primary', active);
-                        d.classList.toggle('w-2.5', !active);
-                        d.classList.toggle('h-2.5', !active);
-                        d.classList.toggle('bg-gray-300', !active);
-                    });
-                }
-            }
-        });
-    </script>
-
-    <script>
+        // ─── Accordion (synchronous — used by onclick) ───
         function toggleAccordion(el) {
-            const allItems = document.querySelectorAll('.accordion-item');
-
-            allItems.forEach(item => {
-                if (item !== el) {
-                    item.classList.remove('active', 'bg-primary');
-                    item.classList.add('bg-white');
-
-                    const title = item.querySelector('.acc-title');
-                    title.classList.remove('text-accent');
-                    title.classList.add('text-textColor');
-
-                    const desc = item.querySelector('.acc-desc');
-                    desc.classList.add('hidden');
-                    desc.classList.remove('block', 'text-white');
-                    desc.classList.add('text-gray-600');
-
-                    const icon = item.querySelector('.acc-btn svg');
-                    icon.classList.remove('-rotate-90');
-                }
-            });
-
             if (el.classList.contains('active')) return;
 
-            el.classList.add('active', 'bg-primary');
-            el.classList.remove('bg-white');
+            document.querySelectorAll('.accordion-item').forEach(item => {
+                const isTarget = item === el;
+                item.classList.toggle('active', isTarget);
+                item.classList.toggle('bg-primary', isTarget);
+                item.classList.toggle('bg-white', !isTarget);
 
-            const title = el.querySelector('.acc-title');
-            title.classList.remove('text-textColor');
-            title.classList.add('text-accent');
+                item.querySelector('.acc-title').classList.toggle('text-accent', isTarget);
+                item.querySelector('.acc-title').classList.toggle('text-textColor', !isTarget);
 
-            const desc = el.querySelector('.acc-desc');
-            desc.classList.remove('hidden', 'text-gray-600');
-            desc.classList.add('block', 'text-white');
+                const desc = item.querySelector('.acc-desc');
+                desc.classList.toggle('hidden', !isTarget);
+                desc.classList.toggle('block', isTarget);
+                desc.classList.toggle('text-white', isTarget);
+                desc.classList.toggle('text-gray-600', !isTarget);
 
-            const icon = el.querySelector('.acc-btn svg');
-            icon.classList.add('-rotate-90');
+                item.querySelector('.acc-btn svg').classList.toggle('-rotate-90', isTarget);
+            });
         }
-    </script>
 
-    <script>
-        // ─── GSAP Counter + Slide Up ───
+        // ─── Critical init: Swipers + Smooth Scroll ───
         document.addEventListener('DOMContentLoaded', function () {
 
-            gsap.registerPlugin(ScrollTrigger);
+            // Swiper 1
+            const swiper1 = new Swiper(".mySwiper", {
+                loop: true,
+                autoplay: { delay: 6000, disableOnInteraction: false },
+                pagination: { el: ".swiper-pagination", dynamicBullets: true, clickable: true },
+            });
+            swiper1.on('slideChange', () => {
+                swiper1.autoplay.start();
+                swiper1.allowTouchMove = true;
+            });
 
-            const counters = document.querySelectorAll('[data-count]');
+            // Swiper 2
+            new Swiper(".mySwiper2", {
+                loop: true,
+                autoplay: { delay: 10000, disableOnInteraction: false },
+                pagination: { el: ".swiper-pagination", dynamicBullets: true, clickable: true },
+            });
 
-            counters.forEach(el => {
+            // Swiper 3 — Before/After
+            new Swiper('.beforeAfterSwiper', {
+                loop: true,
+                spaceBetween: 30,
+                speed: 700,
+                grabCursor: true,
+                autoplay: { delay: 7000, disableOnInteraction: false },
+                breakpoints: {
+                    0:    { slidesPerView: 1, spaceBetween: 16 },
+                    768:  { slidesPerView: 2, spaceBetween: 20 },
+                    1200: { slidesPerView: 2, spaceBetween: 30 },
+                },
+                on: {
+                    slideChange() {
+                        document.querySelectorAll('.ba-dot').forEach((d, i) => {
+                            const active = i === this.realIndex;
+                            d.classList.toggle('!w-7', active);
+                            d.classList.toggle('!h-2.5', active);
+                            d.classList.toggle('bg-primary', active);
+                            d.classList.toggle('w-2.5', !active);
+                            d.classList.toggle('bg-gray-300', !active);
+                        });
+                    }
+                },
+            });
 
-                const target  = parseFloat(el.dataset.count);
-                const dec     = parseInt(el.dataset.decimals || 0);
-                const prefix  = el.dataset.prefix || '';
-                const suffix  = el.dataset.suffix || '';
-
-                // Slide Up
-                gsap.from(el, {
-                    scrollTrigger: {
-                        trigger  : el,
-                        start    : 'top 85%',
-                        once     : true,
-                    },
-                    y        : 40,
-                    opacity  : 0,
-                    duration : 0.8,
-                    ease     : 'power3.out',
+            // Smooth Scroll
+            document.querySelectorAll('a[href*="#"]').forEach(link => {
+                link.addEventListener('click', function (e) {
+                    const href = this.getAttribute('href');
+                    if (!href || href === '#') return;
+                    const url = new URL(href, window.location.origin);
+                    if (url.pathname !== window.location.pathname || !url.hash || url.hash === '#') return;
+                    const target = document.querySelector(url.hash);
+                    if (!target) return;
+                    e.preventDefault();
+                    gsap.to(window, { scrollTo: { y: target, offsetY: 80 }, duration: 1.8, ease: 'power3.inOut' });
                 });
+            });
+        });
 
-                // Count Up
+        // ─── Non-critical: counters + marquee — deferred to idle time ───
+        const initIdleWork = () => {
+
+            // GSAP Counters
+            document.querySelectorAll('[data-count]').forEach(el => {
+                const target = parseFloat(el.dataset.count);
+                const dec    = parseInt(el.dataset.decimals || 0);
+                const suffix = el.dataset.suffix || '';
+                const prefix = el.dataset.prefix || '';
+
+                gsap.from(el, {
+                    scrollTrigger: { trigger: el, start: 'top 85%', once: true },
+                    y: 40, opacity: 0, duration: 0.8, ease: 'power3.out',
+                });
                 gsap.to({ val: 0 }, {
-                    scrollTrigger: {
-                        trigger  : el,
-                        start    : 'top 85%',
-                        once     : true,
-                    },
-                    val      : target,
-                    duration : 2,
-                    ease     : 'power2.out',
+                    scrollTrigger: { trigger: el, start: 'top 85%', once: true },
+                    val: target, duration: 2, ease: 'power2.out',
                     onUpdate() {
                         const v = this.targets()[0].val;
                         el.textContent = prefix + (dec ? v.toFixed(dec) : Math.floor(v)) + suffix;
                     },
-                    onComplete() {
-                        el.textContent = prefix + (dec ? target.toFixed(dec) : target) + suffix;
-                    },
-                });
-
-            });
-
-        });
-    </script>
-
-    <script>
-        gsap.registerPlugin(ScrollTrigger, ScrollToPlugin);
-
-        document.querySelectorAll('a[href*="#"]').forEach(link => {
-            link.addEventListener('click', function (e) {
-                const href = this.getAttribute('href');
-                if (!href || href === '#') return;
-
-                const url = new URL(href, window.location.origin);
-
-                const isSamePage =
-                    url.pathname === window.location.pathname &&
-                    url.hash &&
-                    url.hash !== '#';
-
-                if (!isSamePage) return;
-
-                const target = document.querySelector(url.hash);
-                if (!target) return;
-
-                e.preventDefault();
-
-                gsap.to(window, {
-                    scrollTo: {
-                        y: target,
-                        offsetY: 80,
-                    },
-                    duration: 1.8,
-                    ease: 'power3.inOut',
+                    onComplete() { el.textContent = prefix + (dec ? target.toFixed(dec) : target) + suffix; },
                 });
             });
-        });
-    </script>
 
-    <script>
-        document.addEventListener("DOMContentLoaded", () => {
+            // Partners Marquee
             const marquee = document.getElementById("partnersMarquee");
-            const track = document.getElementById("partnersTrack");
-
+            const track   = document.getElementById("partnersTrack");
             if (!marquee || !track) return;
 
             const buildMarquee = () => {
-                // رجّع التراك للحالة الأصلية أولاً
-                const originalItems = Array.from(track.querySelectorAll(".partner-item[data-original='true']"));
-
-                if (!originalItems.length) {
-                    const currentItems = Array.from(track.children);
-                    currentItems.forEach(item => item.setAttribute("data-original", "true"));
+                if (!track.querySelector(".partner-item[data-original='true']")) {
+                    Array.from(track.children).forEach(item => item.setAttribute("data-original", "true"));
                 }
-
-                // احذف أي نسخ مضافة قبل كده
-                Array.from(track.querySelectorAll(".partner-item[data-clone='true']")).forEach(clone => clone.remove());
+                Array.from(track.querySelectorAll(".partner-item[data-clone='true']")).forEach(c => c.remove());
 
                 const baseItems = Array.from(track.querySelectorAll(".partner-item[data-original='true']"));
-
                 if (!baseItems.length) return;
 
-                // نكرر لحد ما عرض التراك يبقى أكبر من عرض الكونتينر بمرتين على الأقل
-                // علشان -50% تشتغل بسلاسة
                 while (track.scrollWidth < marquee.offsetWidth * 2) {
                     baseItems.forEach(item => {
                         const clone = item.cloneNode(true);
@@ -1646,8 +1421,6 @@
                     });
                 }
 
-                // لو العدد النهائي فردي أو النسخ غير كافية للحركة السلسة
-                // نضيف نسخة كمان من المجموعة الأصلية لضمان التطابق عند -50%
                 const allItems = track.querySelectorAll(".partner-item");
                 if (allItems.length % baseItems.length !== 0 || track.scrollWidth < marquee.offsetWidth * 2.5) {
                     baseItems.forEach(item => {
@@ -1660,14 +1433,17 @@
             };
 
             buildMarquee();
-
             let resizeTimeout;
             window.addEventListener("resize", () => {
                 clearTimeout(resizeTimeout);
-                resizeTimeout = setTimeout(() => {
-                    buildMarquee();
-                }, 150);
+                resizeTimeout = setTimeout(buildMarquee, 150);
             });
-        });
+        };
+
+        if ('requestIdleCallback' in window) {
+            requestIdleCallback(initIdleWork, { timeout: 2000 });
+        } else {
+            setTimeout(initIdleWork, 200);
+        }
     </script>
 @endsection

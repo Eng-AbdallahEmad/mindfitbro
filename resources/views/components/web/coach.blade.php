@@ -610,7 +610,7 @@
                     <select id="ec_plan_id" name="plan_id"
                         class="bg-gray-50/80 border border-gray-200 focus:border-primary focus:bg-white rounded-xl px-3.5 py-2.5 text-sm font-arabic outline-none transition-all w-full">
                         @foreach(\App\Models\Plan::orderBy('name')->get() as $plan)
-                            <option value="{{ $plan->id }}">{{ $plan->name }}</option>
+                            <option value="{{ $plan->id }}">{{ __('messages.plans_data.'.$plan->key.'.name', [], null) ?: $plan->name }}</option>
                         @endforeach
                     </select>
                 </div>
@@ -846,7 +846,7 @@
 
                     <div class="flex-1 font-arabic">
                         <p class="font-black text-textColor text-sm leading-none mb-0.5">{{ $client->name ?? '—' }}</p>
-                        <p class="text-gray-400 text-xs font-bold mb-1.5">{{ $plan->name ?? '—' }}</p>
+                        <p class="text-gray-400 text-xs font-bold mb-1.5">{{ $plan ? (__('messages.plans_data.'.$plan->key.'.name', [], null) ?: $plan->name) : '—' }}</p>
                         <div class="macro-bar-wrap" style="width:90px">
                             <div class="macro-bar-fill bg-primary" style="width:{{ $pct }}%"></div>
                         </div>

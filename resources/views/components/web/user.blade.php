@@ -61,7 +61,7 @@
                 @if($hasSub)
                     <span class="text-[10px] font-bold px-2 py-0.5 rounded-full mt-1 inline-block font-arabic
                         {{ $isWaiting ? 'bg-amber-400/20 text-amber-300' : 'bg-accent/20 text-accent' }}">
-                        {{ $isWaiting ? '⏳ ' : '' }}{{ $plan->name }}
+                        {{ $isWaiting ? '⏳ ' : '' }}{{ __('messages.plans_data.'.$plan->key.'.name', [], null) ?: $plan->name }}
                     </span>
                 @else
                     <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-white/10 text-white/40 mt-1 inline-block font-arabic">
@@ -100,7 +100,7 @@
                 <div class="rounded-2xl p-3 font-arabic text-right
                     {{ $isWaiting ? 'bg-amber-400/10 border border-amber-400/20' : 'bg-accent/10 border border-accent/20' }}">
                     <p class="{{ $isWaiting ? 'text-amber-300' : 'text-accent' }} text-xs font-black mb-0.5">
-                        {{ $isWaiting ? '⏳ في انتظار التفعيل' : 'باقة ' . $plan->name }}
+                        {{ $isWaiting ? '⏳ ' . __('messages.programs.waiting_activation') : __('messages.programs.plan_prefix') . (__('messages.plans_data.'.$plan->key.'.name', [], null) ?: $plan->name) }}
                     </p>
                     <p class="text-white/50 text-[10px]">
                         @if($isWaiting)
@@ -319,13 +319,13 @@
                     </div>
                     <div class="font-arabic flex-1">
                         <div class="flex flex-wrap items-center gap-2 mb-1">
-                            <p class="font-black text-textColor text-xl leading-none">{{ $plan->name }}</p>
+                            <p class="font-black text-textColor text-xl leading-none">{{ __('messages.plans_data.'.$plan->key.'.name', [], null) ?: $plan->name }}</p>
                             <span class="text-[10px] font-black px-2 py-0.5 rounded-full bg-amber-50 text-amber-600 border border-amber-200">
-                                في انتظار التفعيل
+                                {{ __('messages.programs.waiting_activation') }}
                             </span>
                         </div>
                         <p class="text-gray-400 text-xs font-bold">
-                            {{ $plan->desc ?? 'سيتم تفعيل الباقة بعد جلسة التعارف مع الكوتش' }}
+                            {{ (__('messages.plans_data.'.$plan->key.'.desc', [], null) ?: $plan->desc) ?? __('messages.programs.activation_note') }}
                         </p>
                     </div>
                 </div>
@@ -381,9 +381,9 @@
                                 </span>
                             </div>
                             <div class="font-arabic">
-                                <p class="text-sm font-black text-textColor leading-none mb-0.5">{{ $plan->name }}</p>
+                                <p class="text-sm font-black text-textColor leading-none mb-0.5">{{ __('messages.plans_data.'.$plan->key.'.name', [], null) ?: $plan->name }}</p>
                                 <p class="text-xs text-gray-400 font-bold">
-                                    تنتهي {{ $subscription->end_date?->locale('ar')->isoFormat('D MMMM YYYY') ?? '—' }}
+                                    {{ __('messages.programs.expires') }} {{ $subscription->end_date?->locale(app()->getLocale())->isoFormat('D MMMM YYYY') ?? '—' }}
                                 </p>
                             </div>
                         </div>
@@ -489,9 +489,9 @@
                                 </span>
                             </div>
                             <div class="font-arabic">
-                                <p class="font-black text-textColor text-lg leading-none">{{ $plan->name }}</p>
+                                <p class="font-black text-textColor text-lg leading-none">{{ __('messages.plans_data.'.$plan->key.'.name', [], null) ?: $plan->name }}</p>
                                 <p class="text-gray-400 text-xs mt-0.5">
-                                    تنتهي {{ $subscription->end_date ? $subscription->end_date->locale('ar')->isoFormat('D MMMM YYYY') : '—' }}
+                                    {{ __('messages.programs.expires') }} {{ $subscription->end_date ? $subscription->end_date->locale(app()->getLocale())->isoFormat('D MMMM YYYY') : '—' }}
                                 </p>
                             </div>
                         </div>

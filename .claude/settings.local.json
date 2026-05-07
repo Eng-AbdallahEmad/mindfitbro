@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(Get-ChildItem -Path \"c:\\\\xampp\\\\htdocs\\\\gymweb\" -Force)",
+      "Bash(Select-Object Name, PSIsContainer)",
+      "Bash(Format-Table -AutoSize)",
+      "Bash(Get-ChildItem -Path \"c:\\\\xampp\\\\htdocs\\\\gymweb\" -Directory)",
+      "Bash(Select-Object Name)",
+      "PowerShell(tree \"c:\\\\xampp\\\\htdocs\\\\gymweb\\\\resources\\\\views\" -L 3)",
+      "Bash(php artisan *)"
+    ]
+  }
+}

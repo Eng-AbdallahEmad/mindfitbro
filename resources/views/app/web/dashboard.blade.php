@@ -1,6 +1,6 @@
 @extends('layouts.web.app')
 
-@section('title', 'Dashboard — ' . auth()->user()->name)
+@section('title', __('messages.dashboard.title') . ' — ' . auth()->user()->name)
 
 @section('style')
     <style>

@@ -1,6 +1,8 @@
 @extends('layouts.web.app')
 
-@section('title', 'احجز جلستك الأولى')
+@section('title', __('messages.schedule_meeting.title'))
+
+@php $isRtl = app()->getLocale() === 'ar'; @endphp
 
 @section('style')
 <style>
@@ -25,7 +27,7 @@
         min-height: 100vh;
         background: var(--bg);
         font-family: 'Cairo', sans-serif;
-        direction: rtl;
+        direction: {{ $isRtl ? 'rtl' : 'ltr' }};
         position: relative;
         overflow-x: hidden;
         display: flex;
@@ -549,6 +551,7 @@
 @php
     $hasBooking = isset($booking) && $booking;
     $bookingId = $hasBooking ? $booking->id : null;
+    $locale = app()->getLocale();
 @endphp
 
 <x-web.navbar :transparent="false" />
@@ -576,17 +579,17 @@
                     </svg>
                 </div>
                 <div class="header-text">
-                    <div class="header-title font-arabic">احجز جلستك الأولى</div>
-                    <div class="header-sub">جلسة أونلاين مع الكوتش — 30 دقيقة</div>
+                    <div class="header-title font-arabic">{{ __('messages.schedule_meeting.header_title') }}</div>
+                    <div class="header-sub">{{ __('messages.schedule_meeting.header_sub') }}</div>
                     <div class="header-badges">
-                        <span class="hbadge accent">مجاني 100%</span>
+                        <span class="hbadge accent">{{ __('messages.schedule_meeting.badge_free') }}</span>
                         <span class="hbadge">
                             <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-                            الموعد بتوقيت المملكة العربية السعودية
+                            {{ __('messages.schedule_meeting.badge_timezone') }}
                         </span>
                         <span class="hbadge">
                             <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M15.05 5A5 5 0 0 1 19 8.95M15.05 1A9 9 0 0 1 23 8.94m-1 7.98v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 3.07 8.67 19.79 19.79 0 0 1 .01 2.11 2 2 0 0 1 2 0h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L6.91 7.91"/></svg>
-                            أونلاين
+                            {{ __('messages.schedule_meeting.badge_online') }}
                         </span>
                     </div>
                 </div>
@@ -596,24 +599,15 @@
         {{-- Body --}}
         <div class="sched-body">
 
-            {{-- Meet link --}}
-            {{-- <div class="meet-box">
-                <div class="meet-box-left">
-                    <div class="meet-icon">📹</div>
-                    <div>
-                        <div class="meet-label">لينك الاجتماع</div>
-                        <div class="meet-url">{{ $meetShort }}</div>
-                    </div>
-                </div>
-                <button class="meet-copy-btn" id="copyMeetBtn" onclick="copyMeet()">نسخ اللينك</button>
-            </div> --}}
+            {{-- Meet link (commented out) --}}
+            {{-- <div class="meet-box"> ... </div> --}}
 
             {{-- Calendar label --}}
             <div class="cal-label">
                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                     <rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
                 </svg>
-                اختار اليوم والوقت المناسبك
+                {{ __('messages.schedule_meeting.cal_label') }}
             </div>
 
             {{-- Calendar --}}
@@ -636,7 +630,7 @@
 
                 {{-- Day names --}}
                 <div class="cal-days-header">
-                    @foreach(['الأحد','الاثنين','الثلاثاء','الأربعاء','الخميس','الجمعة','السبت'] as $d)
+                    @foreach(__('messages.schedule_meeting.day_names') as $d)
                         <div class="cal-day-name">{{ $d }}</div>
                     @endforeach
                 </div>
@@ -646,7 +640,7 @@
 
                 {{-- Time slots --}}
                 <div class="slots-wrap" id="slotsWrap">
-                    <div class="slots-title" id="slotsTitle">المواعيد المتاحة</div>
+                    <div class="slots-title" id="slotsTitle">{{ __('messages.schedule_meeting.slots_available') }}</div>
                     <div class="slots-grid" id="slotsGrid"></div>
                 </div>
 
@@ -668,7 +662,7 @@
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                             <polyline points="20 6 9 17 4 12"/>
                         </svg>
-                        تأكيد الحجز
+                        {{ __('messages.schedule_meeting.confirm_btn') }}
                     </button>
                 </div>
 
@@ -684,7 +678,7 @@
                 <polyline points="20 6 9 17 4 12"/>
             </svg>
         </div>
-        <div class="booked-title font-arabic">تم الحجز بنجاح! 🎉</div>
+        <div class="booked-title font-arabic">{{ __('messages.schedule_meeting.booked_title') }}</div>
         <div class="booked-detail" id="bookedDetail">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
                 stroke-linecap="round" stroke-linejoin="round" style="color:var(--primary)">
@@ -695,29 +689,28 @@
             </svg>
             <span id="bookedDetailText">
                 @if($hasBooking)
-                    {{ \Carbon\Carbon::parse($booking->meeting_date)->locale('ar')->translatedFormat('l، j F Y') }}
-                    — الساعة {{ \Carbon\Carbon::parse($booking->meeting_time)->format('H:i') }}
+                    {{ \Carbon\Carbon::parse($booking->meeting_date)->locale($locale)->translatedFormat(__('messages.schedule_meeting.booked_date_format')) }}
+                    — {{ __('messages.schedule_meeting.time_at') }} {{ \Carbon\Carbon::parse($booking->meeting_time)->format('H:i') }}
                 @else
                     —
                 @endif
             </span>
         </div>
         <div class="booked-sub">
-            اللينك هيوصلك على الواتس. الكوتش بينتظرك في الموعد المحدد!
+            {{ __('messages.schedule_meeting.booked_sub') }}
         </div>
 
-        {{-- ── زرار تعديل الموعد ── --}}
         <button onclick="editBooking()" class="booked-edit-btn">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
                 stroke-linecap="round" stroke-linejoin="round">
                 <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
                 <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
             </svg>
-            تعديل الموعد
+            {{ __('messages.schedule_meeting.edit_btn') }}
         </button>
 
         <a href="{{ url('/dashboard') }}" class="dash-btn">
-            الذهاب للوحة التحكم
+            {{ __('messages.schedule_meeting.go_dashboard') }}
         </a>
     </div>
 
@@ -738,8 +731,25 @@ const TIME_SLOTS = @json($timeSlots);
 const MEET_LINK  = @json($meetLink);
 const CSRF       = '{{ csrf_token() }}';
 
-const AR_MONTHS = ['يناير','فبراير','مارس','أبريل','مايو','يونيو','يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر'];
-const AR_DAYS   = ['الأحد','الاثنين','الثلاثاء','الأربعاء','الخميس','الجمعة','السبت'];
+const SCHED_TRANS = {
+    months:           @json(__('messages.schedule_meeting.months')),
+    days:             @json(__('messages.schedule_meeting.day_names')),
+    slots_for:        @json(__('messages.schedule_meeting.slots_for')),
+    sum_date_format:  @json(__('messages.schedule_meeting.sum_date_format')),
+    sum_time_format:  @json(__('messages.schedule_meeting.sum_time_format')),
+    detail_format:    @json(__('messages.schedule_meeting.detail_format')),
+    error_booking:    @json(__('messages.schedule_meeting.error_booking')),
+    error_server:     @json(__('messages.schedule_meeting.error_server')),
+    toast_booked:     @json(__('messages.schedule_meeting.toast_booked')),
+    toast_edited:     @json(__('messages.schedule_meeting.toast_edited')),
+    toast_link_copied:@json(__('messages.schedule_meeting.toast_link_copied')),
+    copy_link_btn:    @json(__('messages.schedule_meeting.copy_link_btn')),
+    copied_btn:       @json(__('messages.schedule_meeting.copied_btn')),
+};
+
+function formatStr(template, vars) {
+    return template.replace(/:(\w+)/g, (_, k) => vars[k] ?? '');
+}
 
 let state = {
     today: new Date(),
@@ -764,7 +774,7 @@ function renderCalendar() {
     const month = current.getMonth();
 
     document.getElementById('calMonthTitle').textContent =
-        AR_MONTHS[month] + ' ' + year;
+        SCHED_TRANS.months[month] + ' ' + year;
 
     const firstDay = new Date(year, month, 1).getDay();
     const daysInMonth = new Date(year, month + 1, 0).getDate();
@@ -842,10 +852,11 @@ function renderSlots(date) {
     const grid  = document.getElementById('slotsGrid');
     const title = document.getElementById('slotsTitle');
 
-    const dayName = AR_DAYS[date.getDay()];
-    const day     = date.getDate();
-    const month   = AR_MONTHS[date.getMonth()];
-    title.textContent = `مواعيد ${dayName} ${day} ${month}`;
+    title.textContent = formatStr(SCHED_TRANS.slots_for, {
+        day:   SCHED_TRANS.days[date.getDay()],
+        date:  date.getDate(),
+        month: SCHED_TRANS.months[date.getMonth()],
+    });
 
     grid.innerHTML = '';
 
@@ -868,33 +879,45 @@ function selectSlot(time, btn) {
     document.querySelectorAll('.slot-btn').forEach(b => b.classList.remove('selected'));
     btn.classList.add('selected');
 
-    const date    = state.selectedDate;
-    const dayName = AR_DAYS[date.getDay()];
-    const day     = date.getDate();
-    const month   = AR_MONTHS[date.getMonth()];
-    const year    = date.getFullYear();
-
-    document.getElementById('sumDate').textContent = `${dayName}، ${day} ${month} ${year}`;
-    document.getElementById('sumTime').textContent = `الساعة ${time}`;
+    const date = state.selectedDate;
+    document.getElementById('sumDate').textContent = formatStr(SCHED_TRANS.sum_date_format, {
+        day:   SCHED_TRANS.days[date.getDay()],
+        date:  date.getDate(),
+        month: SCHED_TRANS.months[date.getMonth()],
+        year:  date.getFullYear(),
+    });
+    document.getElementById('sumTime').textContent = formatStr(SCHED_TRANS.sum_time_format, { time });
 
     document.getElementById('confirmWrap').classList.add('show');
     document.getElementById('confirmWrap').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 }
 
-// ── Confirm Booking ────────────────────────────────────────────
+// ── mode: 'create' | 'edit' ────────────────────────────────
+let bookingMode = '{{ $hasBooking ? "edit" : "create" }}';
+let currentBookingId = {{ $bookingId ?? 'null' }};
+
+// ── Confirm Booking (create or update) ────────────────────
 async function confirmBooking() {
     if (!state.selectedDate || !state.selectedTime) return;
 
-    const date    = state.selectedDate;
-    const dayName = AR_DAYS[date.getDay()];
-    const day     = date.getDate();
-    const month   = AR_MONTHS[date.getMonth()];
-    const year    = date.getFullYear();
-    const detail  = `${dayName}، ${day} ${month} ${year} — الساعة ${state.selectedTime}`;
+    const date   = state.selectedDate;
+    const detail = formatStr(SCHED_TRANS.detail_format, {
+        day:   SCHED_TRANS.days[date.getDay()],
+        date:  date.getDate(),
+        month: SCHED_TRANS.months[date.getMonth()],
+        year:  date.getFullYear(),
+        time:  state.selectedTime,
+    });
+
+    const isEdit = bookingMode === 'edit' && currentBookingId;
+    const url    = isEdit
+        ? `/booking/${currentBookingId}`
+        : '{{ route("booking.store") }}';
+    const method = isEdit ? 'PUT' : 'POST';
 
     try {
-        const response = await fetch('{{ route("booking.store") }}', {
-            method: 'POST',
+        const response = await fetch(url, {
+            method,
             headers: {
                 'Content-Type': 'application/json',
                 'X-CSRF-TOKEN': CSRF,
@@ -911,17 +934,42 @@ async function confirmBooking() {
         const data = await response.json();
 
         if (!response.ok) {
-            showToast(data.message || 'حدث خطأ أثناء الحجز');
+            showToast(data.message || SCHED_TRANS.error_booking);
             return;
         }
+
+        if (data.booking) {
+            currentBookingId = data.booking.id;
+            bookingMode = 'edit';
+        }
+
     } catch (e) {
-        showToast('حدث خطأ أثناء الاتصال بالسيرفر');
+        showToast(SCHED_TRANS.error_server);
         return;
     }
 
     document.getElementById('bookedDetailText').textContent = detail;
     document.getElementById('mainView').style.display = 'none';
     document.getElementById('bookedState').classList.add('show');
+
+    showToast(bookingMode === 'edit' ? SCHED_TRANS.toast_edited : SCHED_TRANS.toast_booked);
+}
+
+// ── Edit Booking — go back to calendar ─────────────────────
+function editBooking() {
+    bookingMode = 'edit';
+
+    document.getElementById('bookedState').classList.remove('show');
+    document.getElementById('mainView').style.display = '';
+
+    state.selectedDate = null;
+    state.selectedTime = null;
+    document.getElementById('slotsWrap').classList.remove('show');
+    document.getElementById('confirmWrap').classList.remove('show');
+
+    renderCalendar();
+
+    document.getElementById('schedCard').scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
 // ── Month nav ──────────────────────────────────────────────────
@@ -963,12 +1011,12 @@ function copyMeet() {
         const btn = document.getElementById('copyMeetBtn');
         if (!btn) return;
 
-        btn.textContent = 'تم النسخ ✓';
+        btn.textContent = SCHED_TRANS.copied_btn;
         btn.classList.add('copied');
-        showToast('تم نسخ لينك الاجتماع ✓');
+        showToast(SCHED_TRANS.toast_link_copied);
 
         setTimeout(() => {
-            btn.textContent = 'نسخ اللينك';
+            btn.textContent = SCHED_TRANS.copy_link_btn;
             btn.classList.remove('copied');
         }, 2500);
     });
@@ -985,89 +1033,6 @@ function showToast(msg) {
     t.textContent = msg;
     t.classList.add('show');
     setTimeout(() => t.classList.remove('show'), 2400);
-}
-
-// ── mode: 'create' | 'edit' ────────────────────────────────
-let bookingMode = '{{ $hasBooking ? "edit" : "create" }}';
-let currentBookingId = {{ $bookingId ?? 'null' }};
-
-// ── Confirm Booking (create or update) ────────────────────
-async function confirmBooking() {
-    if (!state.selectedDate || !state.selectedTime) return;
-
-    const date    = state.selectedDate;
-    const dayName = AR_DAYS[date.getDay()];
-    const day     = date.getDate();
-    const month   = AR_MONTHS[date.getMonth()];
-    const year    = date.getFullYear();
-    const detail  = `${dayName}، ${day} ${month} ${year} — الساعة ${state.selectedTime}`;
-
-    const isEdit = bookingMode === 'edit' && currentBookingId;
-    const url    = isEdit
-        ? `/booking/${currentBookingId}`
-        : '{{ route("booking.store") }}';
-    const method = isEdit ? 'PUT' : 'POST';
-
-    try {
-        const response = await fetch(url, {
-            method,
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': CSRF,
-                'Accept': 'application/json',
-            },
-            body: JSON.stringify({
-                subscription_id: {{ $subscription->id }},
-                date: `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`,
-                time: state.selectedTime,
-                meet_link: MEET_LINK,
-            }),
-        });
-
-        const data = await response.json();
-
-        if (!response.ok) {
-            showToast(data.message || 'حدث خطأ أثناء الحجز');
-            return;
-        }
-
-        // لو edit — حدّث الـ bookingId
-        if (data.booking) {
-            currentBookingId = data.booking.id;
-            bookingMode = 'edit';
-        }
-
-    } catch (e) {
-        showToast('حدث خطأ أثناء الاتصال بالسيرفر');
-        return;
-    }
-
-    // show booked state
-    document.getElementById('bookedDetailText').textContent = detail;
-    document.getElementById('mainView').style.display = 'none';
-    document.getElementById('bookedState').classList.add('show');
-
-    showToast(bookingMode === 'edit' ? 'تم تعديل الموعد بنجاح ✓' : 'تم الحجز بنجاح ✓');
-}
-
-// ── Edit Booking — يرجع للـ calendar ─────────────────────
-function editBooking() {
-    bookingMode = 'edit';
-
-    // إخفاء الـ booked state وإظهار الـ calendar
-    document.getElementById('bookedState').classList.remove('show');
-    document.getElementById('mainView').style.display = '';
-
-    // reset الاختيار
-    state.selectedDate = null;
-    state.selectedTime = null;
-    document.getElementById('slotsWrap').classList.remove('show');
-    document.getElementById('confirmWrap').classList.remove('show');
-
-    renderCalendar();
-
-    // scroll للـ card
-    document.getElementById('schedCard').scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
 // ── Init ───────────────────────────────────────────────────────

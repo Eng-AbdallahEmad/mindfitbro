@@ -10,6 +10,9 @@
     $linkColor = $transparent
         ? 'text-white hover:text-accent'
         : 'text-textColor hover:text-primary';
+
+    $isRtl   = app()->getLocale() === 'ar';
+    $nextLang = $isRtl ? 'en' : 'ar';
 @endphp
 
 {{-- Google Icons --}}
@@ -39,23 +42,30 @@
 
             <!-- Right Side Links -->
             <div class="hidden lg:flex items-center gap-8">
-                <a href="{{ route('home') }}"              class="{{ $linkColor }} text-lg font-semibold transition nav-link">الرئيسية</a>
-                <a href="{{ route('home') }}#our-target"   class="{{ $linkColor }} text-lg font-semibold transition nav-link">هدفنا</a>
-                <a href="{{ route('home') }}#before-after" class="{{ $linkColor }} text-lg font-semibold transition nav-link">قبل وبعد</a>
-                <a href="{{ route('home') }}#programs"     class="{{ $linkColor }} text-lg font-semibold transition nav-link">برامج التدريب</a>
-                <a href="{{ route('home') }}#testimonials" class="{{ $linkColor }} text-lg font-semibold transition nav-link">آراء عملاؤنا</a>
-                <a href="{{ route('home') }}#contact"      class="{{ $linkColor }} text-lg font-semibold transition nav-link">اتصل بنا</a>
+                <a href="{{ route('home') }}"              class="{{ $linkColor }} text-lg font-semibold transition nav-link">{{ __('messages.nav.home') }}</a>
+                <a href="{{ route('home') }}#our-target"   class="{{ $linkColor }} text-lg font-semibold transition nav-link">{{ __('messages.nav.our_goal') }}</a>
+                <a href="{{ route('home') }}#before-after" class="{{ $linkColor }} text-lg font-semibold transition nav-link">{{ __('messages.nav.before_after') }}</a>
+                <a href="{{ route('home') }}#programs"     class="{{ $linkColor }} text-lg font-semibold transition nav-link">{{ __('messages.nav.programs') }}</a>
+                <a href="{{ route('home') }}#testimonials" class="{{ $linkColor }} text-lg font-semibold transition nav-link">{{ __('messages.nav.testimonials') }}</a>
+                <a href="{{ route('home') }}#contact"      class="{{ $linkColor }} text-lg font-semibold transition nav-link">{{ __('messages.nav.contact') }}</a>
             </div>
 
             <!-- Left Side -->
-            <div class="hidden lg:flex items-center gap-8">
+            <div class="hidden lg:flex items-center gap-4">
                 @if (auth()->check() && auth()->user()->role === 'user')
                     <a href="{{ route('cart.index') }}"
                        class="{{ $linkColor }} text-lg font-semibold transition flex items-center gap-1 nav-link">
                         <span class="material-symbols-rounded text-[20px]">shopping_cart</span>
-                        السلة
+                        {{ __('messages.nav.cart') }}
                     </a>
                 @endif
+
+                {{-- Language Switcher --}}
+                <a href="{{ route('locale.switch', ['lang' => $nextLang]) }}"
+                   class="{{ $transparent ? 'text-white border-white/40 hover:border-white hover:bg-white/10' : 'text-textColor border-gray-300 hover:border-primary hover:text-primary' }} border rounded-full px-3 py-1 text-xs font-black tracking-wider transition-all duration-300 hover:scale-105 nav-link"
+                   title="{{ $isRtl ? 'Switch to English' : 'التبديل للعربية' }}">
+                    {{ __('messages.nav.lang_switch') }}
+                </a>
 
                 @guest
                     <a href="{{ route('login') }}"
@@ -77,26 +87,26 @@
                         <div
                             x-show="open"
                             x-transition
-                            class="absolute left-0 mt-3 w-52 rounded-2xl bg-white shadow-2xl border border-gray-100 overflow-hidden z-[9999]"
+                            class="absolute {{ $isRtl ? 'left-0' : 'right-0' }} mt-3 w-52 rounded-2xl bg-white shadow-2xl border border-gray-100 overflow-hidden z-[9999]"
                             style="display:none;">
                             <div class="px-4 py-3 border-b border-gray-100">
-                                <p class="text-xs text-gray-400 font-semibold">مرحباً،</p>
+                                <p class="text-xs text-gray-400 font-semibold">{{ __('messages.nav.hello') }}</p>
                                 @if (auth()->user()->role === 'coach')
-                                    <p class="text-sm font-black text-textColor truncate">ك/ {{ auth()->user()->name }}</p>
+                                    <p class="text-sm font-black text-textColor truncate">{{ __('messages.nav.coach_prefix') }}{{ auth()->user()->name }}</p>
                                 @else
                                     <p class="text-sm font-black text-textColor truncate">{{ auth()->user()->name }}</p>
                                 @endif
                             </div>
                             <a href="{{ route('dashboard') }}" class="flex items-center gap-3 px-4 py-3 text-sm font-bold text-gray-700 hover:bg-gray-50 transition">
-                                <span class="material-symbols-rounded text-[18px]">dashboard</span> الداشبورد
+                                <span class="material-symbols-rounded text-[18px]">dashboard</span> {{ __('messages.nav.dashboard') }}
                             </a>
                             <a href="" class="flex items-center gap-3 px-4 py-3 text-sm font-bold text-gray-700 hover:bg-gray-50 transition">
-                                <span class="material-symbols-rounded text-[18px]">edit_square</span> تعديل الملف الشخصي
+                                <span class="material-symbols-rounded text-[18px]">edit_square</span> {{ __('messages.nav.edit_profile') }}
                             </a>
                             <form method="POST" action="{{ route('logout') }}">
                                 @csrf
-                                <button type="submit" class="w-full flex items-center gap-3 px-4 py-3 text-sm font-bold text-red-600 hover:bg-red-50 transition text-right">
-                                    <span class="material-symbols-rounded text-[18px]">logout</span> تسجيل الخروج
+                                <button type="submit" class="w-full flex items-center gap-3 px-4 py-3 text-sm font-bold text-red-600 hover:bg-red-50 transition {{ $isRtl ? 'text-right' : 'text-left' }}">
+                                    <span class="material-symbols-rounded text-[18px]">logout</span> {{ __('messages.nav.logout') }}
                                 </button>
                             </form>
                         </div>
@@ -106,6 +116,12 @@
 
             <!-- Mobile Buttons -->
             <div class="lg:hidden flex items-center gap-2">
+
+                {{-- Language Switcher Mobile --}}
+                <a href="{{ route('locale.switch', ['lang' => $nextLang]) }}"
+                   class="{{ $transparent ? 'text-white border-white/40' : 'text-textColor border-gray-300' }} border rounded-full px-2.5 py-1 text-[11px] font-black transition-all duration-300">
+                    {{ __('messages.nav.lang_switch') }}
+                </a>
 
                 {{-- User Icon --}}
                 @guest
@@ -128,22 +144,22 @@
                         <div
                             x-show="open"
                             x-transition
-                            class="absolute left-0 mt-3 w-52 rounded-2xl bg-white shadow-2xl border border-gray-100 overflow-hidden z-[9999]"
+                            class="absolute {{ $isRtl ? 'left-0' : 'right-0' }} mt-3 w-52 rounded-2xl bg-white shadow-2xl border border-gray-100 overflow-hidden z-[9999]"
                             style="display:none;">
                             <div class="px-4 py-3 border-b border-gray-100">
-                                <p class="text-xs text-gray-400 font-semibold">مرحباً،</p>
+                                <p class="text-xs text-gray-400 font-semibold">{{ __('messages.nav.hello') }}</p>
                                 <p class="text-sm font-black text-textColor truncate">{{ auth()->user()->name }}</p>
                             </div>
                             <a href="{{ route('dashboard') }}" class="flex items-center gap-3 px-4 py-3 text-sm font-bold text-gray-700 hover:bg-gray-50 transition">
-                                <span class="material-symbols-rounded text-[18px]">dashboard</span> الداشبورد
+                                <span class="material-symbols-rounded text-[18px]">dashboard</span> {{ __('messages.nav.dashboard') }}
                             </a>
                             <a href="" class="flex items-center gap-3 px-4 py-3 text-sm font-bold text-gray-700 hover:bg-gray-50 transition">
-                                <span class="material-symbols-rounded text-[18px]">edit_square</span> تعديل الملف الشخصي
+                                <span class="material-symbols-rounded text-[18px]">edit_square</span> {{ __('messages.nav.edit_profile') }}
                             </a>
                             <form method="POST" action="{{ route('logout') }}">
                                 @csrf
-                                <button type="submit" class="w-full flex items-center gap-3 px-4 py-3 text-sm font-bold text-red-600 hover:bg-red-50 transition text-right">
-                                    <span class="material-symbols-rounded text-[18px]">logout</span> تسجيل الخروج
+                                <button type="submit" class="w-full flex items-center gap-3 px-4 py-3 text-sm font-bold text-red-600 hover:bg-red-50 transition {{ $isRtl ? 'text-right' : 'text-left' }}">
+                                    <span class="material-symbols-rounded text-[18px]">logout</span> {{ __('messages.nav.logout') }}
                                 </button>
                             </form>
                         </div>
@@ -161,7 +177,7 @@
     </div>
 </nav>
 
-{{-- ─── Mobile Menu: خارج الـ nav تماماً ─── --}}
+{{-- ─── Mobile Menu ─── --}}
 <div id="mobileMenu"
     class="fixed inset-0 z-[9999] lg:hidden pointer-events-none opacity-0 transition-all duration-500">
 
@@ -172,11 +188,11 @@
 
     <!-- Panel -->
     <div id="mobilePanel"
-        class="absolute inset-y-0 right-0 w-full bg-[#0D1117]/92 backdrop-blur-xl translate-x-full transition-transform duration-500 ease-out touch-pan-y">
+        class="absolute inset-y-0 {{ $isRtl ? 'right-0' : 'left-0' }} w-full bg-[#0D1117]/92 backdrop-blur-xl {{ $isRtl ? 'translate-x-full' : '-translate-x-full' }} transition-transform duration-500 ease-out touch-pan-y">
 
         <!-- Close Button -->
         <button id="closeMenuBtn"
-            class="absolute top-6 right-6 z-30 w-12 h-12 rounded-full bg-white/10 backdrop-blur-md border border-white/15 text-white flex items-center justify-center transition-all duration-300 hover:scale-110 hover:bg-white/20 active:scale-95">
+            class="absolute top-6 {{ $isRtl ? 'right-6' : 'left-6' }} z-30 w-12 h-12 rounded-full bg-white/10 backdrop-blur-md border border-white/15 text-white flex items-center justify-center transition-all duration-300 hover:scale-110 hover:bg-white/20 active:scale-95">
             <span class="material-symbols-rounded text-[28px]">close</span>
         </button>
 
@@ -186,35 +202,33 @@
 
             <a href="{{ route('home') }}"
                class="mobile-menu-link font-arabic translate-y-8 opacity-0 text-2xl font-bold text-white transition-all duration-500 ease-out hover:text-[#D4ED57] hover:scale-110">
-                الرئيسية
+                {{ __('messages.nav.home') }}
             </a>
             <a href="{{ route('home') }}#our-target"
                class="mobile-menu-link font-arabic translate-y-8 opacity-0 text-2xl font-bold text-white transition-all duration-500 ease-out hover:text-[#D4ED57] hover:scale-110">
-                هدفنا
+                {{ __('messages.nav.our_goal') }}
             </a>
             <a href="{{ route('home') }}#before-after"
                class="mobile-menu-link font-arabic translate-y-8 opacity-0 text-2xl font-bold text-white transition-all duration-500 ease-out hover:text-[#D4ED57] hover:scale-110">
-                قبل وبعد
+                {{ __('messages.nav.before_after') }}
             </a>
             <a href="{{ route('home') }}#programs"
                class="mobile-menu-link font-arabic translate-y-8 opacity-0 text-2xl font-bold text-white transition-all duration-500 ease-out hover:text-[#D4ED57] hover:scale-110">
-                برامج التدريب
+                {{ __('messages.nav.programs') }}
             </a>
             <a href="{{ route('home') }}#testimonials"
                class="mobile-menu-link font-arabic translate-y-8 opacity-0 text-2xl font-bold text-white transition-all duration-500 ease-out hover:text-[#D4ED57] hover:scale-110">
-                آراء عملاؤنا
+                {{ __('messages.nav.testimonials') }}
             </a>
             <a href="{{ route('home') }}#contact"
                class="mobile-menu-link font-arabic translate-y-8 opacity-0 text-2xl font-bold text-white transition-all duration-500 ease-out hover:text-[#D4ED57] hover:scale-110">
-                اتصل بنا
+                {{ __('messages.nav.contact') }}
             </a>
             <a href="{{ route('cart.index') }}"
                class="mobile-menu-link font-arabic translate-y-8 opacity-0 text-2xl font-bold text-white transition-all duration-500 ease-out hover:text-[#D4ED57] hover:scale-110 flex items-center gap-2">
                 <span class="material-symbols-rounded">shopping_cart</span>
-                السلة
+                {{ __('messages.nav.cart') }}
             </a>
-
-
 
         </div>
     </div>
@@ -236,7 +250,7 @@
                 navbar.classList.add('fixed', 'bg-white', 'shadow-md');
                 navbar.classList.remove('absolute', 'bg-transparent');
                 menuBtn.classList.replace('text-white', 'text-textColor');
-                authBtn.classList.replace('text-white', 'text-textColor');
+                if (authBtn) authBtn.classList.replace('text-white', 'text-textColor');
                 links.forEach(function (l) {
                     l.classList.remove('text-white', 'hover:text-accent');
                     l.classList.add('text-textColor', 'hover:text-primary');
@@ -251,7 +265,7 @@
                     l.classList.remove('text-textColor', 'hover:text-primary');
                     l.classList.add('text-white', 'hover:text-accent');
                 });
-                authBtn.classList.replace('text-textColor', 'text-white');
+                if (authBtn) authBtn.classList.replace('text-textColor', 'text-white');
                 if (logoWhite) logoWhite.classList.remove('hidden');
                 if (logoBlack) { logoBlack.classList.add('hidden', 'opacity-0'); }
             }
@@ -269,6 +283,8 @@
         var mobileOverlay= document.getElementById('mobileOverlay');
         var mobilePanel  = document.getElementById('mobilePanel');
         var mobileLinks  = document.querySelectorAll('.mobile-menu-link');
+
+        var isRtl = document.documentElement.getAttribute('dir') === 'rtl';
 
         var touchStartX   = 0;
         var touchCurrentX = 0;
@@ -295,7 +311,7 @@
             mobileMenu.classList.add('opacity-100');
             mobileOverlay.classList.remove('bg-[#0D1117]/0', 'backdrop-blur-0');
             mobileOverlay.classList.add('bg-[#0D1117]/60', 'backdrop-blur-sm');
-            mobilePanel.classList.remove('translate-x-full');
+            mobilePanel.classList.remove(isRtl ? 'translate-x-full' : '-translate-x-full');
             mobilePanel.classList.add('translate-x-0');
             document.body.classList.add('overflow-hidden');
             resetLinks();
@@ -307,7 +323,7 @@
             mobileMenu.classList.remove('opacity-100');
             mobileOverlay.classList.remove('bg-[#0D1117]/60', 'backdrop-blur-sm');
             mobileOverlay.classList.add('bg-[#0D1117]/0', 'backdrop-blur-0');
-            mobilePanel.classList.add('translate-x-full');
+            mobilePanel.classList.add(isRtl ? 'translate-x-full' : '-translate-x-full');
             mobilePanel.classList.remove('translate-x-0');
             document.body.classList.remove('overflow-hidden');
             resetLinks();
@@ -337,9 +353,11 @@
         mobilePanel && mobilePanel.addEventListener('touchmove', function (e) {
             if (!isSwiping) return;
             touchCurrentX = e.touches[0].clientX;
-            var diff = touchCurrentX - touchStartX;
+            var diff = isRtl ? touchCurrentX - touchStartX : touchStartX - touchCurrentX;
             if (diff > 0) {
-                mobilePanel.style.transform = 'translateX(' + diff + 'px)';
+                mobilePanel.style.transform = isRtl
+                    ? 'translateX(' + diff + 'px)'
+                    : 'translateX(-' + diff + 'px)';
                 var opacity = Math.max(0, 0.6 - diff / window.innerWidth);
                 var blurVal = Math.max(0, 4  - diff / 80);
                 mobileOverlay.style.backgroundColor  = 'rgba(13,17,23,' + opacity + ')';
@@ -352,14 +370,14 @@
             isSwiping = false;
             mobilePanel.classList.add('duration-500');
             mobileOverlay.classList.add('duration-500');
-            var diff = touchCurrentX - touchStartX;
+            var diff = isRtl ? touchCurrentX - touchStartX : touchStartX - touchCurrentX;
             mobilePanel.style.transform = '';
             mobileOverlay.style.backgroundColor = '';
             mobileOverlay.style.backdropFilter  = '';
             if (diff > 120) {
                 closeMenu();
             } else {
-                mobilePanel.classList.remove('translate-x-full');
+                mobilePanel.classList.remove(isRtl ? 'translate-x-full' : '-translate-x-full');
                 mobilePanel.classList.add('translate-x-0');
                 mobileOverlay.classList.remove('bg-[#0D1117]/0', 'backdrop-blur-0');
                 mobileOverlay.classList.add('bg-[#0D1117]/60', 'backdrop-blur-sm');

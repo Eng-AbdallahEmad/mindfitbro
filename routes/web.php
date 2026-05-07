@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Auth\AuthController;
+use App\Http\Controllers\LocaleController;
 use App\Http\Controllers\Web\BookingController;
 use App\Http\Controllers\Web\CartController;
 use App\Http\Controllers\Web\CheckoutController;
@@ -25,6 +26,8 @@ Route::middleware('guest.custom')->group(function () {
 });
 
 Route::post('auth/logout', [AuthController::class, 'logout'])->name('logout');
+
+Route::get('/locale/{lang}', [LocaleController::class, 'switch'])->name('locale.switch');
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
 

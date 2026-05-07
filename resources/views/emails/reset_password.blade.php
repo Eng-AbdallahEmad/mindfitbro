@@ -1,22 +1,22 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl" xmlns="http://www.w3.org/1999/xhtml">
+<html lang="en" dir="ltr" xmlns="http://www.w3.org/1999/xhtml">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>إعادة تعيين كلمة المرور</title>
+    <title>Reset Your Password</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap');
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
-            font-family: 'Cairo', 'Segoe UI', Tahoma, Arial, sans-serif;
+            font-family: 'Inter', 'Segoe UI', Tahoma, Arial, sans-serif;
             background-color: #f0f4ff;
-            direction: rtl;
+            direction: ltr;
             -webkit-font-smoothing: antialiased;
         }
     </style>
 </head>
-<body style="margin:0;padding:0;background-color:#f0f4ff;font-family:'Cairo','Segoe UI',Tahoma,Arial,sans-serif;direction:rtl;">
+<body style="margin:0;padding:0;background-color:#f0f4ff;font-family:'Inter','Segoe UI',Tahoma,Arial,sans-serif;direction:ltr;">
 
 <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#f0f4ff;min-height:100vh;">
     <tr>
@@ -29,7 +29,6 @@
                 <tr>
                     <td style="background:linear-gradient(135deg,#1a3fa0 0%,#174DAD 50%,#1e5dc4 100%);border-radius:24px 24px 0 0;padding:40px 40px 0 40px;text-align:center;overflow:hidden;position:relative;">
 
-                        {{-- Accent bar --}}
                         <table width="100%" cellpadding="0" cellspacing="0" border="0">
                             <tr>
                                 <td style="padding-bottom:28px;">
@@ -53,11 +52,10 @@
                                     </table>
 
                                     <h1 style="color:#ffffff;font-size:26px;font-weight:900;margin:0 0 10px;line-height:1.3;">
-                                        إعادة تعيين كلمة المرور
+                                        Reset Your Password
                                     </h1>
                                     <p style="color:rgba(255,255,255,0.7);font-size:14px;margin:0;line-height:1.7;">
-                                        مرحباً <strong style="color:#D4ED57;">{{ $name }}</strong>،
-                                        وصلنا طلبك لإعادة تعيين كلمة المرور
+                                        Hi <strong style="color:#D4ED57;">{{ $name }}</strong>, we received a request to reset your password.
                                     </p>
 
                                 </td>
@@ -71,9 +69,9 @@
                     <td style="background:#ffffff;padding:40px;">
 
                         {{-- Message --}}
-                        <p style="color:#374151;font-size:15px;line-height:1.8;margin:0 0 28px;text-align:right;">
-                            اضغط على الزرار اللي تحت عشان تعيّن كلمة مرور جديدة لحسابك.
-                            الرابط صالح لمدة <strong style="color:#174DAD;">{{ $expireMinutes }} دقيقة</strong> بس.
+                        <p style="color:#374151;font-size:15px;line-height:1.8;margin:0 0 28px;text-align:left;">
+                            Click the button below to set a new password for your account.
+                            This link is valid for <strong style="color:#174DAD;">{{ $expireMinutes }} minutes</strong> only.
                         </p>
 
                         {{-- CTA Button --}}
@@ -81,8 +79,8 @@
                             <tr>
                                 <td align="center">
                                     <a href="{{ $url }}"
-                                       style="display:inline-block;background:#D4ED57;color:#1c1c1c;font-size:16px;font-weight:900;text-decoration:none;padding:16px 48px;border-radius:50px;font-family:'Cairo','Segoe UI',Tahoma,Arial,sans-serif;letter-spacing:0.3px;">
-                                        ← إعادة تعيين كلمة السر
+                                       style="display:inline-block;background:#D4ED57;color:#1c1c1c;font-size:16px;font-weight:900;text-decoration:none;padding:16px 48px;border-radius:50px;font-family:'Inter','Segoe UI',Tahoma,Arial,sans-serif;letter-spacing:0.3px;">
+                                        Reset Password →
                                     </a>
                                 </td>
                             </tr>
@@ -96,8 +94,8 @@
                         </table>
 
                         {{-- Alt link --}}
-                        <p style="color:#6b7280;font-size:13px;line-height:1.7;margin:0 0 8px;text-align:right;">
-                            لو الزرار مش شغّال، انسخ الرابط دا والصقه في المتصفح:
+                        <p style="color:#6b7280;font-size:13px;line-height:1.7;margin:0 0 8px;text-align:left;">
+                            If the button doesn't work, copy and paste this link into your browser:
                         </p>
                         <p style="background:#f3f4f6;border-radius:10px;padding:12px 16px;margin:0 0 28px;word-break:break-all;text-align:left;">
                             <a href="{{ $url }}" style="color:#174DAD;font-size:12px;text-decoration:none;font-family:monospace;">{{ $url }}</a>
@@ -109,13 +107,13 @@
                                 <td style="background:#fffbeb;border:1px solid #fde68a;border-radius:14px;padding:16px 20px;">
                                     <table width="100%" cellpadding="0" cellspacing="0" border="0">
                                         <tr>
-                                            <td style="vertical-align:top;padding-left:12px;width:28px;">
+                                            <td style="vertical-align:top;padding-right:12px;width:28px;">
                                                 <span style="font-size:18px;">⚠️</span>
                                             </td>
                                             <td style="vertical-align:top;">
-                                                <p style="color:#92400e;font-size:13px;font-weight:700;margin:0 0 4px;">تنبيه أماني</p>
+                                                <p style="color:#92400e;font-size:13px;font-weight:700;margin:0 0 4px;">Security Notice</p>
                                                 <p style="color:#b45309;font-size:12px;line-height:1.7;margin:0;">
-                                                    لو ما طلبتش إعادة التعيين دي، تجاهل الإيميل دا — حسابك آمن تماماً ومحدش قدر يدخله.
+                                                    If you did not request a password reset, please ignore this email — your account is safe and no changes have been made.
                                                 </p>
                                             </td>
                                         </tr>
@@ -149,7 +147,7 @@
                                         <tr>
                                             <td style="text-align:center;">
                                                 <p style="color:#D4ED57;font-size:18px;font-weight:900;margin:0;">⏱️</p>
-                                                <p style="color:rgba(255,255,255,0.5);font-size:11px;margin:4px 0 0;">{{ $expireMinutes }} دقيقة فقط</p>
+                                                <p style="color:rgba(255,255,255,0.5);font-size:11px;margin:4px 0 0;">{{ $expireMinutes }} min only</p>
                                             </td>
                                         </tr>
                                     </table>
@@ -159,7 +157,7 @@
                                         <tr>
                                             <td style="text-align:center;">
                                                 <p style="color:#D4ED57;font-size:18px;font-weight:900;margin:0;">🎯</p>
-                                                <p style="color:rgba(255,255,255,0.5);font-size:11px;margin:4px 0 0;">رابط لمرة واحدة</p>
+                                                <p style="color:rgba(255,255,255,0.5);font-size:11px;margin:4px 0 0;">One-time link</p>
                                             </td>
                                         </tr>
                                     </table>
@@ -168,10 +166,10 @@
                         </table>
 
                         <p style="color:rgba(255,255,255,0.3);font-size:12px;margin:0 0 6px;">
-                            © {{ date('Y') }} MindFitBro — جميع الحقوق محفوظة
+                            © {{ date('Y') }} MindFitBro — All Rights Reserved
                         </p>
                         <p style="color:rgba(255,255,255,0.2);font-size:11px;margin:0;">
-                            "مش برنامج، ده أسلوب حياة"
+                            "Not a program, it's a lifestyle"
                         </p>
 
                     </td>

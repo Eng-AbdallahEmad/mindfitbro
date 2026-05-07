@@ -1,6 +1,6 @@
 @extends('layouts.web.app')
 
-@section('title', 'عربة التسوق')
+@section('title', __('messages.cart.title'))
 
 @section('style')
 <style>
@@ -374,12 +374,12 @@
         {{-- Header --}}
         <div class="cart-header">
             <div class="flex items-center gap-3">
-                <h1 class="cart-title font-display">عربة التسوق</h1>
-                <span class="cart-count" id="cartCountBadge">{{ $cart->items->count() }} عناصر</span>
+                <h1 class="cart-title font-display">{{ __('messages.cart.title') }}</h1>
+                <span class="cart-count" id="cartCountBadge">{{ $cart->items->count() }} {{ __('messages.cart.items_label') }}</span>
             </div>
             <span class="text-sm text-gray-400 font-semibold" id="totalItemsText">
                 @if($cart->items->count() > 0)
-                    إجمالي {{ $cart->items->count() }} خطط
+                    {{ __('messages.cart.total_items', ['count' => $cart->items->count()]) }}
                 @endif
             </span>
         </div>
@@ -410,7 +410,7 @@
                             <div class="item-name">{{ $item->plan->name }}</div>
                             <div class="item-sub">{{ $item->plan->desc }}</div>
                             @if($item->plan->popular)
-                                <span class="item-badge">الأكثر طلباً</span>
+                                <span class="item-badge">{{ __('messages.cart.popular_badge') }}</span>
                             @endif
                         </div>
 
@@ -432,12 +432,12 @@
                             </span>
                             <span id="price-{{ $item->id }}">{{ number_format($item->final_price, 0) }}</span>
                             <span class="unit">
-                                {!! $sarIcon !!}/<span class="unit-period">{{ $cart->is_yearly ? 'سنة' : 'شهر' }}</span>
+                                {!! $sarIcon !!}/<span class="unit-period">{{ $cart->is_yearly ? __('messages.cart.period_yearly') : __('messages.cart.period_monthly') }}</span>
                             </span>
                         </div>
 
                         {{-- Remove --}}
-                        <button class="remove-btn" onclick="removeItem({{ $item->id }})" title="حذف">✕</button>
+                        <button class="remove-btn" onclick="removeItem({{ $item->id }})" title="{{ __('messages.cart.remove_title') }}">✕</button>
 
                         {{-- Loading overlay --}}
                         <div class="loading-overlay"><div class="spinner"></div></div>
@@ -450,33 +450,33 @@
                 {{-- Empty State --}}
                 <div class="empty-state {{ $cart->items->isEmpty() ? 'show' : '' }}" id="emptyState">
                     <div class="empty-icon">🛒</div>
-                    <div class="empty-title">العربة فاضية!</div>
-                    <div class="empty-sub">مفيش باقات متضافة لحد دلوقتي</div>
+                    <div class="empty-title">{{ __('messages.cart.empty_title') }}</div>
+                    <div class="empty-sub">{{ __('messages.cart.empty_sub') }}</div>
                     <a href="{{ url('/') }}#programs"
                        class="group font-arabic text-textColor bg-accent px-6 py-3 rounded-full text-sm font-black flex items-center gap-2 transition mt-2 hover:bg-yellow-300">
-                        تصفح الباقات
+                        {{ __('messages.cart.empty_cta') }}
                     </a>
                 </div>
 
                 {{-- Coupon --}}
                 <div class="coupon-box" id="couponSection"
                      style="{{ $cart->items->isEmpty() ? 'display:none' : '' }}">
-                    <div class="text-sm font-bold text-textColor mb-3">عندك كوبون خصم؟</div>
+                    <div class="text-sm font-bold text-textColor mb-3">{{ __('messages.cart.coupon_label') }}</div>
                     <div class="coupon-row">
                         <input
                             class="coupon-input"
                             id="couponInput"
-                            placeholder="أدخل كود الخصم..."
+                            placeholder="{{ __('messages.cart.coupon_placeholder') }}"
                             autocomplete="off"
                             value="{{ $cart->coupon_code ?? '' }}"
                         />
-                        <button class="coupon-btn" id="couponBtn" onclick="applyCoupon()">تطبيق</button>
+                        <button class="coupon-btn" id="couponBtn" onclick="applyCoupon()">{{ __('messages.cart.coupon_btn') }}</button>
                     </div>
                     <div class="coupon-success {{ $cart->coupon_code ? 'show' : '' }}" id="couponSuccess">
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
                             <polyline points="20 6 9 17 4 12"/>
                         </svg>
-                        تم تطبيق خصم 10% بنجاح 🎉
+                        {{ __('messages.cart.coupon_success') }}
                     </div>
                     <div class="coupon-error" id="couponError">
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
@@ -484,7 +484,7 @@
                             <line x1="12" y1="8" x2="12" y2="12"/>
                             <line x1="12" y1="16" x2="12.01" y2="16"/>
                         </svg>
-                        كود الخصم غير صحيح
+                        {{ __('messages.cart.coupon_error') }}
                     </div>
                 </div>
             </div>
@@ -492,16 +492,16 @@
             {{-- ══ RIGHT: Summary ══ --}}
             <div>
                 <div class="summary-card font-arabic">
-                    <div class="summary-title font-arabic">ملخص الطلب</div>
+                    <div class="summary-title font-arabic">{{ __('messages.cart.summary_title') }}</div>
 
                     {{-- Yearly Toggle --}}
                     <div class="billing-toggle">
                         <div>
-                            <div class="billing-label">دفع سنوي</div>
-                            <div class="billing-sub">وفّر مع الاشتراك السنوي</div>
+                            <div class="billing-label">{{ __('messages.cart.billing_label') }}</div>
+                            <div class="billing-sub">{{ __('messages.cart.billing_sub') }}</div>
                         </div>
                         <div class="toggle-wrap">
-                            <span class="toggle-text" id="toggleText">{{ $cart->is_yearly ? 'سنوي' : 'شهري' }}</span>
+                            <span class="toggle-text" id="toggleText">{{ $cart->is_yearly ? __('messages.cart.toggle_yearly') : __('messages.cart.toggle_monthly') }}</span>
                             <button class="toggle-pill {{ $cart->is_yearly ? 'on' : '' }}"
                                     id="yearlyToggle"
                                     onclick="toggleYearly()"></button>
@@ -513,7 +513,7 @@
 
                         {{-- Subtotal --}}
                         <div class="summary-row">
-                            <span class="s-label">الإجمالي الفرعي</span>
+                            <span class="s-label">{{ __('messages.cart.subtotal_label') }}</span>
                             <span class="s-value" id="subtotalVal">
                                 {!! $sarIcon !!}
                                 <span id="subtotalNum">{{ number_format($cart->subtotal, 0) }}</span>
@@ -523,7 +523,7 @@
                         {{-- Coupon Discount --}}
                         <div class="summary-row" id="discountRow"
                              style="{{ $cart->coupon_discount > 0 ? '' : 'display:none' }}">
-                            <span class="s-label">خصم الكوبون (10%)</span>
+                            <span class="s-label">{{ __('messages.cart.coupon_disc_label') }}</span>
                             <span class="s-value discount" id="discountVal">
                                 {!! $sarIcon !!}
                                 <span id="discountNum">{{ number_format($cart->coupon_discount, 0) }}</span>
@@ -534,7 +534,7 @@
                         {{-- Yearly Discount --}}
                         <div class="summary-row" id="yearlyDiscRow"
                              style="{{ $cart->yearly_discount > 0 ? '' : 'display:none' }}">
-                            <span class="s-label">خصم سنوي</span>
+                            <span class="s-label">{{ __('messages.cart.yearly_disc_label') }}</span>
                             <span class="s-value discount" id="yearlyDiscVal">
                                 {!! $sarIcon !!}
                                 <span id="yearlyDiscNum">{{ number_format($cart->yearly_discount, 0) }}</span>
@@ -547,7 +547,7 @@
 
                     {{-- Total --}}
                     <div class="summary-total-row">
-                        <div class="total-label">الإجمالي الكلي</div>
+                        <div class="total-label">{{ __('messages.cart.total_label') }}</div>
                         <div class="total-value">
                             {!! $sarIcon !!}
                             <span id="totalVal">{{ number_format($cart->total, 0) }}</span>
@@ -561,12 +561,12 @@
                                 stroke="currentColor" stroke-width="2.5">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M5 12h14M12 5l7 7-7 7"/>
                             </svg>
-                            إتمام الطلب والدفع
+                            {{ __('messages.cart.checkout_btn') }}
                         </button>
                     </form>
 
                     <a href="{{ url('/') }}#programs" class="continue-btn">
-                        مواصلة التسوق
+                        {{ __('messages.cart.continue_btn') }}
                     </a>
 
                     <div class="guarantee-badge">
@@ -575,7 +575,7 @@
                             <path stroke-linecap="round" stroke-linejoin="round"
                                   d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
                         </svg>
-                        <span>ضمان استرداد كامل خلال 7 أيام — بدون أي شروط</span>
+                        <span>{{ __('messages.cart.guarantee') }}</span>
                     </div>
 
                 </div>
@@ -592,6 +592,16 @@
 
 @section('script')
 <script>
+const CART_TRANS = {
+    items_label:    @json(__('messages.cart.items_label')),
+    total_items:    @json(__('messages.cart.total_items')),
+    toggle_yearly:  @json(__('messages.cart.toggle_yearly')),
+    toggle_monthly: @json(__('messages.cart.toggle_monthly')),
+    period_yearly:  @json(__('messages.cart.period_yearly')),
+    period_monthly: @json(__('messages.cart.period_monthly')),
+    coupon_btn:     @json(__('messages.cart.coupon_btn')),
+};
+
 const ROUTES = {
     updateQty:    '{{ route('cart.updateQty') }}',
     remove:       '{{ route('cart.remove') }}',
@@ -622,8 +632,8 @@ async function cartRequest(url, data) {
 function updateSummaryUI(data) {
     const count = data.count;
 
-    document.getElementById('cartCountBadge').textContent = count + ' عناصر';
-    document.getElementById('totalItemsText').textContent  = count > 0 ? 'إجمالي ' + count + ' خطط' : '';
+    document.getElementById('cartCountBadge').textContent = count + ' ' + CART_TRANS.items_label;
+    document.getElementById('totalItemsText').textContent  = count > 0 ? CART_TRANS.total_items.replace(':count', count) : '';
 
     document.getElementById('emptyState').classList.toggle('show', count === 0);
 
@@ -653,7 +663,7 @@ function updateSummaryUI(data) {
 
         // ✅ بس بنغير الـ period (شهر/سنة) مش الـ SAR icon
         const periodEl = itemEl.querySelector('.unit-period');
-        if (periodEl) periodEl.textContent = data.is_yearly ? 'سنة' : 'شهر';
+        if (periodEl) periodEl.textContent = data.is_yearly ? CART_TRANS.period_yearly : CART_TRANS.period_monthly;
 
         const origEl = document.getElementById('original-price-' + item.id);
         if (origEl) {
@@ -727,7 +737,7 @@ async function toggleYearly() {
 
     // Optimistic UI
     btn.classList.toggle('on', isYearly);
-    document.getElementById('toggleText').textContent = isYearly ? 'سنوي' : 'شهري';
+    document.getElementById('toggleText').textContent = isYearly ? CART_TRANS.toggle_yearly : CART_TRANS.toggle_monthly;
 
     try {
         const data = await cartRequest(ROUTES.toggleYearly, { is_yearly: isYearly });
@@ -735,7 +745,7 @@ async function toggleYearly() {
     } catch (e) {
         // Revert on failure
         btn.classList.toggle('on', !isYearly);
-        document.getElementById('toggleText').textContent = !isYearly ? 'سنوي' : 'شهري';
+        document.getElementById('toggleText').textContent = !isYearly ? CART_TRANS.toggle_yearly : CART_TRANS.toggle_monthly;
         console.error('Failed to toggle yearly', e);
     }
 }
@@ -774,7 +784,7 @@ async function applyCoupon() {
         console.error('Failed to apply coupon', e);
     } finally {
         btn.disabled    = false;
-        btn.textContent = 'تطبيق';
+        btn.textContent = CART_TRANS.coupon_btn;
     }
 }
 

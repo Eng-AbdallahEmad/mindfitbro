@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" dir="rtl">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" dir="{{ app()->getLocale() === 'ar' ? 'rtl' : 'ltr' }}">
     <head>
 
         @include('components.web.meta')
@@ -36,7 +36,7 @@
             {{-- Tagline --}}
             <p class="font-arabic text-sm font-bold tracking-[3px] text-white/40 loader-item"
             style="animation: mfbFadeUp 0.6s 0.3s ease both; opacity:0;">
-                جاهز تبقى أقوى؟
+                {{ __('messages.loader.tagline') }}
             </p>
 
             {{-- Progress Bar --}}
@@ -56,7 +56,7 @@
             <a href="https://wa.me/966593035979"
                target="_blank"
                rel="noopener noreferrer"
-               title="تواصل معنا على واتساب"
+               title="{{ __('messages.fab.whatsapp_title') }}"
                class="group relative flex items-center justify-center w-14 h-14 rounded-2xl shadow-xl transition-all duration-300 hover:scale-110 hover:-translate-y-1"
                style="background:linear-gradient(135deg,#25d366 0%,#128c4a 100%);box-shadow:0 8px 24px rgba(37,211,102,0.35);">
 
@@ -71,7 +71,7 @@
                 {{-- Tooltip --}}
                 <span class="pointer-events-none absolute left-full mr-3 ml-3 whitespace-nowrap rounded-xl bg-gray-900/90 px-3 py-1.5 text-xs font-bold text-white font-arabic opacity-0 translate-x-2 transition-all duration-200 group-hover:opacity-100 group-hover:translate-x-0 backdrop-blur-sm"
                       style="right:auto;left:calc(100% + 12px);">
-                    تواصل معنا
+                    {{ __('messages.fab.whatsapp_tooltip') }}
                     <span class="absolute top-1/2 -translate-y-1/2 -left-1.5 border-4 border-transparent border-l-0"
                           style="border-right-color:rgba(17,24,39,0.9);"></span>
                 </span>
@@ -79,7 +79,7 @@
 
             {{-- Calorie Calculator --}}
             <a href="{{ route('calorie-calculator') }}"
-               title="حاسبة السعرات الحرارية"
+               title="{{ __('messages.fab.calories_title') }}"
                class="group relative flex items-center justify-center w-14 h-14 rounded-2xl shadow-xl transition-all duration-300 hover:scale-110 hover:-translate-y-1"
                style="background:linear-gradient(135deg,#D4ED57 0%,#b8d400 100%);box-shadow:0 8px 24px rgba(212,237,87,0.4);">
 
@@ -90,7 +90,7 @@
                 {{-- Tooltip --}}
                 <span class="pointer-events-none absolute whitespace-nowrap rounded-xl bg-gray-900/90 px-3 py-1.5 text-xs font-bold text-white font-arabic opacity-0 translate-x-2 transition-all duration-200 group-hover:opacity-100 group-hover:translate-x-0 backdrop-blur-sm"
                       style="left:calc(100% + 12px);">
-                    حاسبة السعرات
+                    {{ __('messages.fab.calories_tooltip') }}
                     <span class="absolute top-1/2 -translate-y-1/2 -left-1.5 border-4 border-transparent border-l-0"
                           style="border-right-color:rgba(17,24,39,0.9);"></span>
                 </span>
@@ -106,7 +106,6 @@
             const loader = document.querySelector(".loader-container");
             if (!loader) return;
 
-            // انتظر 200ms بعد الـ load لحسن التجربة
             setTimeout(() => {
                 loader.style.transition = "opacity 0.6s ease, transform 0.6s ease";
                 loader.style.opacity    = "0";
@@ -119,6 +118,15 @@
             }, 200);
         });
     </script>
+
+    <!-- Swiper JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Swiper/11.0.5/swiper-bundle.min.js" integrity="sha512-Ysw1DcK1P+uYLqprEAzNQJP+J4hTx4t/3X2nbVwszao8wD+9afLjBQYjz7Uk4ADP+Er++mJoScI42ueGtQOzEA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <!-- GSAP JS -->
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollToPlugin.min.js"></script>
+    <!-- Lottie Player (deferred — custom element, doesn't block render) -->
+    <script defer src="https://unpkg.com/@lottiefiles/lottie-player@2.0.8/dist/lottie-player.js"></script>
 
     @yield('script')
 </html>
