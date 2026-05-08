@@ -52,7 +52,7 @@
 
             <!-- Left Side -->
             <div class="hidden lg:flex items-center gap-4">
-                @if (auth()->check() && auth()->user()->role === 'user')
+                @if (auth()->guest() || auth()->user()->role === 'user')
                     <a href="{{ route('cart.index') }}"
                        class="{{ $linkColor }} text-lg font-semibold transition flex items-center gap-1 nav-link">
                         <span class="material-symbols-rounded text-[20px]">shopping_cart</span>

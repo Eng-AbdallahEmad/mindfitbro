@@ -4,6 +4,7 @@ namespace App\Http\Controllers\web;
 
 use App\Http\Controllers\Controller;
 use App\Models\MeetingBooking;
+use App\Models\MemberEvaluation;
 use App\Models\Program;
 use App\Models\UserProfile;
 use App\Models\WeightLog;
@@ -42,7 +43,12 @@ class DashboardController extends Controller
                         ? $this->dashboardService->getProgress($subscription)
                         : [];
 
-        return view('app.web.dashboard', compact('subscription', 'progress'));
+        $evaluations = MemberEvaluation::where('user_id', Auth::id())
+            ->with('coach')
+            ->orderByDesc('evaluated_at')
+            ->get();
+
+        return view('app.web.dashboard', compact('subscription', 'progress', 'evaluations'));
     }
 
     // ══════════════════════════════════════════════

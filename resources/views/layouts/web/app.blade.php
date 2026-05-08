@@ -50,6 +50,7 @@
         @yield('content')
 
         {{-- ══════════════ FLOATING ACTION BUTTONS ══════════════ --}}
+        @if(! request()->routeIs('dashboard', 'coach.*', 'subscribers.*'))
         <div class="fixed bottom-6 left-6 z-[9999] flex flex-col-reverse gap-3">
 
             {{-- WhatsApp --}}
@@ -97,6 +98,7 @@
             </a>
 
         </div>
+        @endif
         {{-- ══════════════ END FLOATING BUTTONS ══════════════ --}}
 
     </body>

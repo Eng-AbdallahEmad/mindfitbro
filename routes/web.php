@@ -8,6 +8,7 @@ use App\Http\Controllers\Web\CheckoutController;
 use App\Http\Controllers\Web\DashboardController;
 use App\Http\Controllers\Web\HomeController;
 use App\Http\Controllers\Web\PrivacyPolicyController;
+use App\Http\Controllers\Web\SubscriberController;
 use App\Http\Controllers\Web\TermsOfServiceController;
 use Illuminate\Support\Facades\Route;
 
@@ -35,6 +36,24 @@ Route::get('privacy-policy', [PrivacyPolicyController::class, 'index'])->name('p
 Route::get('terms-of-service', [TermsOfServiceController::class, 'index'])->name('terms-of-service');
 Route::view('calorie-calculator', 'app.web.calorie_calculator')->name('calorie-calculator');
 
+// ── Cart & Checkout (accessible without login) ──────────────────
+Route::prefix('cart')->name('cart.')->group(function () {
+    Route::get('/',                [CartController::class, 'index'])->name('index');
+    Route::post('/add',            [CartController::class, 'add'])->name('add');
+    Route::post('/update-qty',     [CartController::class, 'updateQuantity'])->name('updateQty');
+    Route::post('/remove',         [CartController::class, 'remove'])->name('remove');
+    Route::post('/toggle-yearly',  [CartController::class, 'toggleYearly'])->name('toggleYearly');
+    Route::post('/apply-coupon',   [CartController::class, 'applyCoupon'])->name('applyCoupon');
+});
+
+Route::get('/checkout', fn () => redirect()->route('cart.index'));
+Route::post('/checkout', [CheckoutController::class, 'process'])->name('checkout.process');
+Route::get('/checkout/success/{id}', [CheckoutController::class, 'success'])->name('checkout.success');
+
+// ── Complete Account (guest email link) ─────────────────────────
+Route::get('/complete-account/{token}', [CheckoutController::class, 'completeAccount'])->name('complete-account.show');
+Route::post('/complete-account/{token}', [CheckoutController::class, 'storeCompleteAccount'])->name('complete-account.store');
+
 Route::middleware('auth.custom')->group(function () {
     Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
@@ -57,17 +76,12 @@ Route::middleware('auth.custom')->group(function () {
 
     Route::get('/coach/bookings', [DashboardController::class, 'bookings'])->name('coach.bookings');
 
-    Route::prefix('cart')->name('cart.')->group(function () {
-        Route::get('/',                [CartController::class, 'index'])->name('index');
-        Route::post('/add',            [CartController::class, 'add'])->name('add');
-        Route::post('/update-qty',     [CartController::class, 'updateQuantity'])->name('updateQty');
-        Route::post('/remove',         [CartController::class, 'remove'])->name('remove');
-        Route::post('/toggle-yearly',  [CartController::class, 'toggleYearly'])->name('toggleYearly');
-        Route::post('/apply-coupon',   [CartController::class, 'applyCoupon'])->name('applyCoupon');
+    Route::prefix('coach/subscribers')->name('coach.subscribers.')->group(function () {
+        Route::get('/',            [SubscriberController::class, 'index'])->name('index');
+        Route::post('/attendance', [SubscriberController::class, 'storeAttendance'])->name('attendance');
+        Route::post('/evaluation', [SubscriberController::class, 'storeEvaluation'])->name('evaluation');
+        Route::get('/{userId}',    [SubscriberController::class, 'show'])->name('show')->whereNumber('userId');
     });
-
-    Route::post('/checkout', [CheckoutController::class, 'process'])->name('checkout.process');
-    Route::get('/checkout/success/{id}', [CheckoutController::class, 'success'])->name('checkout.success');
 
     Route::get('/schedule-meeting/{subscription}', [BookingController::class, 'show'])->name('booking.show');
     Route::post('/booking/store', [BookingController::class, 'store'])->name('booking.store');

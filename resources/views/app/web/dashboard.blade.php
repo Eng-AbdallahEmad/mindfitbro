@@ -118,6 +118,7 @@
         .day-today   { background: #174DAD; color: #fff; border-color: #D4ED57; }
         .day-rest    { background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.3); }
         .day-upcoming{ background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.5); border-color: rgba(255,255,255,0.12); }
+        .day-missed  { background: rgba(239,68,68,0.18); color: #fca5a5; border-color: rgba(239,68,68,0.3); }
 
         /* ══════════════════════════════════════
         MACRO BARS
@@ -195,7 +196,7 @@
         :active-clients="$activeClients"
     />
 @else
-   <x-web.user :subscription="$subscription" :progress="$progress"/>
+   <x-web.user :subscription="$subscription" :progress="$progress" :evaluations="$evaluations"/>
 @endif
 
 

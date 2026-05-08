@@ -1,5 +1,6 @@
 @props([
-    'coach'          => null,
+    'coach'  => null,
+    'active' => '',
 ])
 
 <aside class="dash-sidebar" :class="{ open: sideOpen }">
@@ -27,27 +28,27 @@
 
     {{-- Nav --}}
     <nav class="flex flex-col gap-1 flex-1">
-        <a href="{{ route('home') }}" class="nav-item">
+        <a href="{{ route('home') }}" class="nav-item {{ $active === 'home' ? 'active' : '' }}">
             <span class="material-symbols-rounded nav-icon"
                     style="font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 20">home</span>
             الصفحة الرئيسية
         </a>
-        <a href="{{ route('dashboard') }}" class="nav-item">
+        <a href="{{ route('dashboard') }}" class="nav-item {{ $active === 'dashboard' ? 'active' : '' }}">
             <span class="material-symbols-rounded nav-icon"
                     style="font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 20">dashboard</span>
             نظرة عامة
         </a>
-        <a href="{{ route('coach.bookings') }}" class="nav-item active">
+        <a href="{{ route('coach.bookings') }}" class="nav-item {{ $active === 'bookings' ? 'active' : '' }}">
             <span class="material-symbols-rounded nav-icon"
                     style="font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 20">calendar_month</span>
             الحجوزات
         </a>
-        <a href="#" class="nav-item">
+        <a href="{{ route('coach.subscribers.index') }}" class="nav-item {{ $active === 'subscribers' ? 'active' : '' }}">
             <span class="material-symbols-rounded nav-icon"
                     style="font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 20">group</span>
             المشتركين
         </a>
-        <a href="#" class="nav-item">
+        <a href="#" class="nav-item {{ $active === 'settings' ? 'active' : '' }}">
             <span class="material-symbols-rounded nav-icon"
                     style="font-variation-settings:'FILL' 0,'wght' 400,'GRAD' 0,'opsz' 20">settings</span>
             الإعدادات

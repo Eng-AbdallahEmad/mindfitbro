@@ -298,6 +298,67 @@
     .checkout-btn:hover  { background: var(--accent-hover); transform: translateY(-1px); }
     .checkout-btn:active { transform: scale(0.98); }
 
+    /* ── Guest Info Box ── */
+    .guest-info-box {
+        background: #F4F7FF;
+        border: 1.5px solid rgba(23,77,173,0.15);
+        border-radius: 16px;
+        padding: 16px;
+        margin-bottom: 14px;
+    }
+
+    .guest-info-header {
+        display: flex; align-items: center; gap: 7px;
+        font-size: 13px; font-weight: 900; color: var(--primary);
+        font-family: var(--font-arabic, 'Cairo', sans-serif);
+        margin-bottom: 12px;
+    }
+
+    .guest-input {
+        width: 100%; background: #fff;
+        border: 1.5px solid rgba(23,77,173,0.2); border-radius: 12px;
+        padding: 10px 14px; font-size: 13px;
+        font-family: var(--font-arabic, 'Cairo', sans-serif);
+        color: var(--text); outline: none;
+        transition: border-color 0.2s, box-shadow 0.2s;
+        text-align: right;
+    }
+
+    .guest-input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(23,77,173,0.08); }
+    .guest-input.is-error { border-color: var(--red); box-shadow: 0 0 0 3px rgba(239,68,68,0.08); }
+
+    .guest-hint {
+        font-size: 11px; color: var(--gray-muted); font-weight: 600;
+        font-family: var(--font-arabic, 'Cairo', sans-serif);
+        margin-top: 8px; direction: rtl;
+    }
+
+    .guest-error {
+        font-size: 11px; color: var(--red); font-weight: 600;
+        font-family: var(--font-arabic, 'Cairo', sans-serif);
+        margin-top: 4px;
+    }
+
+    .guest-divider {
+        display: flex; align-items: center; gap: 10px;
+        margin: 12px 0 10px; color: var(--gray-muted);
+        font-size: 11px; font-weight: 700;
+        font-family: var(--font-arabic, 'Cairo', sans-serif);
+    }
+    .guest-divider::before, .guest-divider::after {
+        content: ''; flex: 1; height: 1px; background: rgba(23,77,173,0.12);
+    }
+
+    .login-link-btn {
+        width: 100%; display: flex; align-items: center; justify-content: center; gap: 6px;
+        background: transparent; color: var(--primary);
+        border: 1.5px solid rgba(23,77,173,0.25); border-radius: 12px;
+        padding: 9px 16px; font-size: 12px; font-weight: 700;
+        font-family: var(--font-arabic, 'Cairo', sans-serif);
+        text-decoration: none; transition: background 0.15s, border-color 0.15s;
+    }
+    .login-link-btn:hover { background: #EFF5FF; border-color: var(--primary); }
+
     .continue-btn {
         width: 100%; background: transparent; color: var(--primary);
         border: 1.5px solid var(--primary); border-radius: 14px;
@@ -554,9 +615,50 @@
                         </div>
                     </div>
 
-                    <form action="{{ route('checkout.process') }}" method="POST">
+                    <form action="{{ route('checkout.process') }}" method="POST" id="checkoutForm">
                         @csrf
-                        <button type="submit" class="checkout-btn">
+
+                        {{-- ── Guest Info (shown only when not logged in) ── --}}
+                        @guest
+                        <div class="guest-info-box">
+                            <div class="guest-info-header">
+                                <span class="material-symbols-rounded" style="font-size:17px">person</span>
+                                {{ __('messages.cart.guest_info_title') }}
+                            </div>
+                            <div style="display:flex;flex-direction:column;gap:9px;">
+                                <div>
+                                    <input type="text" name="guest_name"
+                                           class="guest-input {{ $errors->has('guest_name') ? 'is-error' : '' }}"
+                                           placeholder="{{ __('messages.cart.guest_name_placeholder') }}"
+                                           value="{{ old('guest_name') }}"
+                                           required>
+                                    @error('guest_name')
+                                        <p class="guest-error">⚠ {{ $message }}</p>
+                                    @enderror
+                                </div>
+                                <div>
+                                    <input type="email" name="guest_email"
+                                           class="guest-input {{ $errors->has('guest_email') ? 'is-error' : '' }}"
+                                           placeholder="{{ __('messages.cart.guest_email_placeholder') }}"
+                                           value="{{ old('guest_email') }}"
+                                           required>
+                                    @error('guest_email')
+                                        <p class="guest-error">⚠ {{ $message }}</p>
+                                    @enderror
+                                </div>
+                            </div>
+                            <p class="guest-hint">📧 {{ __('messages.cart.guest_email_hint') }}</p>
+                            <div class="guest-divider"><span>{{ __('messages.cart.guest_or') }}</span></div>
+                            <a href="{{ route('login') }}" class="login-link-btn">
+                                <span class="material-symbols-rounded" style="font-size:15px">login</span>
+                                {{ __('messages.cart.guest_login_link') }}
+                            </a>
+                        </div>
+                        @endguest
+
+                        <button type="submit" class="checkout-btn" id="checkoutBtn"
+                            {{ $cart->items->isEmpty() ? 'disabled' : '' }}
+                            style="{{ $cart->items->isEmpty() ? 'opacity:.4;cursor:not-allowed;pointer-events:none;' : '' }}">
                             <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
                                 stroke="currentColor" stroke-width="2.5">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M5 12h14M12 5l7 7-7 7"/>
@@ -636,6 +738,14 @@ function updateSummaryUI(data) {
     document.getElementById('totalItemsText').textContent  = count > 0 ? CART_TRANS.total_items.replace(':count', count) : '';
 
     document.getElementById('emptyState').classList.toggle('show', count === 0);
+
+    const checkoutBtn = document.getElementById('checkoutBtn');
+    if (checkoutBtn) {
+        checkoutBtn.disabled = count === 0;
+        checkoutBtn.style.opacity = count === 0 ? '0.4' : '';
+        checkoutBtn.style.cursor  = count === 0 ? 'not-allowed' : '';
+        checkoutBtn.style.pointerEvents = count === 0 ? 'none' : '';
+    }
 
     const couponSec = document.getElementById('couponSection');
     if (couponSec) couponSec.style.display = count === 0 ? 'none' : '';

@@ -11,6 +11,9 @@ class Subscription extends Model
 
     protected $fillable = [
         'user_id',
+        'guest_name',
+        'guest_email',
+        'guest_token',
         'plan_id',
         'start_date',
         'end_date',

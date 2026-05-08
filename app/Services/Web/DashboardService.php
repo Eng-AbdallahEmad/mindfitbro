@@ -2,10 +2,11 @@
 
 namespace App\Services\Web;
 
-use App\Models\Subscription;
-use App\Models\UserWorkoutLog;
+use App\Models\Attendance;
 use App\Models\Program;
+use App\Models\Subscription;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class DashboardService
 {
@@ -37,25 +38,45 @@ class DashboardService
     {
         $user    = Auth::user();
         $profile = $user->profile;
-        $program = Program::where('user_id', $user->id)->latest()->first();
+        $program = Program::where('user_id', $user->id)->with('days')->latest()->first();
 
         // ── الأوزان ──────────────────────────────────────────
         $startWeight   = $profile?->start_weight   ?? 0;
         $currentWeight = $profile?->current_weight ?? $startWeight;
         $goalWeight    = $profile?->goal_weight     ?? 0;
 
-        // ── تقدم الرحلة ──────────────────────────────────────
+        // ── تقدم الرحلة بناءً على الحضور الفعلي ─────────────
         $totalWeeks = $program?->total_weeks ?? 1;
-        $weeksDone  = 0;
 
-        if ($subscription->start_date) {
-            $daysPassed = (int) $subscription->start_date->startOfDay()->diffInDays(now()->startOfDay());
-            $weeksDone  = (int) floor($daysPassed / 7);
-            $weeksDone  = min($weeksDone, $totalWeeks);
+        $workoutDaysPerWeek = 0;
+        if ($program) {
+            foreach ($program->days as $day) {
+                if ($day->type !== 'rest') {
+                    $workoutDaysPerWeek++;
+                }
+            }
+        }
+        $workoutDaysPerWeek = max(1, $workoutDaysPerWeek);
+        $totalWorkoutDays   = $totalWeeks * $workoutDaysPerWeek;
+
+        // أيام التمرين فقط (day_order: 1=أحد … 7=سبت = DAYOFWEEK() في MySQL)
+        $workoutDayOrders = $program
+            ? $program->days->where('type', '!=', 'rest')->pluck('day_order')->toArray()
+            : [];
+
+        $attendedQuery = Attendance::where('user_id', $user->id)
+            ->whereIn('status', ['present', 'late']);
+
+        if (! empty($workoutDayOrders)) {
+            $attendedQuery->whereIn(DB::raw('DAYOFWEEK(attended_at)'), $workoutDayOrders);
         }
 
-        $pct = $totalWeeks > 0
-            ? min(100, (int) round(($weeksDone / $totalWeeks) * 100))
+        $attendedDays = min($attendedQuery->count(), $totalWorkoutDays);
+
+        $weeksDone = min((int) floor($attendedDays / $workoutDaysPerWeek), $totalWeeks);
+
+        $pct = $totalWorkoutDays > 0
+            ? min(100, (int) round(($attendedDays / $totalWorkoutDays) * 100))
             : 0;
 
         // ── الستريك (أيام تدريب متتالية) ─────────────────────
@@ -76,72 +97,113 @@ class DashboardService
         ];
     }
 
-    // ── حساب الستريك ─────────────────────────────────────────
+    // ── حساب الستريك (أيام تمرين متتالية — الراحة لا تكسر الستريك) ──
     private function calcStreak(int $userId): int
     {
-        $streak = 0;
-        $date   = now()->startOfDay();
+        // جيب برنامج المستخدم لتحديد أيام الراحة
+        $program     = Program::where('user_id', $userId)->with('days')->latest()->first();
+        $programDays = [];
+        if ($program) {
+            foreach ($program->days as $day) {
+                $programDays[(int) $day->day_order] = $day->type;
+            }
+        }
 
-        while (true) {
-            $logged = UserWorkoutLog::where('user_id', $userId)
-                ->whereDate('date', $date)
-                ->where('status', 'done')
-                ->exists();
+        // جيب سجل الحضور لآخر سنة دفعة واحدة بدل كويري لكل يوم
+        $attendanceMap = Attendance::where('user_id', $userId)
+            ->where('attended_at', '>=', now()->subYear()->toDateString())
+            ->whereIn('status', ['present', 'late'])
+            ->get()
+            ->keyBy(fn ($a) => $a->attended_at->toDateString());
 
-            if (! $logged) break;
+        $streak    = 0;
+        $date      = now()->startOfDay();
+        $skipToday = true; // اليوم ممكن مجاش الجيم لسه — لا تكسر الستريك
 
-            $streak++;
+        for ($guard = 0; $guard < 365; $guard++) {
+            $dayOrder = $date->dayOfWeek + 1; // 1=أحد … 7=سبت
+            $isRest   = ($programDays[$dayOrder] ?? 'workout') === 'rest';
+
+            if ($isRest) {
+                $date->subDay();
+                continue; // أيام الراحة شفافة — متحسبش ومتكسرش
+            }
+
+            $attended = isset($attendanceMap[$date->toDateString()]);
+
+            if ($attended) {
+                $streak++;
+                $skipToday = false;
+            } elseif ($skipToday) {
+                $skipToday = false; // ابدأ من امبارح لو اليوم لسه متسجلش
+            } else {
+                break;
+            }
+
             $date->subDay();
         }
 
         return $streak;
     }
 
-    // ── أيام الأسبوع الحالي ──────────────────────────────────
-    private function getWeekDays(int $userId, $program): array
+    // ── أيام الأسبوع الحالي (بناءً على سجل الحضور) ──────────
+    private function getWeekDays(int $userId, ?Program $program): array
     {
-        $labels = ['أح', 'إث', 'ث', 'أر', 'خ', 'ج', 'س'];
-        $today  = now()->startOfDay();
-        $days   = [];
-
-        // أيام الأسبوع من الأحد للسبت
+        $labels = app()->getLocale() === 'ar'
+            ? ['أح', 'إث', 'ث', 'أر', 'خ', 'ج', 'س']
+            : ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+        $today     = now()->startOfDay();
         $weekStart = now()->startOfWeek(\Carbon\Carbon::SUNDAY);
+        $weekEnd   = $weekStart->copy()->addDays(6);
 
-        // جيب أيام البرنامج بشكل مضمون
+        // جيب سجلات الحضور لكل أيام الأسبوع الحالي دفعة واحدة
+        $weekAttendances = Attendance::where('user_id', $userId)
+            ->whereBetween('attended_at', [$weekStart->toDateString(), $weekEnd->toDateString()])
+            ->get()
+            ->keyBy(fn ($a) => $a->attended_at->toDateString());
+
+        // أيام البرنامج (راحة / تمرين)
         $programDays = [];
-
         if ($program) {
             foreach ($program->days()->orderBy('day_order')->get() as $day) {
                 $programDays[(int) $day->day_order] = $day->type;
             }
         }
 
+        $days = [];
         for ($i = 0; $i < 7; $i++) {
             $date     = $weekStart->copy()->addDays($i);
             $dayOrder = $i + 1; // 1=أحد ... 7=سبت
             $isRest   = ($programDays[$dayOrder] ?? 'workout') === 'rest';
+            $dateStr  = $date->toDateString();
 
             if ($date->gt($today)) {
                 $status = $isRest ? 'rest' : 'upcoming';
             } elseif ($date->eq($today)) {
-                $status = $isRest ? 'rest' : 'today';
+                if ($isRest) {
+                    $status = 'rest';
+                } else {
+                    $att    = $weekAttendances[$dateStr] ?? null;
+                    $status = match (true) {
+                        $att && in_array($att->status, ['present', 'late']) => 'done',
+                        $att && $att->status === 'absent'                   => 'missed',
+                        default                                              => 'today',
+                    };
+                }
             } else {
                 if ($isRest) {
                     $status = 'rest';
                 } else {
-                    $logged = UserWorkoutLog::where('user_id', $userId)
-                        ->whereDate('date', $date)
-                        ->where('status', 'done')
-                        ->exists();
-
-                    $status = $logged ? 'done' : 'upcoming';
+                    $att    = $weekAttendances[$dateStr] ?? null;
+                    $status = match (true) {
+                        $att === null                              => 'upcoming',
+                        in_array($att->status, ['present','late'])=> 'done',
+                        default                                    => 'missed',
+                    };
                 }
             }
 
-            $days[] = [
-                'label'  => $labels[$i],
-                'status' => $status,
-            ];
+            $days[] = ['label' => $labels[$i], 'status' => $status];
         }
 
         return $days;

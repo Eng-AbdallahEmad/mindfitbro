@@ -278,7 +278,7 @@
 
                 {{-- Password --}}
                 <div class="flex flex-col gap-2">
-                    <div class="flex {{ $isRtl ? 'flex-row' : 'flex-row-reverse' }} items-center justify-between">
+                    <div class="flex flex-row-reverse items-center justify-between">
                         <a href="{{ route('password.request') }}"
                             class="text-xs text-primary font-bold font-arabic hover:underline">
                             {{ __('messages.login.forgot_password') }}

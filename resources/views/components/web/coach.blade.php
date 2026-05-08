@@ -650,7 +650,7 @@
 <div class="dash-wrap" x-data="{ sideOpen: false }">
 
     {{-- ══════════════ SIDEBAR ══════════════ --}}
-    <x-web.sidebar :coach="$coach"/>
+    <x-web.sidebar :coach="$coach" active="dashboard"/>
 
     {{-- ══════════════ MAIN CONTENT ══════════════ --}}
     <main class="flex flex-col gap-5 p-5 lg:p-8 overflow-y-auto">

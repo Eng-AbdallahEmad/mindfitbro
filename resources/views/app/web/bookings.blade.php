@@ -150,7 +150,7 @@
 @section('content')
 <div class="dash-wrap">
 
-    <x-web.sidebar :coach="$coach"/>
+    <x-web.sidebar :coach="$coach" active="bookings"/>
 
     <main class="flex flex-col gap-5 p-5 lg:p-8 overflow-y-auto">
 
