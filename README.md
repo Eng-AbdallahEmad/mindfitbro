@@ -1,4 +1,4 @@
-# MindFitBro — منصة اللياقة البدنية الذكية
+# MindFitBro — Smart Fitness Platform
 
 <p align="center">
   <img src="public/assets/logo/mindfitbro.png" alt="MindFitBro Logo" width="200"/>
@@ -14,97 +14,97 @@
 
 ---
 
-## نظرة عامة
+## Overview
 
-**MindFitBro** منصة ويب متكاملة للياقة البدنية والتدريب الشخصي، مبنية بـ Laravel 12، توصل العملاء بالكوتشات المتخصصين وتساعدهم على تتبع تقدمهم اليومي.
+**MindFitBro** is a full-featured fitness and personal training web platform built with Laravel 12. It connects clients with specialized coaches and helps them track their daily progress.
 
-المنصة تدعم **3 أدوار مختلفة**:
+The platform supports **3 distinct roles**:
 
-| الدور | الوصف |
-|-------|-------|
-| 👤 **User** | العميل — يشتري الباقة، يحجز المقابلة، يتابع تقدمه |
-| 🏋️ **Coach** | الكوتش — يدير المقابلات، يتابع المشتركين، يسجل التقييمات |
-| ⚙️ **Admin** | المشرف — إدارة كاملة للمنصة |
-
----
-
-## المميزات الرئيسية
-
-### للعملاء
-- **شراء بدون تسجيل (Guest Checkout)** — اشتري مباشرةً بالاسم والإيميل دون الحاجة لإنشاء حساب مسبق
-- **سلة مشتريات ذكية** — إضافة وتعديل وحذف الباقات، دعم الأسعار السنوية والكوبونات
-- **حجز مواعيد المقابلات** — اختيار وقت مناسب مع الكوتش مباشرةً من الداشبورد
-- **تتبع التقدم** — متابعة الوزن، الحضور، اكتمال البرنامج التدريبي
-- **حساب السعرات الحرارية** — أداة مدمجة لحساب احتياجات السعرات
-
-### للكوتشات
-- **داشبورد احترافي** — إحصائيات شاملة: عدد العملاء، الجلسات، والإيرادات الشهرية
-- **إدارة المقابلات** — قبول أو رفض المواعيد وإضافة روابط Google Meet
-- **متابعة المشتركين** — عرض تفصيلي لكل عميل مع خريطة حضور الـ 90 يوم
-- **تسجيل التقييمات** — تسجيل بيانات اللياقة (وزن، نسبة دهون، كتلة عضلية)
-- **تسجيل الحضور** — تتبع يومي للحضور (حضر / تأخر / غاب)
-
-### عام
-- **دعم ثنائي اللغة (AR/EN)** — واجهة كاملة بالعربية والإنجليزية
-- **إيميلات تلقائية** — تأكيد الشراء مع الفاتورة، استعادة كلمة المرور
-- **تصميم متجاوب** — يعمل على جميع الأجهزة (موبايل، تابلت، كمبيوتر)
+| Role | Description |
+|------|-------------|
+| 👤 **User** | Client — purchases a plan, books sessions, tracks progress |
+| 🏋️ **Coach** | Manages sessions, monitors subscribers, records evaluations |
+| ⚙️ **Admin** | Full platform administration |
 
 ---
 
-## التقنيات المستخدمة
+## Key Features
+
+### For Clients
+- **Guest Checkout** — Purchase directly with name and email, no account required upfront
+- **Smart Cart** — Add, update, and remove plans with yearly pricing and coupon support
+- **Session Booking** — Schedule meetings with a coach directly from the dashboard
+- **Progress Tracking** — Monitor weight, attendance, and training program completion
+- **Calorie Calculator** — Built-in tool to calculate daily calorie needs
+
+### For Coaches
+- **Professional Dashboard** — Full stats: total clients, sessions, and monthly revenue
+- **Booking Management** — Accept or reject appointments and add Google Meet links
+- **Subscriber Monitoring** — Detailed profile per client with a 90-day attendance heatmap
+- **Fitness Evaluations** — Record body composition data (weight, body fat %, muscle mass)
+- **Attendance Tracking** — Daily attendance log (present / late / absent)
+
+### General
+- **Bilingual Support (AR/EN)** — Full Arabic and English UI
+- **Automated Emails** — Purchase confirmation with invoice, password reset
+- **Fully Responsive** — Works on all devices (mobile, tablet, desktop)
+
+---
+
+## Tech Stack
 
 ### Backend
-| التقنية | الإصدار | الغرض |
-|---------|---------|--------|
-| PHP | ^8.2 | لغة البرمجة الأساسية |
-| Laravel | 12.0 | إطار عمل الويب |
-| MySQL | latest | قاعدة البيانات |
+| Technology | Version | Purpose |
+|------------|---------|---------|
+| PHP | ^8.2 | Core programming language |
+| Laravel | 12.0 | Web framework |
+| MySQL | latest | Database |
 
 ### Frontend
-| التقنية | الإصدار | الغرض |
-|---------|---------|--------|
-| Tailwind CSS | 3.x | تصميم الواجهات |
-| Alpine.js | CDN | التفاعلية والـ reactivity |
-| Vite | 7.x | بناء الأصول |
-| Swiper.js | 11.x | الـ sliders |
-| GSAP | 3.12 | الأنيميشن |
-| Material Symbols | Google | الأيقونات |
-| Cairo Font | Google | الخط العربي |
+| Technology | Version | Purpose |
+|------------|---------|---------|
+| Tailwind CSS | 3.x | UI styling |
+| Alpine.js | CDN | Reactivity & interactivity |
+| Vite | 7.x | Asset bundling |
+| Swiper.js | 11.x | Sliders |
+| GSAP | 3.12 | Animations |
+| Material Symbols | Google | Icons |
+| Cairo Font | Google | Arabic typography |
 
 ---
 
-## متطلبات التشغيل
+## Requirements
 
 - PHP >= 8.2
 - Composer
 - Node.js >= 18
 - MySQL >= 8.0
-- XAMPP / Laragon / أي خادم محلي
+- XAMPP / Laragon / any local server
 
 ---
 
-## طريقة التثبيت
+## Installation
 
-### 1. استنساخ المشروع
+### 1. Clone the repository
 ```bash
 git clone https://github.com/Eng-AbdallahEmad/mindfitbro.git
 cd mindfitbro
 ```
 
-### 2. تثبيت الحزم
+### 2. Install dependencies
 ```bash
 composer install
 npm install
 ```
 
-### 3. إعداد ملف البيئة
+### 3. Set up the environment file
 ```bash
 cp .env.example .env
 php artisan key:generate
 ```
 
-### 4. إعداد قاعدة البيانات
-في ملف `.env` عدّل البيانات التالية:
+### 4. Configure the database
+Edit the following in your `.env` file:
 ```env
 DB_CONNECTION=mysql
 DB_HOST=127.0.0.1
@@ -114,7 +114,7 @@ DB_USERNAME=root
 DB_PASSWORD=
 ```
 
-### 5. إعداد البريد الإلكتروني
+### 5. Configure email
 ```env
 MAIL_MAILER=smtp
 MAIL_HOST=mail.spacemail.com
@@ -126,80 +126,80 @@ MAIL_FROM_ADDRESS=info@mindfitbro.com
 MAIL_FROM_NAME="MindFitBro"
 ```
 
-### 6. تشغيل الـ Migrations والـ Seeders
+### 6. Run migrations and seeders
 ```bash
 php artisan migrate --seed
 ```
 
-### 7. بناء الأصول
+### 7. Build assets
 ```bash
 npm run build
-# أو في وضع التطوير:
+# or for development:
 npm run dev
 ```
 
-### 8. تشغيل المشروع
+### 8. Start the server
 ```bash
 php artisan serve
 ```
-ثم افتح المتصفح على: `http://localhost:8000`
+Then open your browser at: `http://localhost:8000`
 
 ---
 
-## هيكل قاعدة البيانات
+## Database Schema
 
 ```
-users                    ← المستخدمون (عملاء / كوتشات / أدمن)
-user_profiles            ← بيانات اللياقة (طول، وزن، تاريخ ميلاد)
-plans                    ← الباقات المتاحة
-features                 ← المميزات المتاحة
-feature_plan             ← pivot: ربط الباقات بالمميزات
-subscriptions            ← اشتراكات العملاء (+ بيانات الـ guest checkout)
-carts                    ← سلال المشتريات
-cart_items               ← عناصر السلة
-meeting_bookings         ← مواعيد المقابلات
-programs                 ← البرامج التدريبية
-program_days             ← أيام البرنامج
-user_workout_logs        ← سجلات التمارين
-weight_logs              ← سجلات الوزن
-attendances              ← سجلات الحضور
-member_evaluations       ← تقييمات اللياقة من الكوتش
+users                    ← Users (clients / coaches / admins)
+user_profiles            ← Fitness profile (height, weight, date of birth)
+plans                    ← Available subscription plans
+features                 ← Plan features
+feature_plan             ← Pivot: plan-feature relationships
+subscriptions            ← User subscriptions (+ guest checkout fields)
+carts                    ← Shopping carts
+cart_items               ← Cart line items with pricing snapshots
+meeting_bookings         ← Coach-client meeting appointments
+programs                 ← Training programs
+program_days             ← Weekly workout/rest schedule
+user_workout_logs        ← Workout completion logs
+weight_logs              ← Weight tracking history
+attendances              ← Daily attendance records
+member_evaluations       ← Coach fitness evaluations
 ```
 
 ---
 
-## الباقات المتاحة
+## Available Plans
 
-| الباقة | الاسم | السعر الشهري | الخصم السنوي | الأكثر طلباً |
-|--------|-------|-------------|------------|------------|
-| 🥉 Starter | الأساسي | 299 ر.س | 10% | — |
-| 🥇 Pro | النخبة | 599 ر.س | 15% | ✅ |
-| 💎 Elite | إيليت | 999 ر.س | 20% | — |
+| Plan | Name | Monthly Price | Yearly Discount | Most Popular |
+|------|------|--------------|----------------|-------------|
+| 🥉 Starter | الأساسي | 299 SAR | 10% | — |
+| 🥇 Pro | النخبة | 599 SAR | 15% | ✅ |
+| 💎 Elite | إيليت | 999 SAR | 20% | — |
 
-### كوبونات الخصم المتاحة (10%)
+### Discount Coupons (10% off)
 ```
 MFB10 · MINDFITBRO · WELCOME · EID2025
 ```
 
 ---
 
-## هيكل المشروع
+## Project Structure
 
 ```
 app/
 ├── Http/
 │   ├── Controllers/
-│   │   ├── Auth/AuthController.php          ← تسجيل، دخول، استعادة كلمة مرور
+│   │   ├── Auth/AuthController.php          ← Register, login, password reset
 │   │   └── Web/
-│   │       ├── HomeController.php           ← الصفحة الرئيسية
-│   │       ├── CartController.php           ← إدارة السلة (AJAX)
-│   │       ├── CheckoutController.php       ← الدفع والـ Guest Checkout
-│   │       ├── DashboardController.php      ← داشبورد العميل والكوتش
-│   │       ├── BookingController.php        ← حجز المواعيد
-│   │       └── SubscriberController.php     ← متابعة المشتركين
+│   │       ├── HomeController.php           ← Home page
+│   │       ├── CartController.php           ← Cart management (AJAX)
+│   │       ├── CheckoutController.php       ← Checkout & guest checkout
+│   │       ├── DashboardController.php      ← Client & coach dashboard
+│   │       ├── BookingController.php        ← Session booking
+│   │       └── SubscriberController.php     ← Subscriber monitoring
 │   └── Middleware/
 ├── Mail/
-│   └── PurchaseConfirmationMail.php         ← إيميل تأكيد الشراء
+│   └── PurchaseConfirmationMail.php         ← Purchase confirmation email
 ├── Models/
 │   ├── User.php · Subscription.php · Plan.php
 │   ├── Cart.php · CartItem.php · Feature.php
@@ -207,85 +207,85 @@ app/
 │   ├── Attendance.php · MemberEvaluation.php
 │   └── WeightLog.php · UserWorkoutLog.php
 ├── Notifications/
-│   └── ResetPasswordNotification.php        ← إشعار استعادة كلمة المرور
+│   └── ResetPasswordNotification.php        ← Password reset notification
 └── Services/Web/
-    ├── HomeService.php                      ← بيانات الصفحة الرئيسية
-    ├── CartService.php                      ← منطق السلة والأسعار
-    ├── CheckoutService.php                  ← منطق الدفع
-    ├── DashboardService.php                 ← بيانات داشبورد العميل
-    └── CoachDashboardService.php            ← بيانات داشبورد الكوتش
+    ├── HomeService.php                      ← Home page data
+    ├── CartService.php                      ← Cart & pricing logic
+    ├── CheckoutService.php                  ← Checkout logic
+    ├── DashboardService.php                 ← Client dashboard data
+    └── CoachDashboardService.php            ← Coach dashboard data
 
 resources/
 ├── views/
-│   ├── layouts/web/app.blade.php           ← اللايوت الرئيسي
+│   ├── layouts/web/app.blade.php           ← Main layout
 │   ├── components/web/                     ← navbar, sidebar, footer, ...
 │   ├── auth/web/                           ← login, register, complete_account, ...
 │   ├── app/web/                            ← home, cart, dashboard, bookings, ...
-│   └── mail/                              ← قوالب الإيميلات
+│   └── mail/                              ← Email templates
 ├── lang/
-│   ├── ar/messages.php                     ← الترجمة العربية
-│   └── en/messages.php                     ← الترجمة الإنجليزية
+│   ├── ar/messages.php                     ← Arabic translations
+│   └── en/messages.php                     ← English translations
 └── css/ · js/
 
 database/
-├── migrations/                             ← 24+ migration file
+├── migrations/                             ← 24+ migration files
 └── seeders/
     ├── PlanSeeder.php                      ← 3 plans + 9 features
-    └── CoachSeeder.php                     ← حساب الكوتش التجريبي
+    └── CoachSeeder.php                     ← Demo coach account
 ```
 
 ---
 
-## سير العمل الرئيسي
+## Core Workflows
 
-### 1. رحلة العميل العادي
+### 1. Regular Client Journey
 ```
-التسجيل ← اختيار الباقة ← السلة ← الدفع ← حجز موعد المقابلة ← متابعة التقدم
-```
-
-### 2. رحلة الـ Guest Checkout
-```
-اختيار الباقة ← السلة ← الدفع بالاسم والإيميل
-    ← إيميل تأكيد + فاتورة
-    ← رابط إكمال الحساب
-    ← إنشاء حساب + ربطه بالباقة
-    ← حجز موعد المقابلة
+Register → Choose Plan → Cart → Checkout → Book Session → Track Progress
 ```
 
-### 3. دور الكوتش
+### 2. Guest Checkout Flow
 ```
-استقبال طلبات المقابلات ← قبول/رفض + إضافة رابط Meet
-    ← تسجيل الحضور اليومي
-    ← تسجيل التقييمات الدورية
-    ← متابعة تقدم كل عميل
+Choose Plan → Cart → Checkout with name & email
+    → Confirmation email with invoice
+    → Complete account link
+    → Create account & link to subscription
+    → Book first session
+```
+
+### 3. Coach Workflow
+```
+Receive booking requests → Accept/Reject + Add Meet link
+    → Log daily attendance
+    → Record periodic evaluations
+    → Monitor each client's progress
 ```
 
 ---
 
-## الـ Routes الرئيسية
+## Main Routes
 
-| المسار | الطريقة | الوظيفة |
-|--------|---------|---------|
-| `/` | GET | الصفحة الرئيسية |
-| `/auth/register` | GET/POST | تسجيل حساب جديد |
-| `/auth/login` | GET/POST | تسجيل الدخول |
-| `/auth/forgot-password` | GET/POST | استعادة كلمة المرور |
-| `/cart` | GET | عرض السلة |
-| `/cart/add` | POST | إضافة باقة للسلة |
-| `/cart/apply-coupon` | POST | تطبيق كوبون خصم |
-| `/checkout` | POST | إتمام الشراء |
-| `/checkout/success/{id}` | GET | صفحة نجاح الشراء |
-| `/complete-account/{token}` | GET/POST | إكمال بيانات حساب الـ Guest |
-| `/dashboard` | GET | الداشبورد (عميل أو كوتش) |
-| `/schedule-meeting/{subscription}` | GET | حجز موعد مقابلة |
-| `/coach/bookings` | GET | قائمة مواعيد الكوتش |
-| `/coach/subscribers` | GET | قائمة مشتركي الكوتش |
-| `/coach/subscribers/{id}` | GET | ملف المشترك التفصيلي |
-| `/calorie-calculator` | GET | حاسبة السعرات |
+| Path | Method | Function |
+|------|--------|----------|
+| `/` | GET | Home page |
+| `/auth/register` | GET/POST | Create new account |
+| `/auth/login` | GET/POST | Sign in |
+| `/auth/forgot-password` | GET/POST | Password recovery |
+| `/cart` | GET | View cart |
+| `/cart/add` | POST | Add plan to cart |
+| `/cart/apply-coupon` | POST | Apply discount coupon |
+| `/checkout` | POST | Process purchase |
+| `/checkout/success/{id}` | GET | Purchase success page |
+| `/complete-account/{token}` | GET/POST | Complete guest account |
+| `/dashboard` | GET | Dashboard (client or coach) |
+| `/schedule-meeting/{subscription}` | GET | Book a session |
+| `/coach/bookings` | GET | Coach bookings list |
+| `/coach/subscribers` | GET | Coach subscribers list |
+| `/coach/subscribers/{id}` | GET | Subscriber detail profile |
+| `/calorie-calculator` | GET | Calorie calculator tool |
 
 ---
 
-## المتغيرات البيئية المهمة
+## Key Environment Variables
 
 ```env
 APP_NAME=MindFitBro
@@ -299,7 +299,7 @@ MAIL_HOST=mail.spacemail.com
 MAIL_PORT=465
 MAIL_ENCRYPTION=ssl
 MAIL_USERNAME=info@mindfitbro.com
-MAIL_PASSWORD=          ← مطلوب تعبئته
+MAIL_PASSWORD=          ← Required
 
 SESSION_DRIVER=database
 CACHE_STORE=database
@@ -308,25 +308,15 @@ QUEUE_CONNECTION=database
 
 ---
 
-## حسابات تجريبية (بعد تشغيل الـ Seeders)
+## Roadmap
 
-| الدور | اسم المستخدم | كلمة المرور |
-|-------|-------------|-------------|
-| Coach | coach@salim | (من CoachSeeder) |
-
----
-
-## التطوير المستقبلي
-
-- [ ] لوحة تحكم الأدمن الكاملة
-- [ ] نظام الإشعارات الفورية
-- [ ] تطبيق موبايل
-- [ ] بوابة دفع إلكترونية (Stripe / Moyasar)
-- [ ] تقارير وإحصائيات متقدمة
+- [ ] Full admin control panel
+- [ ] Online payment gateway (Stripe / Moyasar)
+- [ ] Advanced reports and analytics
 
 ---
 
-## المطور
+## Developer
 
 **Abdallah Emad**
 - GitHub: [@Eng-AbdallahEmad](https://github.com/Eng-AbdallahEmad)
@@ -334,5 +324,5 @@ QUEUE_CONNECTION=database
 ---
 
 <p align="center">
-  صُنع بـ ❤️ لمساعدة الناس على الوصول لأفضل نسخة من أنفسهم
+  Built with ❤️ to help people become the best version of themselves
 </p>
