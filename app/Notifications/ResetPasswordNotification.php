@@ -16,7 +16,7 @@ class ResetPasswordNotification extends BaseResetPassword
 
         return (new MailMessage)
             ->subject('إعادة تعيين كلمة المرور — MindFitBro')
-            ->view('emails.reset_password', [
+            ->view('mail.reset_password', [
                 'url'  => $url,
                 'name' => $notifiable->name,
                 'expireMinutes' => config('auth.passwords.'.config('auth.defaults.passwords').'.expire', 60),
