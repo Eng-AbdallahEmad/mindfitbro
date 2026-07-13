@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\web;
 
 use App\Http\Controllers\Controller;
+use App\Models\Attendance;
 use App\Models\MeetingBooking;
 use App\Models\MemberEvaluation;
 use App\Models\Program;
@@ -11,12 +12,14 @@ use App\Models\WeightLog;
 use App\Models\ProgramDay;
 use App\Models\Subscription;
 use App\Models\Plan;
+use App\Mail\MeetingLinkMail;
 use App\Services\Web\CoachDashboardService;
 use App\Services\Web\DashboardService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
 
 class DashboardController extends Controller
 {
@@ -38,17 +41,154 @@ class DashboardController extends Controller
             return view('app.web.dashboard', $data);
         }
 
-        $subscription = $this->dashboardService->getSubscription();
-        $progress     = $subscription && $subscription->status === 'active'
-                        ? $this->dashboardService->getProgress($subscription)
-                        : [];
+        // ── 1. Primary query: active / approved / waiting ──────────────────────
+        $subscription   = $this->dashboardService->getSubscription();
+        $rejectedRecent = false;
+        $booking        = null;
 
-        $evaluations = MemberEvaluation::where('user_id', Auth::id())
-            ->with('coach')
-            ->orderByDesc('evaluated_at')
-            ->get();
+        if ($subscription) {
+            $dashboardState = $this->dashboardService->resolveState($subscription);
+            $booking        = $subscription->meetingBookings->first();
+        } else {
+            // ── Option B: Fallback queries (in priority order) ─────────────────
+            $pendingSub = Subscription::where('user_id', Auth::id())
+                ->where('status', Subscription::STATUS_PENDING_REVIEW)
+                ->with('plan')
+                ->latest()
+                ->first();
 
-        return view('app.web.dashboard', compact('subscription', 'progress', 'evaluations'));
+            if ($pendingSub) {
+                $subscription   = $pendingSub;
+                $dashboardState = 'pending_review';
+            } else {
+                $expiredSub = Subscription::where('user_id', Auth::id())
+                    ->where('status', Subscription::STATUS_EXPIRED)
+                    ->with('plan')
+                    ->latest()
+                    ->first();
+
+                if ($expiredSub) {
+                    $subscription   = $expiredSub;
+                    $dashboardState = 'completed';
+                } else {
+                    $rejectedSub    = Subscription::where('user_id', Auth::id())
+                        ->whereIn('status', [Subscription::STATUS_REJECTED, Subscription::STATUS_CANCELLED])
+                        ->latest()
+                        ->first();
+                    $rejectedRecent = $rejectedSub?->status === Subscription::STATUS_REJECTED;
+                    $dashboardState = 'no_sub';
+                }
+            }
+        }
+
+        $plan = $subscription?->plan;
+
+        // ── 2. Booking step (meeting_phase only) ───────────────────────────────
+        $bookingStep = 1;
+        $meetingDone = false;
+        if ($booking) {
+            $bookingStep = 2;
+            $meetingDone = \Carbon\Carbon::parse($booking->meeting_date)->isPast();
+        }
+        $hasBooking = $booking !== null;
+
+        // ── 3. Subscription timing ─────────────────────────────────────────────
+        $daysLeft       = 0;
+        $totalDays      = 1;
+        $subPct         = 0;
+        $daysUntilStart = 0;
+        $startDateIso   = null;
+
+        if ($subscription?->end_date) {
+            $daysLeft  = (int) now()->startOfDay()
+                            ->diffInDays($subscription->end_date->startOfDay(), false);
+            $totalDays = $subscription->start_date
+                ? max(1, (int) $subscription->start_date->diffInDays($subscription->end_date))
+                : 1;
+            $daysUsed  = $subscription->start_date
+                ? (int) $subscription->start_date->diffInDays(now())
+                : 0;
+            $subPct    = $totalDays > 0
+                ? min(100, (int) round(($daysUsed / $totalDays) * 100))
+                : 0;
+        }
+
+        if ($dashboardState === 'upcoming' && $subscription?->start_date) {
+            $daysUntilStart = (int) now()->startOfDay()
+                                 ->diffInDays($subscription->start_date->startOfDay());
+            $startDateIso   = $subscription->start_date->toDateString();
+        }
+
+        // ── 4. Progress data ───────────────────────────────────────────────────
+        $progress = [];
+        if ($dashboardState === 'active') {
+            $progress = $this->dashboardService->getProgress($subscription);
+        } elseif ($dashboardState === 'completed') {
+            $profile  = UserProfile::where('user_id', Auth::id())->first();
+            $progress = [
+                'startWeight'   => $profile?->start_weight   ?? 0,
+                'currentWeight' => $profile?->current_weight ?? 0,
+                'goalWeight'    => $profile?->goal_weight     ?? 0,
+            ];
+        }
+
+        $startWeight   = $progress['startWeight']   ?? 0;
+        $currentWeight = $progress['currentWeight'] ?? 0;
+        $goalWeight    = $progress['goalWeight']    ?? 0;
+        $weeksDone     = $progress['weeksDone']     ?? 0;
+        $totalWeeks    = $progress['totalWeeks']    ?? 0;
+        $pct           = $progress['pct']           ?? 0;
+        $streak        = $progress['streak']        ?? 0;
+        $weekDays      = $progress['weekDays']      ?? [];
+        $hasProgram    = $progress['hasProgram']    ?? false;
+
+        $wRange     = abs($goalWeight - $startWeight);
+        $wDone      = abs($currentWeight - $startWeight);
+        $wPct       = $wRange > 0
+            ? min(100, (int) round(($wDone / $wRange) * 100))
+            : 0;
+        $wRemaining = round(abs($goalWeight - $currentWeight), 1);
+        $wLosing    = $goalWeight < $startWeight;
+
+        // null = no program yet (active partial shows "program being prepared" placeholder)
+        $todayDayStatus = (!$hasProgram || empty($weekDays))
+            ? null
+            : ($weekDays[now()->dayOfWeek]['status'] ?? 'upcoming');
+
+        // ── 5. Evaluations (active only) ───────────────────────────────────────
+        $evaluations = $dashboardState === 'active'
+            ? MemberEvaluation::where('user_id', Auth::id())
+                ->with('coach')
+                ->orderByDesc('evaluated_at')
+                ->get()
+            : null;
+
+        // ── 6. Completed: attendance percentage estimate ────────────────────────
+        $attendancePct = 0;
+        if ($dashboardState === 'completed' && $subscription?->start_date && $subscription?->end_date) {
+            $worked     = Attendance::where('user_id', Auth::id())
+                ->whereIn('status', ['present', 'late'])
+                ->whereBetween('attended_at', [
+                    $subscription->start_date->toDateString(),
+                    $subscription->end_date->toDateString(),
+                ])
+                ->count();
+            $periodDays = (int) $subscription->start_date->diffInDays($subscription->end_date);
+            $estTotal   = (int) round($periodDays * 5 / 7);
+            $attendancePct = $estTotal > 0
+                ? min(100, (int) round($worked / $estTotal * 100))
+                : 0;
+        }
+
+        return view('app.web.dashboard', compact(
+            'dashboardState', 'subscription', 'plan', 'booking', 'hasBooking',
+            'bookingStep', 'meetingDone', 'rejectedRecent',
+            'daysLeft', 'totalDays', 'subPct', 'daysUntilStart', 'startDateIso',
+            'startWeight', 'currentWeight', 'goalWeight',
+            'wRange', 'wDone', 'wPct', 'wRemaining', 'wLosing',
+            'weeksDone', 'totalWeeks', 'pct', 'streak', 'weekDays',
+            'todayDayStatus', 'evaluations', 'attendancePct', 'progress'
+        ));
     }
 
     // ══════════════════════════════════════════════
@@ -76,15 +216,13 @@ class DashboardController extends Controller
             $booking->update(['status' => 'confirmed']);
 
             // ── 2. تفعيل الاشتراك وحفظ التواريخ ─────────────────
-            $startDate = \Carbon\Carbon::parse($request->start_date);
-            $duration  = $subscription->plan->duration_days ?? 30;
-
-            $duration = (int) $duration;
+            $startDate      = \Carbon\Carbon::parse($request->start_date);
+            $durationMonths = (int) ($subscription->duration_months ?? 3);
 
             $subscription->update([
                 'status'     => 'active',
                 'start_date' => $startDate,
-                'end_date'   => $startDate->copy()->addDays($duration),
+                'end_date'   => $startDate->copy()->addMonths($durationMonths),
             ]);
 
             // ── 3. حساب عدد الأسابيع ─────────────────────────────
@@ -159,7 +297,7 @@ class DashboardController extends Controller
             );
         });
 
-        return back()->with('success', 'تم تفعيل الباقة وإنشاء البرنامج بنجاح ✓');
+        return back()->with('success', 'تم تفعيل الباقة وإنشاء البرنامج بنجاح');
     }
 
     // ══════════════════════════════════════════════
@@ -185,7 +323,16 @@ class DashboardController extends Controller
 
         $booking->update(['meet_link' => $request->input('meet_link')]);
 
-        return back()->with('success', 'تم حفظ رابط الاجتماع بنجاح ✓');
+        $user = $booking->user;
+        if ($user && $user->email) {
+            try {
+                Mail::to($user->email)->send(new MeetingLinkMail($booking, $user->name));
+            } catch (\Throwable) {
+                // Don't fail the request if mail sending fails
+            }
+        }
+
+        return back()->with('success', 'تم حفظ رابط الاجتماع وإرسال إشعار للمشترك بنجاح');
     }
 
     // ══════════════════════════════════════════════
@@ -272,7 +419,7 @@ class DashboardController extends Controller
             }
         });
 
-        return back()->with('success', 'تم تحديث بيانات العميل بنجاح ✓');
+        return back()->with('success', 'تم تحديث بيانات العميل بنجاح');
     }
 
     // ══════════════════════════════════════════════

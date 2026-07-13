@@ -25,13 +25,33 @@ class DashboardService
             },
         ])
             ->where('user_id', Auth::id())
-            ->whereIn('status', ['active', 'waiting'])
+            ->whereIn('status', ['active', 'approved', 'waiting'])
             ->where(function ($q) {
                 $q->whereNull('end_date')
                   ->orWhere('end_date', '>=', now());
             })
             ->latest('created_at')
             ->first();
+    }
+
+    // Resolves the dashboard display state from a primary subscription.
+    // Uses date-string comparison — NOT isFuture() — because start_date stored at midnight
+    // is technically "past" by morning; isFuture() would wrongly skip upcoming state.
+    public function resolveState(Subscription $subscription): string
+    {
+        if (in_array($subscription->status, ['approved', 'waiting'])) {
+            return 'meeting_phase';
+        }
+
+        if ($subscription->status === 'active') {
+            $startDate = $subscription->start_date?->toDateString();
+            if ($startDate && $startDate >= now()->toDateString()) {
+                return 'upcoming';
+            }
+            return 'active';
+        }
+
+        return 'no_sub';
     }
 
     public function getProgress(Subscription $subscription): array
@@ -94,6 +114,7 @@ class DashboardService
             'pct'           => $pct,
             'streak'        => $streak,
             'weekDays'      => $weekDays,
+            'hasProgram'    => $program !== null,
         ];
     }
 
