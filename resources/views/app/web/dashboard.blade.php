@@ -196,7 +196,7 @@
         :active-clients="$activeClients"
     />
 @else
-   <x-web.user :subscription="$subscription" :progress="$progress" :evaluations="$evaluations"/>
+    @include('components.web.user')
 @endif
 
 
