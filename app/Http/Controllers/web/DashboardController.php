@@ -15,6 +15,7 @@ use App\Models\Plan;
 use App\Mail\MeetingLinkMail;
 use App\Services\Web\CoachDashboardService;
 use App\Services\Web\DashboardService;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -119,9 +120,15 @@ class DashboardController extends Controller
             $startDateIso   = $subscription->start_date->toDateString();
         }
 
+        // ── 3b. Auto-set journey_started_at for missed day-one ────────────────
+        // When start_date < today and column is still null, set it silently
+        if ($dashboardState === 'active' && $subscription && is_null($subscription->journey_started_at)) {
+            $subscription->update(['journey_started_at' => now()]);
+        }
+
         // ── 4. Progress data ───────────────────────────────────────────────────
         $progress = [];
-        if ($dashboardState === 'active') {
+        if (in_array($dashboardState, ['active', 'start_ceremony'])) {
             $progress = $this->dashboardService->getProgress($subscription);
         } elseif ($dashboardState === 'completed') {
             $profile  = UserProfile::where('user_id', Auth::id())->first();
@@ -155,8 +162,8 @@ class DashboardController extends Controller
             ? null
             : ($weekDays[now()->dayOfWeek]['status'] ?? 'upcoming');
 
-        // ── 5. Evaluations (active only) ───────────────────────────────────────
-        $evaluations = $dashboardState === 'active'
+        // ── 5. Evaluations (active + start_ceremony) ──────────────────────────
+        $evaluations = in_array($dashboardState, ['active', 'start_ceremony'])
             ? MemberEvaluation::where('user_id', Auth::id())
                 ->with('coach')
                 ->orderByDesc('evaluated_at')
@@ -189,6 +196,36 @@ class DashboardController extends Controller
             'weeksDone', 'totalWeeks', 'pct', 'streak', 'weekDays',
             'todayDayStatus', 'evaluations', 'attendancePct', 'progress'
         ));
+    }
+
+    // ══════════════════════════════════════════════
+    // Start Journey Ceremony (idempotent)
+    // ══════════════════════════════════════════════
+
+    public function startJourney(): JsonResponse
+    {
+        $subscription = Subscription::where('user_id', Auth::id())
+            ->where('status', 'active')
+            ->latest()
+            ->first();
+
+        if (! $subscription) {
+            return response()->json(['error' => 'No active subscription'], 422);
+        }
+
+        // Idempotent: already acknowledged
+        if (! is_null($subscription->journey_started_at)) {
+            return response()->json(['ok' => true]);
+        }
+
+        // Only valid on the actual start day
+        if ($subscription->start_date?->toDateString() !== now()->toDateString()) {
+            return response()->json(['error' => 'Not start day'], 422);
+        }
+
+        $subscription->update(['journey_started_at' => now()]);
+
+        return response()->json(['ok' => true]);
     }
 
     // ══════════════════════════════════════════════

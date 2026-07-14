@@ -757,6 +757,14 @@ return [
         'meeting_link_pending'      => 'Coach will share the meeting link soon',
         'no_program_yet'            => 'Program Being Prepared',
         'no_program_soon'           => 'Your coach is setting it up soon',
+        'ceremony_title'            => 'Your Journey Starts Today!',
+        'ceremony_subtitle'         => 'Everything is ready — tap to launch',
+        'ceremony_btn'              => 'Start My Journey',
+        'ceremony_loading'          => 'Starting...',
+        'ceremony_desc'             => 'This screen won\'t appear again',
+        'countdown_h'               => 'h',
+        'countdown_m'               => 'min',
+        'countdown_s'               => 'sec',
     ],
 
     'purchase' => [

@@ -45,8 +45,14 @@ class DashboardService
 
         if ($subscription->status === 'active') {
             $startDate = $subscription->start_date?->toDateString();
-            if ($startDate && $startDate >= now()->toDateString()) {
-                return 'upcoming';
+            if ($startDate) {
+                $today = now()->toDateString();
+                if ($startDate > $today) {
+                    return 'upcoming';
+                }
+                if ($startDate === $today && is_null($subscription->journey_started_at)) {
+                    return 'start_ceremony';
+                }
             }
             return 'active';
         }

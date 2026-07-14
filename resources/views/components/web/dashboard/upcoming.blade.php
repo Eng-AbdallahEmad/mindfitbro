@@ -3,35 +3,7 @@
         ->isoFormat($isRtl ? 'dddd، D MMMM YYYY' : 'dddd, MMMM D, YYYY');
 @endphp
 
-@if($daysUntilStart === 0)
-
-{{-- ── TODAY: show CTA, no countdown (countdown would loop to reload) ── --}}
-<div class="anim anim-1 flex flex-col gap-5">
-    <div class="bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden font-arabic">
-        <div class="bg-gradient-to-br from-primary to-blue-700 px-8 py-12 text-center relative overflow-hidden">
-            <div style="position:absolute;inset:0;background-image:radial-gradient(circle,rgba(255,255,255,.08) 1px,transparent 1px);background-size:22px 22px;pointer-events:none;"></div>
-            <div class="relative z-10">
-                <div class="w-20 h-20 rounded-2xl bg-white/15 flex items-center justify-center mx-auto mb-5">
-                    <span class="material-symbols-rounded text-accent" style="font-size:40px;font-variation-settings:'FILL' 1">rocket_launch</span>
-                </div>
-                <div class="inline-flex items-center gap-2 bg-white/15 border border-white/25 rounded-full px-4 py-1.5 text-white text-[11px] font-black mb-4">
-                    <span class="material-symbols-rounded" style="font-size:13px;font-variation-settings:'FILL' 1">celebration</span>
-                    {{ __('messages.user_dashboard.upcoming_today_badge') }}
-                </div>
-                <h2 class="text-white text-2xl font-black mb-3">{{ __('messages.user_dashboard.upcoming_today_desc') }}</h2>
-                <a href="{{ route('dashboard') }}"
-                   class="inline-flex items-center gap-2 bg-accent text-textColor font-black font-arabic text-sm px-7 py-3.5 rounded-2xl hover:bg-accent/90 transition mt-2">
-                    <span class="material-symbols-rounded" style="font-size:18px">dashboard</span>
-                    {{ __('messages.user_dashboard.upcoming_today_cta') }}
-                </a>
-            </div>
-        </div>
-    </div>
-</div>
-
-@else
-
-{{-- ── FUTURE: countdown ── --}}
+{{-- start_date is always > today when this partial is rendered (start_ceremony handles today) --}}
 <div class="anim anim-1 flex flex-col gap-5">
     <div class="bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden font-arabic">
 
@@ -57,9 +29,9 @@
                 <div class="grid grid-cols-4 gap-2 text-center" id="countdownGrid">
                     @foreach([
                         ['id'=>'cd-days', 'label'=>__('messages.user_dashboard.day_label')],
-                        ['id'=>'cd-hours','label'=>__('messages.user_dashboard.at_time')],
-                        ['id'=>'cd-mins', 'label'=>'min'],
-                        ['id'=>'cd-secs', 'label'=>'sec'],
+                        ['id'=>'cd-hours','label'=>__('messages.user_dashboard.countdown_h')],
+                        ['id'=>'cd-mins', 'label'=>__('messages.user_dashboard.countdown_m')],
+                        ['id'=>'cd-secs', 'label'=>__('messages.user_dashboard.countdown_s')],
                     ] as $unit)
                     <div class="bg-[#F4F7FF] rounded-xl py-3">
                         <p class="font-display text-2xl font-black text-primary leading-none" id="{{ $unit['id'] }}">—</p>
@@ -132,31 +104,23 @@
     </div>
 </div>
 
-{{-- Live countdown (only for future dates — avoids reload loop on same day) --}}
 <script>
-(function() {
-    const start = new Date('{{ $startDateIso }}T00:00:00');
-
-    function pad(n) { return String(n).padStart(2,'0'); }
-
+(function () {
+    var start = new Date('{{ $startDateIso }}T00:00:00');
+    function pad(n) { return String(n).padStart(2, '0'); }
     function tick() {
-        const diff = start - new Date();
+        var diff = start - new Date();
         if (diff <= 0) { window.location.reload(); return; }
-
-        const d = Math.floor(diff / 86400000);
-        const h = Math.floor((diff % 86400000) / 3600000);
-        const m = Math.floor((diff % 3600000)  / 60000);
-        const s = Math.floor((diff % 60000)    / 1000);
-
+        var d = Math.floor(diff / 86400000);
+        var h = Math.floor((diff % 86400000) / 3600000);
+        var m = Math.floor((diff % 3600000)  / 60000);
+        var s = Math.floor((diff % 60000)    / 1000);
         document.getElementById('cd-days').textContent  = d;
         document.getElementById('cd-hours').textContent = pad(h);
         document.getElementById('cd-mins').textContent  = pad(m);
         document.getElementById('cd-secs').textContent  = pad(s);
     }
-
     tick();
     setInterval(tick, 1000);
 })();
 </script>
-
-@endif

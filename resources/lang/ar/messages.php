@@ -757,6 +757,14 @@ return [
         'meeting_link_pending'      => 'الكوتش هيشاركك لينك الاجتماع قريباً',
         'no_program_yet'            => 'برنامجك قيد الإعداد',
         'no_program_soon'           => 'الكوتش بيجهزه قريباً',
+        'ceremony_title'            => 'رحلتك بدأت اليوم!',
+        'ceremony_subtitle'         => 'كل شيء جاهز — اضغط لتنطلق',
+        'ceremony_btn'              => 'ابدأ رحلتك الآن',
+        'ceremony_loading'          => 'جاري البدء...',
+        'ceremony_desc'             => 'لن تُعرض هذه الشاشة مجدداً',
+        'countdown_h'               => 'ساعة',
+        'countdown_m'               => 'دقيقة',
+        'countdown_s'               => 'ثانية',
     ],
 
     'purchase' => [

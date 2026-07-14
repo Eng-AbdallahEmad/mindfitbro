@@ -9,6 +9,16 @@ class Subscription extends Model
 {
     use HasFactory;
 
+    // New-flow statuses
+    const STATUS_PENDING_REVIEW = 'pending_review';
+    const STATUS_APPROVED       = 'approved';
+    const STATUS_ACTIVE         = 'active';
+    const STATUS_EXPIRED        = 'expired';
+    const STATUS_REJECTED       = 'rejected';
+    // Legacy statuses (pre-Phase A records)
+    const STATUS_WAITING        = 'waiting';
+    const STATUS_CANCELLED      = 'cancelled';
+
     protected $fillable = [
         'user_id',
         'guest_name',
@@ -20,11 +30,19 @@ class Subscription extends Model
         'status',
         'plans_snapshot',
         'is_yearly',
+        'duration_months',
         'subtotal',
         'coupon_discount',
         'yearly_discount',
         'total',
         'coupon_code',
+        'currency',
+        'payment_method_key',
+        'receipt_path',
+        'rejection_reason',
+        'reviewed_by',
+        'reviewed_at',
+        'journey_started_at',
     ];
 
     protected $casts = [
@@ -32,10 +50,13 @@ class Subscription extends Model
         'end_date'        => 'date',
         'plans_snapshot'  => 'array',
         'is_yearly'       => 'boolean',
-        'subtotal'        => 'decimal:2',
-        'coupon_discount' => 'decimal:2',
-        'yearly_discount' => 'decimal:2',
-        'total'           => 'decimal:2',
+        'duration_months' => 'integer',
+        'subtotal'        => 'decimal:3',
+        'coupon_discount' => 'decimal:3',
+        'yearly_discount' => 'decimal:3',
+        'total'           => 'decimal:3',
+        'reviewed_at'          => 'datetime',
+        'journey_started_at'   => 'datetime',
     ];
 
     public function user()
@@ -46,6 +67,11 @@ class Subscription extends Model
     public function plan()
     {
         return $this->belongsTo(Plan::class);
+    }
+
+    public function reviewer()
+    {
+        return $this->belongsTo(User::class, 'reviewed_by');
     }
 
     public function meetingBookings()

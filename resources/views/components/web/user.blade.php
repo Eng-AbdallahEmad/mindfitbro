@@ -32,7 +32,7 @@
             </div>
             <div class="min-w-0">
                 <p class="text-white font-black text-sm font-display leading-none truncate">{{ $user->name }}</p>
-                @if($plan && in_array($dashboardState, ['meeting_phase', 'upcoming', 'active', 'completed']))
+                @if($plan && in_array($dashboardState, ['meeting_phase', 'upcoming', 'active', 'completed', 'start_ceremony']))
                     <span class="text-[10px] font-bold px-2 py-0.5 rounded-full mt-1 inline-block font-arabic
                         {{ $dashboardState === 'meeting_phase' ? 'bg-amber-400/20 text-amber-300' : 'bg-accent/20 text-accent' }}">
                         @if($dashboardState === 'meeting_phase' && $subscription->status === 'approved')
@@ -69,7 +69,7 @@
                 <span class="material-symbols-rounded nav-icon" style="font-variation-settings:'FILL' 0,'wght' 400,'GRAD' 0,'opsz' 20">monitoring</span>
                 {{ __('messages.user_dashboard.nav_progress') }}
             </a>
-            @if(in_array($dashboardState, ['meeting_phase', 'upcoming', 'active']))
+            @if(in_array($dashboardState, ['meeting_phase', 'upcoming', 'active', 'start_ceremony']))
             <a href="#subscription" class="nav-item">
                 <span class="material-symbols-rounded nav-icon" style="font-variation-settings:'FILL' 0,'wght' 400,'GRAD' 0,'opsz' 20">workspace_premium</span>
                 {{ __('messages.user_dashboard.nav_subscription') }}
@@ -137,7 +137,7 @@
                 </a>
             </div>
 
-            @elseif($dashboardState === 'active' && $plan)
+            @elseif(in_array($dashboardState, ['active', 'start_ceremony']) && $plan)
             <div class="rounded-2xl p-3 font-arabic {{ $isRtl ? 'text-right' : 'text-left' }} bg-accent/10 border border-accent/20">
                 <p class="text-accent text-[11px] font-black mb-0.5">
                     {{ __('messages.programs.plan_prefix') . (__('messages.plans_data.'.$plan->key.'.name', [], null) ?: $plan->name) }}
@@ -190,7 +190,7 @@
                 </h1>
             </div>
             <div class="flex items-center gap-3">
-                @if($dashboardState === 'active' && $streak > 0)
+                @if(in_array($dashboardState, ['active', 'start_ceremony']) && $streak > 0)
                     <div class="hidden md:flex items-center gap-2 bg-white rounded-full px-4 py-2 border border-gray-100 shadow-sm font-arabic">
                         <span class="material-symbols-rounded text-orange-500" style="font-size:20px;font-variation-settings:'FILL' 1">local_fire_department</span>
                         <span class="font-black text-sm text-textColor">{{ $streak }}</span>

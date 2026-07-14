@@ -10,7 +10,8 @@
                 <svg width="130" height="130" viewBox="0 0 130 130">
                     <circle cx="65" cy="65" r="58" class="ring-bg"/>
                     <circle cx="65" cy="65" r="58" class="ring-fill" id="journeyRing"
-                        style="stroke-dashoffset: {{ 408 - (408 * $pct / 100) }}"/>
+                        style="stroke-dashoffset: {{ 408 - (408 * $pct / 100) }}"
+                        data-dashoffset="{{ 408 - (408 * $pct / 100) }}"/>
                 </svg>
                 <div class="absolute inset-0 flex flex-col items-center justify-center font-arabic">
                     <span class="font-display text-3xl font-black text-white leading-none">{{ $pct }}%</span>
