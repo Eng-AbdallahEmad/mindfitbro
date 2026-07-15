@@ -79,23 +79,14 @@ class Setting extends Model
                 'booking_available_days' => '0,1,2,3,4',
                 'booking_time_slots'     => '09:00,10:00,11:00,12:00,14:00,15:00,16:00,17:00,18:00',
             ],
-            'pricing' => [
-                // SAR prices
-                'family_plan_price_sar_3m'          => '1399',
-                'family_plan_price_sar_6m'          => '2399',
-                'family_plan_original_price_sar_3m' => '2396',
-                'family_plan_original_price_sar_6m' => '3999',
-                // EGP prices
-                'family_plan_price_egp_3m'          => '',
-                'family_plan_price_egp_6m'          => '',
-                // TND prices
-                'family_plan_price_tnd_3m'          => '',
-                'family_plan_price_tnd_6m'          => '',
-                // USD prices
-                'family_plan_price_usd_3m'          => '',
-                'family_plan_price_usd_6m'          => '',
-                // Which plan IDs unlock the family offer
-                'family_plan_ids'                   => '2,3',
+            'family_reward' => [
+                'family_reward_enabled'        => '0',
+                'family_reward_plan_id'        => '',
+                'family_reward_discount_mode'  => 'fixed',
+                'family_reward_discount_value' => '20',
+                'family_reward_discount_min'   => '10',
+                'family_reward_discount_max'   => '30',
+                'family_reward_max_invites'    => '5',
             ],
         ];
     }

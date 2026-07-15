@@ -74,6 +74,11 @@ class Subscription extends Model
         return $this->hasMany(MeetingBooking::class);
     }
 
+    public function familyInvitations()
+    {
+        return $this->hasMany(FamilyInvitation::class);
+    }
+
     protected static function booted(): void
     {
         static::deleting(function (Subscription $subscription) {
