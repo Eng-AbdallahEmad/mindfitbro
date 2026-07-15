@@ -91,7 +91,7 @@
                         'videos'       => ['icon' => 'play_circle',    'label' => 'الفيديوهات'],
                         'testimonials' => ['icon' => 'face',           'label' => 'صور المراجعين'],
                         'before-after' => ['icon' => 'compare',        'label' => 'قبل وبعد'],
-                        'pricing'      => ['icon' => 'payments',       'label' => 'الأسعار'],
+                        'family-reward'=> ['icon' => 'card_giftcard',  'label' => 'جائزة الأبطال'],
                         'booking'      => ['icon' => 'event_available','label' => 'مواعيد الحجز'],
                     ];
                 @endphp
@@ -555,86 +555,120 @@
                 </div>
             </div>
 
-            {{-- ════ PRICING ════ --}}
-            <div id="tab-pricing" class="settings-card hidden">
+            {{-- ════ FAMILY REWARD ════ --}}
+            <div id="tab-family-reward" class="settings-card hidden"
+                 x-data="{ mode: '{{ $s->get('family_reward_discount_mode', 'fixed') }}' }">
                 <div class="settings-card-header">
-                    <span class="w-8 h-8 rounded-lg bg-amber-50 flex items-center justify-center flex-shrink-0">
-                        <span class="material-symbols-rounded text-amber-500" style="font-size:18px;font-variation-settings:'FILL' 1">payments</span>
+                    <span class="w-8 h-8 rounded-lg bg-yellow-50 flex items-center justify-center flex-shrink-0">
+                        <span class="material-symbols-rounded text-yellow-500" style="font-size:18px;font-variation-settings:'FILL' 1">card_giftcard</span>
                     </span>
                     <div>
-                        <h3 class="text-sm font-black text-slate-800">الأسعار</h3>
-                        <p class="text-[11px] text-slate-400 font-semibold">أسعار الباقة العائلية والعروض الخاصة</p>
+                        <h3 class="text-sm font-black text-slate-800">جائزة الأبطال</h3>
+                        <p class="text-[11px] text-slate-400 font-semibold">دعوات الخصم لمشتركي الباقة المميزة</p>
                     </div>
                 </div>
                 <div class="p-6 space-y-5">
 
-                    <div class="p-4 rounded-xl border-2 border-dashed border-amber-200 bg-amber-50">
-                        <div class="flex items-center gap-2 mb-4">
-                            <span class="material-symbols-rounded text-amber-600" style="font-size:18px;font-variation-settings:'FILL' 1">family_restroom</span>
-                            <h4 class="font-black text-amber-800 text-sm">الباقة العائلية</h4>
+                    {{-- Enable toggle --}}
+                    <div class="flex items-center justify-between p-4 rounded-xl border border-slate-200 bg-slate-50">
+                        <div>
+                            <p class="text-sm font-black text-slate-800">تفعيل برنامج الدعوات</p>
+                            <p class="text-xs text-slate-400 font-semibold mt-0.5">عند التفعيل تظهر قسم الدعوات في لوحة تحكم المشتركين</p>
                         </div>
+                        <label class="relative inline-flex items-center cursor-pointer">
+                            <input type="hidden" name="settings[family_reward_enabled]" value="0">
+                            <input type="checkbox" name="settings[family_reward_enabled]" value="1"
+                                   class="sr-only peer"
+                                   {{ $s->get('family_reward_enabled', '0') === '1' ? 'checked' : '' }}>
+                            <div class="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600 rtl:peer-checked:after:-translate-x-full"></div>
+                        </label>
+                    </div>
 
-                        {{-- IDs --}}
-                        <div class="mb-4">
-                            <label class="form-label">IDs الباقات العائلية</label>
-                            <input type="text" name="settings[family_plan_ids]" dir="ltr"
-                                   value="{{ $s->get('family_plan_ids', '2,3') }}" class="form-input"
-                                   placeholder="2,3" style="max-width:200px">
-                            <p class="form-hint">أرقام الباقات مفصولة بفاصلة — تُحدد متى يظهر العرض العائلي للمستخدم</p>
-                        </div>
-
-                        {{-- Price matrix: 4 currencies × 2 durations --}}
-                        <div class="space-y-3">
-                            <p class="text-[11px] font-black text-slate-500 uppercase tracking-wider">جدول الأسعار — اتركها فارغة لعرض سعر الريال</p>
-
-                            @foreach([
-                                'sar' => ['label' => 'الريال السعودي (SAR)', 'sym' => 'ر.س', 'highlight' => true],
-                                'egp' => ['label' => 'الجنيه المصري (EGP)',  'sym' => 'ج.م', 'highlight' => false],
-                                'tnd' => ['label' => 'الدينار التونسي (TND)','sym' => 'د.ت', 'highlight' => false],
-                                'usd' => ['label' => 'الدولار الأمريكي (USD)','sym' => '$',  'highlight' => false],
-                            ] as $c => $info)
-                            <div class="rounded-xl border {{ $info['highlight'] ? 'border-amber-300 bg-white' : 'border-slate-200 bg-white' }} p-3">
-                                <p class="text-[11px] font-black text-slate-600 mb-2">{{ $info['label'] }}</p>
-                                <div class="grid grid-cols-2 gap-3">
-                                    <div>
-                                        <label class="form-label text-[11px]">٣ شهور ({{ $info['sym'] }})</label>
-                                        <input type="number" name="settings[family_plan_price_{{ $c }}_3m]"
-                                               value="{{ $s->get('family_plan_price_'.$c.'_3m', '') }}"
-                                               class="form-input" min="0" placeholder="{{ $c === 'sar' ? '1399' : 'اختياري' }}">
-                                    </div>
-                                    <div>
-                                        <label class="form-label text-[11px]">٦ شهور ({{ $info['sym'] }})</label>
-                                        <input type="number" name="settings[family_plan_price_{{ $c }}_6m]"
-                                               value="{{ $s->get('family_plan_price_'.$c.'_6m', '') }}"
-                                               class="form-input" min="0" placeholder="{{ $c === 'sar' ? '2399' : 'اختياري' }}">
-                                    </div>
-                                </div>
-                            </div>
+                    {{-- Reward plan dropdown --}}
+                    <div>
+                        <label class="form-label">الباقة المميزة (Elite Plan)</label>
+                        <select name="settings[family_reward_plan_id]" class="form-input">
+                            <option value="">-- اختر الباقة --</option>
+                            @foreach($plans as $plan)
+                            <option value="{{ $plan->id }}"
+                                {{ (string)$s->get('family_reward_plan_id', '') === (string)$plan->id ? 'selected' : '' }}>
+                                {{ $plan->name }}
+                            </option>
                             @endforeach
-                        </div>
+                        </select>
+                        <p class="form-hint">مشتركو هذه الباقة فقط يحصلون على صلاحية إرسال دعوات الخصم</p>
+                    </div>
 
-                        {{-- SAR original prices for display strikethrough --}}
-                        <div class="mt-3 grid grid-cols-2 gap-3">
-                            <div>
-                                <label class="form-label text-[11px]">السعر الأصلي (مشطوب) — ر.س ٣ش</label>
-                                <input type="number" name="settings[family_plan_original_price_sar_3m]"
-                                       value="{{ $s->get('family_plan_original_price_sar_3m', '2396') }}"
-                                       class="form-input" min="0">
-                            </div>
-                            <div>
-                                <label class="form-label text-[11px]">السعر الأصلي (مشطوب) — ر.س ٦ش</label>
-                                <input type="number" name="settings[family_plan_original_price_sar_6m]"
-                                       value="{{ $s->get('family_plan_original_price_sar_6m', '3999') }}"
-                                       class="form-input" min="0">
-                            </div>
+                    {{-- Max invites --}}
+                    <div>
+                        <label class="form-label">الحد الأقصى للدعوات لكل مشترك</label>
+                        <input type="number" name="settings[family_reward_max_invites]"
+                               value="{{ $s->get('family_reward_max_invites', '5') }}"
+                               class="form-input" min="1" max="50" style="max-width:120px">
+                        <p class="form-hint">عدد الدعوات التي يمكن لكل مشترك إرسالها طوال فترة اشتراكه</p>
+                    </div>
+
+                    {{-- Discount mode --}}
+                    <div>
+                        <label class="form-label">نوع الخصم</label>
+                        <div class="flex items-center gap-4 mt-2">
+                            <label class="flex items-center gap-2 cursor-pointer">
+                                <input type="radio" name="settings[family_reward_discount_mode]" value="fixed"
+                                       x-model="mode"
+                                       {{ $s->get('family_reward_discount_mode', 'fixed') === 'fixed' ? 'checked' : '' }}
+                                       class="text-blue-600">
+                                <span class="text-sm font-bold text-slate-700">نسبة ثابتة</span>
+                            </label>
+                            <label class="flex items-center gap-2 cursor-pointer">
+                                <input type="radio" name="settings[family_reward_discount_mode]" value="range"
+                                       x-model="mode"
+                                       {{ $s->get('family_reward_discount_mode', 'fixed') === 'range' ? 'checked' : '' }}
+                                       class="text-blue-600">
+                                <span class="text-sm font-bold text-slate-700">نطاق عشوائي</span>
+                            </label>
                         </div>
                     </div>
 
+                    {{-- Fixed value --}}
+                    <div x-show="mode === 'fixed'">
+                        <label class="form-label">نسبة الخصم الثابتة (%)</label>
+                        <div class="flex items-center gap-2">
+                            <input type="number" name="settings[family_reward_discount_value]"
+                                   value="{{ $s->get('family_reward_discount_value', '20') }}"
+                                   class="form-input" min="1" max="100" style="max-width:120px">
+                            <span class="text-slate-500 font-bold text-sm">%</span>
+                        </div>
+                        <p class="form-hint">كل دعوة تُولّد كوبون بهذه النسبة بالضبط</p>
+                    </div>
+
+                    {{-- Range values --}}
+                    <div x-show="mode === 'range'" style="display:none">
+                        <label class="form-label">نطاق الخصم العشوائي (%)</label>
+                        <div class="flex items-center gap-3">
+                            <div>
+                                <label class="form-label text-[11px]">من</label>
+                                <input type="number" name="settings[family_reward_discount_min]"
+                                       value="{{ $s->get('family_reward_discount_min', '10') }}"
+                                       class="form-input" min="1" max="99" style="max-width:100px">
+                            </div>
+                            <span class="text-slate-400 font-bold mt-4">—</span>
+                            <div>
+                                <label class="form-label text-[11px]">إلى</label>
+                                <input type="number" name="settings[family_reward_discount_max]"
+                                       value="{{ $s->get('family_reward_discount_max', '30') }}"
+                                       class="form-input" min="2" max="100" style="max-width:100px">
+                            </div>
+                            <span class="text-slate-500 font-bold text-sm mt-4">%</span>
+                        </div>
+                        <p class="form-hint">قيمة عشوائية تُسحب من هذا النطاق لكل دعوة على حدة</p>
+                    </div>
+
+                    {{-- Info box --}}
                     <div class="rounded-xl bg-blue-50 border border-blue-100 p-4 flex items-start gap-3">
                         <span class="material-symbols-rounded text-blue-500 flex-shrink-0" style="font-size:18px">info</span>
                         <p class="text-xs text-blue-700 font-semibold leading-relaxed">
-                            العرض العائلي يظهر تلقائياً للمستخدمين المشتركين في الباقات المحددة بالـ IDs أعلاه.
-                            لتعطيل العرض العائلي تماماً، اترك حقل IDs فارغاً.
+                            كل دعوة تُولّد كود خصم بصيغة <strong>FAM-XXXX</strong> صالح 30 يوماً لاستخدام واحد.
+                            يمكن متابعة جميع الدعوات من صفحة <a href="{{ route('admin.family-invitations.index') }}" class="underline font-black">سجل الدعوات</a>.
                         </p>
                     </div>
 

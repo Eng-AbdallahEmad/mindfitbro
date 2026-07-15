@@ -9,6 +9,7 @@ use App\Http\Controllers\Admin\BeforeAftersController as AdminBeforeAftersContro
 use App\Http\Controllers\Admin\TestimonialsController as AdminTestimonialsController;
 use App\Http\Controllers\Admin\VideosController as AdminVideosController;
 use App\Http\Controllers\Admin\CouponsController as AdminCouponsController;
+use App\Http\Controllers\Admin\FamilyInvitationsController as AdminFamilyInvitationsController;
 use App\Http\Controllers\Admin\SubscriptionsController as AdminSubscriptionsController;
 use App\Http\Controllers\Auth\AdminAuthController;
 use App\Http\Controllers\Auth\AuthController;
@@ -193,6 +194,9 @@ Route::prefix('admin')->name('admin.')->group(function () {
         // Settings
         Route::get('settings', [AdminSettingsController::class, 'index'])->name('settings.index');
         Route::post('settings', [AdminSettingsController::class, 'update'])->name('settings.update');
+
+        // Family Invitations (read-only index for audit)
+        Route::get('family-invitations', [AdminFamilyInvitationsController::class, 'index'])->name('family-invitations.index');
 
         // Videos (managed from settings page)
         Route::post('videos', [AdminVideosController::class, 'store'])->name('videos.store');
