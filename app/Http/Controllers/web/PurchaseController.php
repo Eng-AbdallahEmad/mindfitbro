@@ -198,7 +198,6 @@ class PurchaseController extends Controller
                 'subtotal'           => $subtotal,
                 'coupon_code'        => $couponCode,
                 'coupon_discount'    => $couponDiscount,
-                'yearly_discount'    => 0,
                 'total'              => $total,
                 'payment_method_key' => config('payment.currency_to_method.' . $currency, 'sa_world'),
                 'receipt_path'       => $receiptPath,
