@@ -17,10 +17,8 @@ class Plan extends Model
         'icon_color',
         'desc',
         'price',
-        'yearly_price',
         'popular',
         'btn_class',
-        'duration_days',
         'is_active',
         'sort_order',
     ];
@@ -28,7 +26,7 @@ class Plan extends Model
     protected $casts = [
         'popular'   => 'boolean',
         'is_active' => 'boolean',
-        'price'     => 'decimal:2',
+        'price'     => 'decimal:3',
     ];
 
     public function subscriptions()
@@ -44,8 +42,20 @@ class Plan extends Model
             ->orderBy('feature_plan.sort_order');
     }
 
-    public function cartItems()
+    public function prices()
     {
-        return $this->hasMany(CartItem::class);
+        return $this->hasMany(PlanPrice::class);
+    }
+
+    public function priceFor(string $currency, int $durationMonths = 3): ?PlanPrice
+    {
+        return $this->prices->first(
+            fn ($p) => $p->currency === $currency && (int) $p->duration_months === $durationMonths
+        );
+    }
+
+    public function sarPrice(int $durationMonths = 3): float
+    {
+        return (float) ($this->priceFor('SAR', $durationMonths)?->price ?? $this->price ?? 0);
     }
 }

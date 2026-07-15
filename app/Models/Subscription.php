@@ -15,8 +15,7 @@ class Subscription extends Model
     const STATUS_ACTIVE         = 'active';
     const STATUS_EXPIRED        = 'expired';
     const STATUS_REJECTED       = 'rejected';
-    // Legacy statuses (pre-Phase A records)
-    const STATUS_WAITING        = 'waiting';
+    // Legacy status (pre-Phase A records)
     const STATUS_CANCELLED      = 'cancelled';
 
     protected $fillable = [

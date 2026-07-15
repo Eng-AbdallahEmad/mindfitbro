@@ -171,7 +171,7 @@
                 </div>
                 <h2 class="font-display text-3xl xl:text-4xl text-white font-black leading-tight mb-4">
                     خطوة واحدة<br>
-                    <span class="text-accent">وتبدأ رحلتك 🚀</span>
+                    <span class="text-accent">وتبدأ رحلتك <span class="material-symbols-rounded align-middle" style="font-size:28px;font-variation-settings:'FILL' 1">rocket_launch</span></span>
                 </h2>
                 <p class="font-arabic text-white/70 text-base leading-relaxed max-w-sm mx-auto">
                     أكمل بياناتك عشان تتابع باقتك وتحجز موعد الكوتش
@@ -187,7 +187,11 @@
                 <div class="font-arabic">
                     <p class="text-white font-black text-sm">{{ $mainPlan['plan_name'] }}</p>
                     <p class="text-white/50 text-xs">
-                        {{ $subscription->is_yearly ? 'سنوي' : 'شهري' }}
+                        @if($subscription->duration_months)
+                            {{ $subscription->duration_months }} شهور
+                        @else
+                            شهري (قديم)
+                        @endif
                         · {{ number_format($subscription->total, 0) }} ر.س
                     </p>
                 </div>

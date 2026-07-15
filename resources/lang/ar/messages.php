@@ -8,7 +8,6 @@ return [
         'programs'     => 'برامج التدريب',
         'testimonials' => 'آراء عملاؤنا',
         'contact'      => 'اتصل بنا',
-        'cart'         => 'السلة',
         'dashboard'    => 'الداشبورد',
         'logout'       => 'تسجيل الخروج',
         'hello'        => 'مرحباً،',

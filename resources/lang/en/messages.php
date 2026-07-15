@@ -8,7 +8,6 @@ return [
         'programs'     => 'Training Programs',
         'testimonials' => 'Client Reviews',
         'contact'      => 'Contact Us',
-        'cart'         => 'Cart',
         'dashboard'    => 'Dashboard',
         'logout'       => 'Logout',
         'hello'        => 'Hello,',

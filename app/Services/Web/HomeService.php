@@ -10,9 +10,10 @@ class HomeService
 {
     public function getPlans()
     {
-        return Plan::with(['features' => function ($query) {
-                $query->orderBy('feature_plan.sort_order');
-            }])
+        return Plan::with([
+                'features' => fn($q) => $q->orderBy('feature_plan.sort_order'),
+                'prices',
+            ])
             ->where('is_active', true)
             ->orderBy('sort_order')
             ->get();
@@ -36,16 +37,4 @@ class HomeService
             ->first();
     }
 
-    public function getCart()
-    {
-        if (!Auth::check()) {
-            return null;
-        }
-
-        return \App\Models\Cart::with('items')
-            ->where('user_id', Auth::id())
-            ->whereHas('items')
-            ->latest()
-            ->first();
-    }
 }
