@@ -701,19 +701,6 @@
             <span class="bg-accent text-darkBg text-[11px] font-black px-3 py-1 rounded-full font-arabic">{{ __('messages.programs.save_with_6months') }}</span>
         </div>
 
-        @php
-            $familyPlanIds = array_filter(array_map('intval', explode(',', $settings->get('family_plan_ids', '2,3'))));
-            $familyOffer = $subscription
-                && in_array($subscription->plan_id, $familyPlanIds);
-
-            $curLower    = strtolower($currency);
-            $fPrice3m    = (int)($settings->get("family_plan_price_{$curLower}_3m", '') ?: $settings->get('family_plan_price_sar_3m', 1399));
-            $fPrice6m    = (int)($settings->get("family_plan_price_{$curLower}_6m", '') ?: $settings->get('family_plan_price_sar_6m', 2399));
-            $fOriginal3m = (int)($settings->get("family_plan_original_price_{$curLower}_3m", '') ?: $settings->get('family_plan_original_price_sar_3m', 2396));
-            $fOriginal6m = (int)($settings->get("family_plan_original_price_{$curLower}_6m", '') ?: $settings->get('family_plan_original_price_sar_6m', 3999));
-            $fCurrencyFallback = $currency !== 'SAR' && !$settings->get("family_plan_price_{$curLower}_3m");
-        @endphp
-
         {{-- Cards --}}
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-[980px] w-full px-6">
             @foreach($plans as $plan)
@@ -795,91 +782,6 @@
             @endforeach
         </div>
 
-        @if($familyOffer)
-            <div class="w-full max-w-[980px] px-6 mx-auto">
-                <div class="relative rounded-[24px] border-2 border-dashed border-accent bg-gradient-to-l from-[#fffde8] to-[#f0f5ff] overflow-hidden font-arabic" dir="{{ $isRtl ? 'rtl' : 'ltr' }}">
-
-                    <div class="w-full bg-accent flex items-center justify-center gap-2 py-2 px-4">
-                        <span class="material-symbols-rounded text-darkBg" style="font-size:16px;font-variation-settings:'FILL' 1">timer</span>
-                        <p class="text-darkBg text-xs font-black tracking-widest">{{ __('messages.programs.limited_offer') }}</p>
-                        <span class="material-symbols-rounded text-darkBg" style="font-size:16px;font-variation-settings:'FILL' 1">timer</span>
-                    </div>
-
-                    <div class="flex flex-col lg:flex-row items-center gap-8 p-8">
-
-                        <div class="flex-1 {{ $alignStart }}">
-                            <div class="flex items-center gap-3 mb-4 flex-row justify-start">
-                                <div class="w-12 h-12 rounded-2xl flex items-center justify-center bg-accent/20">
-                                    <span class="material-symbols-rounded text-[26px] text-amber-600" style="font-variation-settings:'FILL' 1">family_restroom</span>
-                                </div>
-                                <div>
-                                    <h3 class="text-2xl font-black text-textColor leading-none">{{ __('messages.programs.family_name') }}</h3>
-                                    <span class="text-xs font-bold text-amber-600 bg-amber-100 px-2 py-0.5 rounded-full">{{ __('messages.programs.family_for') }}</span>
-                                </div>
-                            </div>
-
-                            <p class="text-gray-500 text-sm leading-relaxed mb-6 max-w-md">
-                                {{ __('messages.programs.family_desc') }}
-                            </p>
-
-                            <div class="grid grid-cols-2 gap-x-6 gap-y-2.5 mb-6">
-                                @foreach(__('messages.programs.family_features') as $feat)
-                                <div class="flex items-center gap-2 text-sm font-semibold text-textColor">
-                                    <span class="material-symbols-rounded text-green-500 flex-shrink-0" style="font-size:16px;font-variation-settings:'FILL' 1">check_circle</span>
-                                    {{ $feat }}
-                                </div>
-                                @endforeach
-                            </div>
-                        </div>
-
-                        <div class="hidden lg:block w-px self-stretch bg-accent/30 mx-2"></div>
-
-                        <div class="flex flex-col items-center gap-4 min-w-[220px]">
-
-                            <span class="bg-green-100 text-green-700 text-xs font-black px-4 py-1.5 rounded-full flex items-center gap-1">
-                                <span class="material-symbols-rounded" style="font-size:14px;font-variation-settings:'FILL' 1">savings</span>
-                                {{ __('messages.programs.save_40') }}
-                            </span>
-
-                            <div class="text-center">
-                                <p class="text-xs text-gray-400 font-arabic mb-1">{{ __('messages.programs.instead_price') }}</p>
-                                <p class="text-gray-300 text-lg font-bold line-through font-display mb-1">
-                                    <x-web.currency-symbol :currency="$currency" />
-                                    <span x-text="months === 3 ? {{ $fOriginal3m }} : {{ $fOriginal6m }}">{{ $fOriginal3m }}</span>
-                                </p>
-                                <div class="flex items-baseline justify-center gap-1.5 text-textColor">
-                                    <x-web.currency-symbol :currency="$currency" />
-                                    <span class="text-6xl font-black font-display leading-none"
-                                        x-text="months === 3 ? {{ $fPrice3m }} : {{ $fPrice6m }}">
-                                        {{ $fPrice3m }}
-                                    </span>
-                                </div>
-                                <span class="text-sm text-gray-400 font-arabic"
-                                    x-text="months === 3 ? '{{ $dur3Label }}' : '{{ $dur6Label }}'">{{ $dur3Label }}</span>
-                                @if($fCurrencyFallback)
-                                <p class="text-[11px] text-amber-600 font-bold font-arabic mt-1">السعر بالريال السعودي</p>
-                                @endif
-                            </div>
-
-                            <div class="h-4"></div>
-
-                            <a href="#"
-                                class="w-full py-3.5 rounded-[14px] font-black text-sm text-center transition-all duration-300 font-arabic bg-accent text-darkBg hover:bg-yellow-300 flex items-center justify-center gap-2">
-                                <span class="material-symbols-rounded" style="font-size:16px;font-variation-settings:'FILL' 1">family_restroom</span>
-                                {{ __('messages.programs.subscribe_family') }}
-                            </a>
-
-                            <p class="text-gray-400 text-[11px] font-arabic text-center">
-                                {{ __('messages.programs.offer_limited_time') }}
-                            </p>
-
-                        </div>
-
-                    </div>
-
-                </div>
-            </div>
-        @endif
 
         @endif {{-- end plans empty/full --}}
 
@@ -1318,7 +1220,6 @@
                             <option value="starter">{{ __('messages.contact.plan_options.starter') }}</option>
                             <option value="pro">{{ __('messages.contact.plan_options.pro') }}</option>
                             <option value="elite">{{ __('messages.contact.plan_options.elite') }}</option>
-                            <option value="family">{{ __('messages.contact.plan_options.family') }}</option>
                             <option value="unknown">{{ __('messages.contact.plan_options.unknown') }}</option>
                         </select>
                     </div>

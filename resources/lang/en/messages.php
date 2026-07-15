@@ -109,14 +109,6 @@ return [
         'plan_prefix'          => 'Plan: ',
         'activation_note'      => 'The plan will be activated after the intro session with the coach',
         'expires'              => 'Expires',
-        'family_name'          => 'Family Plan',
-        'family_for'           => 'For 4 Members',
-        'family_desc'          => 'A plan dedicated to the whole family — each member gets a personalized training and nutrition plan, with daily follow-up and monthly video sessions for all members.',
-        'limited_offer'        => '⚡ Limited Offer',
-        'save_40'              => 'Save 40% compared to individual plans',
-        'instead_price'        => 'Instead of',
-        'subscribe_family'     => 'Subscribe to Family Plan',
-        'offer_limited_time'   => 'Offer valid for a limited time only',
         'guarantee'            => 'Full refund guarantee within 7 days — no conditions',
 
         // Coming soon state
@@ -131,14 +123,6 @@ return [
         'coming_soon_wa_msg'    => 'Hello, I\'d like to ask about the upcoming plans',
         'coming_soon_price_hint' => 'Prices will be announced soon',
 
-        'family_features'      => [
-            'Training plans for 4 members',
-            'Custom nutrition programs',
-            'Daily follow-up for all',
-            'Weekly video sessions',
-            'Lab analysis for all members',
-            'Monthly progress reports',
-        ],
     ],
 
     'testimonials' => [
@@ -198,7 +182,6 @@ return [
             'starter' => 'Starter — 299 SAR',
             'pro'     => 'Pro — 599 SAR',
             'elite'   => 'Elite — 999 SAR',
-            'family'  => 'Family Plan — 1,399 SAR',
             'unknown' => 'Not sure yet',
         ],
     ],
@@ -231,7 +214,6 @@ return [
         'weekly_follow'   => 'Weekly Follow-up',
         'daily_follow'    => 'Daily Follow-up',
         'medical_follow'  => 'Medical Follow-up (as needed)',
-        'family_plan'     => 'Family Plan Access',
         'program_updates' => 'Program Adjustments Based on Progress',
     ],
 
