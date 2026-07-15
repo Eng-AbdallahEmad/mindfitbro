@@ -14,7 +14,6 @@ use App\Http\Controllers\Auth\AdminAuthController;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\LocaleController;
 use App\Http\Controllers\Web\BookingController;
-use App\Http\Controllers\Web\CartController;
 use App\Http\Controllers\Web\CheckoutController;
 use App\Http\Controllers\Web\DashboardController;
 use App\Http\Controllers\Web\CurrencyController;
@@ -78,17 +77,7 @@ Route::prefix('purchase')->name('purchase.')->group(function () {
     Route::post('/{plan:key}',       [PurchaseController::class, 'submit'])->name('submit');
 });
 
-// ── Cart & Checkout (accessible without login) ──────────────────
-Route::prefix('cart')->name('cart.')->group(function () {
-    Route::get('/',                [CartController::class, 'index'])->name('index');
-    Route::post('/add',             [CartController::class, 'add'])->name('add');
-    Route::post('/update-qty',      [CartController::class, 'updateQuantity'])->name('updateQty');
-    Route::post('/remove',          [CartController::class, 'remove'])->name('remove');
-    Route::post('/set-duration',    [CartController::class, 'setDuration'])->name('setDuration');
-    Route::post('/apply-coupon',    [CartController::class, 'applyCoupon'])->name('applyCoupon');
-});
-
-Route::get('/checkout', fn () => redirect()->route('cart.index'));
+// ── Legacy Checkout (removed in Batch 3) ────────────────────────
 Route::post('/checkout', [CheckoutController::class, 'process'])->name('checkout.process');
 Route::get('/checkout/success/{id}', [CheckoutController::class, 'success'])->name('checkout.success');
 
