@@ -750,4 +750,22 @@ return [
         'go_dashboard_btn'      => 'لوحة التحكم',
         'back_home'             => 'العودة للرئيسية',
     ],
+
+    'family_reward' => [
+        'title'             => 'جائزة الأبطال',
+        'subtitle'          => 'شارك أصدقاءك وعائلتك خصماً خاصاً على الاشتراك',
+        'used_label'        => 'دعوات مُرسلة',
+        'name_placeholder'  => 'الاسم',
+        'email_placeholder' => 'البريد الإلكتروني',
+        'add_row'           => 'إضافة شخص آخر',
+        'remove_row'        => 'حذف',
+        'send_btn'          => 'إرسال الدعوات',
+        'quota_reached'     => 'وصلت إلى الحد الأقصى من الدعوات (:n دعوات)',
+        'sent_success'      => 'تم إرسال الدعوات بنجاح!',
+        'sent_count'        => 'تم إرسال :n دعوة(ات) مع كودات الخصم',
+        'sent_list_title'   => 'الدعوات المُرسلة',
+        'status_pending'    => 'في الانتظار',
+        'status_redeemed'   => 'مُستخدمة',
+        'status_expired'    => 'منتهية',
+    ],
 ];

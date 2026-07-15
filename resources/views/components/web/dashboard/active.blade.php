@@ -389,3 +389,7 @@
 
 </div>
 @endif
+
+@if($canSendInvitations)
+    @include('components.web.dashboard.partials.family-reward')
+@endif

@@ -750,4 +750,22 @@ return [
         'go_dashboard_btn'      => 'Dashboard',
         'back_home'             => 'Back to Home',
     ],
+
+    'family_reward' => [
+        'title'             => 'Champions Reward',
+        'subtitle'          => 'Share a special discount with friends and family',
+        'used_label'        => 'invitations sent',
+        'name_placeholder'  => 'Name',
+        'email_placeholder' => 'Email address',
+        'add_row'           => 'Add another person',
+        'remove_row'        => 'Remove',
+        'send_btn'          => 'Send Invitations',
+        'quota_reached'     => 'You have reached your invitation limit (:n)',
+        'sent_success'      => 'Invitations sent successfully!',
+        'sent_count'        => ':n invitation(s) sent with discount codes',
+        'sent_list_title'   => 'Sent Invitations',
+        'status_pending'    => 'Pending',
+        'status_redeemed'   => 'Redeemed',
+        'status_expired'    => 'Expired',
+    ],
 ];
