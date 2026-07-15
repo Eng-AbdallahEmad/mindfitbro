@@ -8,6 +8,7 @@ use App\Http\Controllers\Admin\SettingsController as AdminSettingsController;
 use App\Http\Controllers\Admin\BeforeAftersController as AdminBeforeAftersController;
 use App\Http\Controllers\Admin\TestimonialsController as AdminTestimonialsController;
 use App\Http\Controllers\Admin\VideosController as AdminVideosController;
+use App\Http\Controllers\Admin\CouponsController as AdminCouponsController;
 use App\Http\Controllers\Admin\SubscriptionsController as AdminSubscriptionsController;
 use App\Http\Controllers\Auth\AdminAuthController;
 use App\Http\Controllers\Auth\AuthController;
@@ -190,6 +191,13 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::post('features', [AdminPlansController::class, 'storeFeature'])->name('features.store');
         Route::put('features/{feature}', [AdminPlansController::class, 'updateFeature'])->name('features.update');
         Route::delete('features/{feature}', [AdminPlansController::class, 'destroyFeature'])->name('features.destroy');
+
+        // Coupons
+        Route::get('coupons', [AdminCouponsController::class, 'index'])->name('coupons.index');
+        Route::post('coupons', [AdminCouponsController::class, 'store'])->name('coupons.store');
+        Route::put('coupons/{coupon}', [AdminCouponsController::class, 'update'])->name('coupons.update');
+        Route::patch('coupons/{coupon}/toggle', [AdminCouponsController::class, 'toggle'])->name('coupons.toggle');
+        Route::delete('coupons/{coupon}', [AdminCouponsController::class, 'destroy'])->name('coupons.destroy');
 
         // Settings
         Route::get('settings', [AdminSettingsController::class, 'index'])->name('settings.index');
