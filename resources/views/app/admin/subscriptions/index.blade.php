@@ -142,8 +142,8 @@
             <span class="material-symbols-rounded text-yellow-500" style="font-size:22px;font-variation-settings:'FILL' 1">schedule</span>
         </div>
         <div>
-            <p class="text-2xl font-black text-slate-800 leading-none">{{ number_format($stats['waiting']) }}</p>
-            <p class="text-xs font-bold text-slate-400 mt-1">في الانتظار (قديم)</p>
+            <p class="text-2xl font-black text-slate-800 leading-none">{{ number_format($stats['approved']) }}</p>
+            <p class="text-xs font-bold text-slate-400 mt-1">موافق عليه</p>
         </div>
     </div>
 

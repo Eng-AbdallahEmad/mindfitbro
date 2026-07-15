@@ -28,7 +28,7 @@ class HomeService
         return Subscription::query()
             ->with('plan')
             ->where('user_id', Auth::id())
-            ->whereIn('status', ['active', 'waiting'])
+            ->where('status', 'active')
             ->where(function ($q) {
                 $q->whereNull('end_date')
                 ->orWhereDate('end_date', '>=', now());

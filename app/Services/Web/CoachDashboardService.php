@@ -14,9 +14,9 @@ class CoachDashboardService
         $totalUsers = User::whereIn('role', ['user'])->count();
 
         // ── المشتركين ──────────────────────────────────────────
-        $totalClients = Subscription::whereIn('status', ['active', 'waiting'])->count();
+        $totalClients = Subscription::where('status', 'active')->count();
 
-        $newClientsThisMonth = Subscription::whereIn('status', ['active', 'waiting'])
+        $newClientsThisMonth = Subscription::where('status', 'active')
             ->whereMonth('created_at', now()->month)
             ->whereYear('created_at', now()->year)
             ->count();
@@ -41,7 +41,7 @@ class CoachDashboardService
             ->get();
 
         // ── الإيرادات ──────────────────────────────────────────
-        $monthlyRevenue = Subscription::whereIn('status', ['active', 'waiting'])
+        $monthlyRevenue = Subscription::where('status', 'active')
             ->whereMonth('created_at', now()->month)
             ->whereYear('created_at', now()->year)
             ->sum('total');

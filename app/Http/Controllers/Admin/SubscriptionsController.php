@@ -67,7 +67,7 @@ class SubscriptionsController extends Controller
 
         $plans = Plan::orderBy('sort_order')->get(['id', 'name']);
 
-        $revenueRows = Subscription::whereIn('status', ['active', 'waiting', 'expired'])
+        $revenueRows = Subscription::whereIn('status', ['active', 'approved', 'expired'])
             ->selectRaw('currency, SUM(total) as total')
             ->groupBy('currency')
             ->orderBy('currency')
@@ -77,7 +77,7 @@ class SubscriptionsController extends Controller
             'total'          => Subscription::count(),
             'active'         => Subscription::where('status', 'active')->count(),
             'pending_review' => Subscription::where('status', 'pending_review')->count(),
-            'waiting'        => Subscription::where('status', 'waiting')->count(),
+            'approved'       => Subscription::where('status', 'approved')->count(),
             'expired'        => Subscription::where('status', 'expired')->count(),
             'revenue_by_currency' => $revenueRows->pluck('total', 'currency')->toArray(),
         ];

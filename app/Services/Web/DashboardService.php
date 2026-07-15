@@ -25,7 +25,7 @@ class DashboardService
             },
         ])
             ->where('user_id', Auth::id())
-            ->whereIn('status', ['active', 'approved', 'waiting'])
+            ->whereIn('status', ['active', 'approved'])
             ->where(function ($q) {
                 $q->whereNull('end_date')
                   ->orWhere('end_date', '>=', now());
@@ -39,7 +39,7 @@ class DashboardService
     // is technically "past" by morning; isFuture() would wrongly skip upcoming state.
     public function resolveState(Subscription $subscription): string
     {
-        if (in_array($subscription->status, ['approved', 'waiting'])) {
+        if ($subscription->status === 'approved') {
             return 'meeting_phase';
         }
 
