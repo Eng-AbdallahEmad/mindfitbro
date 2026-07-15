@@ -21,6 +21,7 @@ use App\Http\Controllers\Web\HomeController;
 use App\Http\Controllers\Web\PrivacyPolicyController;
 use App\Http\Controllers\Web\ProfileController;
 use App\Http\Controllers\Web\JourneyController;
+use App\Http\Controllers\Web\FamilyInvitationController;
 use App\Http\Controllers\Web\PurchaseController;
 use App\Http\Controllers\Web\SubscriberController;
 use App\Http\Controllers\Web\TermsOfServiceController;
@@ -69,6 +70,8 @@ Route::get('terms-of-service', [TermsOfServiceController::class, 'index'])->name
 Route::view('calorie-calculator', 'app.web.calorie_calculator')->name('calorie-calculator');
 
 // ── Direct Purchase Flow ────────────────────────────────────────
+Route::get('/purchase', fn () => redirect(route('home') . '#programs'));
+
 Route::prefix('purchase')->name('purchase.')->group(function () {
     Route::get('/success/{id}',      [PurchaseController::class, 'success'])->name('success');
     Route::post('/check-coupon',     [PurchaseController::class, 'checkCoupon'])->name('check-coupon');
@@ -132,6 +135,9 @@ Route::middleware('auth.custom')->group(function () {
             Route::get('/schedule-meeting/{subscription}', [BookingController::class, 'show'])->name('booking.show');
             Route::post('/booking/store', [BookingController::class, 'store'])->name('booking.store');
             Route::put('/booking/{booking}', [BookingController::class, 'update'])->name('booking.update');
+
+            // ── Family Reward Invitations ────────────────────────────────────
+            Route::post('family-invitations', [FamilyInvitationController::class, 'store'])->name('family-invitations.store');
         }); // gate.expired
 
     }); // profile.complete

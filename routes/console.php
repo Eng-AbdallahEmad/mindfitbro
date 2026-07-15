@@ -30,3 +30,10 @@ Schedule::command('subscriptions:notify-start')
     ->withoutOverlapping()
     ->runInBackground()
     ->appendOutputTo(storage_path('logs/subscriptions-start.log'));
+
+// تحديث دعوات العائلة المنتهية — يعمل يومياً الساعة 00:20
+Schedule::command('family-invitations:expire')
+    ->dailyAt('00:20')
+    ->withoutOverlapping()
+    ->runInBackground()
+    ->appendOutputTo(storage_path('logs/family-invitations-expire.log'));
