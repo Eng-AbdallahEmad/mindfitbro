@@ -18,7 +18,7 @@ class PurchaseConfirmationMail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'تأكيد شراء باقتك — MindFitBro 🎉',
+            subject: 'تأكيد شراء باقتك — MindFitBro',
         );
     }
 

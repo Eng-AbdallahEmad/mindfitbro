@@ -2,7 +2,11 @@
     'hidden' => false,
 ])
 
-@php $isRtl = app()->getLocale() === 'ar'; @endphp
+@php
+    $isRtl      = app()->getLocale() === 'ar';
+    $footerSettings = \App\Models\Setting::pluck('value', 'key');
+    $footerPlans    = \App\Models\Plan::where('is_active', true)->orderBy('sort_order')->get(['name', 'price', 'icon']);
+@endphp
 
 {{-- ═══════════════════════════════════════════
     Footer Section — MindFitBro
@@ -38,7 +42,7 @@
                 {{-- Social Icons --}}
                 <div class="flex gap-2.5">
                     {{-- Instagram --}}
-                    <a href="#"
+                    <a href="{{ $footerSettings->get('instagram_url', '#') }}"
                         class="w-10 h-10 rounded-[10px] bg-white/10 border border-white/10 flex items-center justify-center hover:bg-[#D4ED57]/20 hover:border-[#D4ED57]/40 transition-all duration-300 group">
                         <svg viewBox="0 0 20 20" width="18" height="18" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" fill="currentColor" class="text-white/60 group-hover:text-[#D4ED57] transition-colors duration-300">
                             <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
@@ -56,21 +60,21 @@
                         </svg>
                     </a>
                     {{-- TikTok --}}
-                    <a href="#"
+                    <a href="{{ $footerSettings->get('tiktok_url', '#') }}"
                         class="w-10 h-10 rounded-[10px] bg-white/10 border border-white/10 flex items-center justify-center hover:bg-[#D4ED57]/20 hover:border-[#D4ED57]/40 transition-all duration-300 group">
                         <svg fill="currentColor" viewBox="0 0 32 32" width="18" height="18" class="text-white/60 group-hover:text-[#D4ED57] transition-colors duration-300" xmlns="http://www.w3.org/2000/svg">
                             <path d="M16.656 1.029c1.637-0.025 3.262-0.012 4.886-0.025 0.054 2.031 0.878 3.859 2.189 5.213l-0.002-0.002c1.411 1.271 3.247 2.095 5.271 2.235l0.028 0.002v5.036c-1.912-0.048-3.71-0.489-5.331-1.247l0.082 0.034c-0.784-0.377-1.447-0.764-2.077-1.196l0.052 0.034c-0.012 3.649 0.012 7.298-0.025 10.934-0.103 1.853-0.719 3.543-1.707 4.954l0.020-0.031c-1.652 2.366-4.328 3.919-7.371 4.011l-0.014 0c-0.123 0.006-0.268 0.009-0.414 0.009-1.73 0-3.347-0.482-4.725-1.319l0.040 0.023c-2.508-1.509-4.238-4.091-4.558-7.094l-0.004-0.041c-0.025-0.625-0.037-1.25-0.012-1.862 0.49-4.779 4.494-8.476 9.361-8.476 0.547 0 1.083 0.047 1.604 0.136l-0.056-0.008c0.025 1.849-0.050 3.699-0.050 5.548-0.423-0.153-0.911-0.242-1.42-0.242-1.868 0-3.457 1.194-4.045 2.861l-0.009 0.030c-0.133 0.427-0.21 0.918-0.21 1.426 0 0.206 0.013 0.41 0.037 0.61l-0.002-0.024c0.332 2.046 2.086 3.59 4.201 3.59 0.061 0 0.121-0.001 0.181-0.004l-0.009 0c1.463-0.044 2.733-0.831 3.451-1.994l0.010-0.018c0.267-0.372 0.45-0.822 0.511-1.311l0.001-0.014c0.125-2.237 0.075-4.461 0.087-6.698 0.012-5.036-0.012-10.060 0.025-15.083z"/>
                         </svg>
                     </a>
                     {{-- YouTube --}}
-                    <a href="#"
+                    <a href="{{ $footerSettings->get('youtube_url', '#') }}"
                         class="w-10 h-10 rounded-[10px] bg-white/10 border border-white/10 flex items-center justify-center hover:bg-[#D4ED57]/20 hover:border-[#D4ED57]/40 transition-all duration-300 group">
                         <svg fill="currentColor" viewBox="0 0 32 32" width="18" height="18" class="text-white/60 group-hover:text-[#D4ED57] transition-colors duration-300" xmlns="http://www.w3.org/2000/svg">
                             <path d="M12.932 20.459v-8.917l7.839 4.459zM30.368 8.735c-0.354-1.301-1.354-2.307-2.625-2.663l-0.027-0.006c-3.193-0.406-6.886-0.638-10.634-0.638-0.381 0-0.761 0.002-1.14 0.007l0.058-0.001c-0.322-0.004-0.701-0.007-1.082-0.007-3.748 0-7.443 0.232-11.070 0.681l0.434-0.044c-1.297 0.363-2.297 1.368-2.644 2.643l-0.006 0.026c-0.4 2.109-0.628 4.536-0.628 7.016 0 0.088 0 0.176 0.001 0.263l-0-0.014c-0 0.074-0.001 0.162-0.001 0.25 0 2.48 0.229 4.906 0.666 7.259l-0.038-0.244c0.354 1.301 1.354 2.307 2.625 2.663l0.027 0.006c3.193 0.406 6.886 0.638 10.634 0.638 0.38 0 0.76-0.002 1.14-0.007l-0.058 0.001c0.322 0.004 0.702 0.007 1.082 0.007 3.749 0 7.443-0.232 11.070-0.681l-0.434 0.044c1.298-0.362 2.298-1.368 2.646-2.643l0.006-0.026c0.399-2.109 0.627-4.536 0.627-7.015 0-0.088-0-0.176-0.001-0.263l0 0.013c0-0.074 0.001-0.162 0.001-0.25 0-2.48-0.229-4.906-0.666-7.259l0.038 0.244z"/>
                         </svg>
                     </a>
                     {{-- WhatsApp --}}
-                    <a href="#"
+                    <a href="https://wa.me/{{ $footerSettings->get('whatsapp_number', '966593035979') }}"
                         class="w-10 h-10 rounded-[10px] bg-white/10 border border-white/10 flex items-center justify-center hover:bg-[#D4ED57]/20 hover:border-[#D4ED57]/40 transition-all duration-300 group">
                         <svg fill="currentColor" viewBox="0 0 24 24" width="18" height="18" class="text-white/60 group-hover:text-[#D4ED57] transition-colors duration-300" xmlns="http://www.w3.org/2000/svg">
                             <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
@@ -112,20 +116,16 @@
                     {{ __('messages.footer.plans') }}
                 </h4>
                 <ul class="flex flex-col gap-4">
-                    @foreach([
-                        ['name' => __('messages.footer.starter'), 'price' => '299', 'icon' => 'bolt'],
-                        ['name' => __('messages.footer.pro'),     'price' => '599', 'icon' => 'star'],
-                        ['name' => __('messages.footer.elite'),   'price' => '999', 'icon' => 'emoji_events'],
-                    ] as $plan)
+                    @foreach($footerPlans as $plan)
                     <li>
                         <a href="{{ route('home') }}#programs"
                             class="group flex items-center justify-between gap-3 bg-white/5 hover:bg-white/10 border border-white/5 hover:border-[#D4ED57]/30 rounded-[12px] px-4 py-3 transition-all duration-300">
                             <div class="flex items-center gap-2.5">
-                                <span class="material-symbols-rounded text-[#D4ED57]/70 group-hover:text-[#D4ED57] transition-colors" style="font-size:16px">{{ $plan['icon'] }}</span>
-                                <span class="text-sm font-bold text-white/70 group-hover:text-white transition-colors">{{ $plan['name'] }}</span>
+                                <span class="material-symbols-rounded text-[#D4ED57]/70 group-hover:text-[#D4ED57] transition-colors" style="font-size:16px">{{ $plan->icon ?: 'workspace_premium' }}</span>
+                                <span class="text-sm font-bold text-white/70 group-hover:text-white transition-colors">{{ $plan->name }}</span>
                             </div>
                             <span class="text-xs font-black text-[#D4ED57]/60 group-hover:text-[#D4ED57] transition-colors font-display flex items-center gap-1">
-                                {{ $plan['price'] }}
+                                {{ number_format($plan->price, 0) }}
                                 <svg width="10" height="12" viewBox="0 0 16 18" fill="none" xmlns="http://www.w3.org/2000/svg" class="inline-block flex-shrink-0 opacity-60 group-hover:opacity-100 transition-opacity">
                                     <path d="M9.36633 2.59339C10.0415 1.83554 10.4564 1.4953 11.2713 1.06514V13.6848L9.36633 14.0784V2.59339Z" fill="currentColor"/>
                                     <path d="M15.4529 8.93793C15.8478 8.10434 15.8943 7.73386 16 6.87871L1.39805 10.0494C1.05179 10.8207 0.940326 11.2518 0.886964 12.0176L15.4529 8.93793Z" fill="currentColor"/>
@@ -156,23 +156,23 @@
 
             {{-- ── Column 4: Contact ── --}}
             <div class="flex flex-col gap-5 font-arabic">
-                <h4 class="text-white font-black text-base relative pb-3 after:content-[''] after:absolute after:bottom-0 after:{{ $isRtl ? 'right' : 'left' }}-0 after:w-8 after:h-[2px] after:bg-[#D4ED57] after:rounded-full">
+                <h4 class="text-white font-black text-base relative pb-3 after:content-[''] after:absolute after:bottom-0 after:{{ $isRtl ? 'right-0' : 'left-0' }} after:w-8 after:h-[2px] after:bg-[#D4ED57] after:rounded-full">
                     {{ __('messages.footer.stay_connected') }}
                 </h4>
 
                 {{-- Mini Contact Info --}}
                 <div class="flex flex-col gap-3.5">
-                    <a href="tel:+966593035979" class="group flex items-center gap-3 text-sm text-white/60 hover:text-white transition-colors duration-300">
+                    <a href="tel:{{ $footerSettings->get('contact_phone', '+966593035979') }}" class="group flex items-center gap-3 text-sm text-white/60 hover:text-white transition-colors duration-300">
                         <div class="w-8 h-8 rounded-[8px] bg-white/10 flex items-center justify-center flex-shrink-0 group-hover:bg-[#D4ED57]/20 transition-colors">
                             <span class="material-symbols-rounded text-[#D4ED57]/60 group-hover:text-[#D4ED57]" style="font-size:16px">call</span>
                         </div>
-                        <span dir="ltr">+966 593 035 979</span>
+                        <span dir="ltr">{{ $footerSettings->get('contact_phone_display', '+966 593 035 979') }}</span>
                     </a>
-                    <a href="mailto:info@mindfitbro.com" class="group flex items-center gap-3 text-sm text-white/60 hover:text-white transition-colors duration-300">
+                    <a href="mailto:{{ $footerSettings->get('contact_email', 'info@mindfitbro.com') }}" class="group flex items-center gap-3 text-sm text-white/60 hover:text-white transition-colors duration-300">
                         <div class="w-8 h-8 rounded-[8px] bg-white/10 flex items-center justify-center flex-shrink-0 group-hover:bg-[#D4ED57]/20 transition-colors">
                             <span class="material-symbols-rounded text-[#D4ED57]/60 group-hover:text-[#D4ED57]" style="font-size:16px">mail</span>
                         </div>
-                        info@mindfitbro.com
+                        {{ $footerSettings->get('contact_email', 'info@mindfitbro.com') }}
                     </a>
                     <div class="flex items-center gap-3 text-sm text-white/60">
                         <div class="w-8 h-8 rounded-[8px] bg-white/10 flex items-center justify-center flex-shrink-0">

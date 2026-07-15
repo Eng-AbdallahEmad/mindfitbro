@@ -35,4 +35,9 @@ return [
         ],
     ],
 
+    'location' => [
+        'testing_enabled'      => env('LOCATION_TESTING_ENABLED', false),
+        'testing_country_code' => env('LOCATION_TESTING_COUNTRY_CODE', ''),
+    ],
+
 ];

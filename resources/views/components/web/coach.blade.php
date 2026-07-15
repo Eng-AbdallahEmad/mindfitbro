@@ -662,7 +662,7 @@
                     {{ now()->isoFormat('dddd، D MMMM Y') }}
                 </p>
                 <h1 class="font-display text-2xl lg:text-3xl text-textColor font-black">
-                    أهلاً كابتن، {{ explode(' ', $coach->name)[0] }} 👋
+                    أهلاً كابتن، {{ explode(' ', $coach->name)[0] }} <span class="material-symbols-rounded" style="font-size:28px;font-variation-settings:'FILL' 1;vertical-align:middle">waving_hand</span>
                 </h1>
             </div>
             <button class="lg:hidden w-10 h-10 rounded-xl bg-white border border-gray-100 flex items-center justify-center"
@@ -707,7 +707,7 @@
                 @if($pendingBookings > 0)
                     <span class="text-[10px] font-black font-arabic text-amber-700 bg-amber-50 border border-amber-100 px-2 py-0.5 rounded-full self-start animate-pulse">يحتاج مراجعة</span>
                 @else
-                    <span class="text-[10px] font-black font-arabic text-green-700 bg-green-50 border border-green-100 px-2 py-0.5 rounded-full self-start">كل شيء تمام ✓</span>
+                    <span class="text-[10px] font-black font-arabic text-green-700 bg-green-50 border border-green-100 px-2 py-0.5 rounded-full self-start">كل شيء تمام <span class="material-symbols-rounded" style="font-size:12px;font-variation-settings:'FILL' 1">check</span></span>
                 @endif
             </div>
 
@@ -757,14 +757,14 @@
                             </p>
                         </div>
                         <div class="flex gap-2 flex-shrink-0">
-                            {{-- ✅ زر التأكيد — يفتح الـ modal بالـ event الصحيح --}}
+                            {{-- زر التأكيد — يفتح الـ modal بالـ event الصحيح --}}
                             <button type="button"
                                 @click="window.dispatchEvent(new CustomEvent('open-confirm-booking', {
                                     detail: {
                                         bookingId:    {{ $booking->id }},
                                         clientName:   '{{ addslashes($booking->subscription->user->name ?? '') }}',
                                         formAction:   '{{ route('coach.bookings.confirm', $booking->id) }}',
-                                        planDuration: {{ $booking->subscription->plan->duration_days ?? 30 }}
+                                        planDuration: {{ ($booking->subscription->duration_months ?? 3) * 30 }}
                                     }
                                 }))"
                                 class="flex items-center gap-1 text-[11px] font-black font-arabic text-green-700 bg-green-50 border border-green-200 px-3 py-1.5 rounded-lg hover:bg-green-100 transition">
@@ -869,7 +869,7 @@
                         </span>
                     @endif
 
-                    {{-- ✏️ زر التعديل — بيبعت restDays صح --}}
+                    {{-- زر التعديل — بيبعت restDays صح --}}
                     <button type="button"
                         @click="window.dispatchEvent(new CustomEvent('open-edit-client', {
                             detail: {
@@ -882,7 +882,7 @@
                                 startDate:      '{{ $sub->start_date?->format('Y-m-d') ?? '' }}',
                                 endDate:        '{{ $sub->end_date?->format('Y-m-d') ?? '' }}',
                                 planId:         '{{ $sub->plan_id ?? '' }}',
-                                planDuration:   {{ $sub->plan->duration_days ?? 30 }},
+                                planDuration:   {{ ($sub->duration_months ?? 3) * 30 }},
                                 restDays:       {{ json_encode(array_map('intval', $restDays)) }}
                             }
                         }))"

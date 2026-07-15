@@ -365,7 +365,7 @@
                 @if($notMarked > 0)
                     <span class="text-[10px] font-black font-arabic text-amber-700 bg-amber-50 border border-amber-100 px-2 py-0.5 rounded-full self-start animate-pulse">يحتاج متابعة</span>
                 @else
-                    <span class="text-[10px] font-black font-arabic text-green-700 bg-green-50 border border-green-100 px-2 py-0.5 rounded-full self-start">اكتمل التسجيل ✓</span>
+                    <span class="text-[10px] font-black font-arabic text-green-700 bg-green-50 border border-green-100 px-2 py-0.5 rounded-full self-start">اكتمل التسجيل </span>
                 @endif
             </div>
 
@@ -660,11 +660,11 @@
                     if (data.success) {
                         this.attendance[userId] = data.status;
                         const labels = {
-                            present: 'تم تسجيل الحضور ✓',
-                            late:    'تم تسجيل التأخر ✓',
-                            absent:  'تم تسجيل الغياب ✓',
+                            present: 'تم تسجيل الحضور ',
+                            late:    'تم تسجيل التأخر ',
+                            absent:  'تم تسجيل الغياب ',
                         };
-                        this.showToast(labels[data.status] || 'تم الحفظ ✓');
+                        this.showToast(labels[data.status] || 'تم الحفظ ');
                     } else {
                         this.showToast('حدث خطأ، حاول مرة أخرى', false);
                     }
@@ -690,7 +690,7 @@
                 window.addEventListener('eval-saved', (e) => {
                     const { userId, eval: ev } = e.detail;
                     this.lastEvals[userId] = ev;
-                    this.showToast('تم حفظ التقييم بنجاح ✓');
+                    this.showToast('تم حفظ التقييم بنجاح ');
                 });
             },
         }));

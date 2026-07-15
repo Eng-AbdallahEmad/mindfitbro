@@ -46,7 +46,7 @@
                                     <table cellpadding="0" cellspacing="0" border="0" style="margin:0 auto 20px;">
                                         <tr>
                                             <td style="background:#D4ED57;border-radius:50%;width:68px;height:68px;text-align:center;vertical-align:middle;">
-                                                <span style="font-size:32px;line-height:68px;display:block;">🔐</span>
+                                                <span style="font-size:32px;line-height:68px;display:block;"></span>
                                             </td>
                                         </tr>
                                     </table>
@@ -108,7 +108,7 @@
                                     <table width="100%" cellpadding="0" cellspacing="0" border="0">
                                         <tr>
                                             <td style="vertical-align:top;padding-right:12px;width:28px;">
-                                                <span style="font-size:18px;">⚠️</span>
+                                                <span style="font-size:18px;"></span>
                                             </td>
                                             <td style="vertical-align:top;">
                                                 <p style="color:#92400e;font-size:13px;font-weight:700;margin:0 0 4px;">Security Notice</p>
@@ -136,7 +136,7 @@
                                     <table cellpadding="0" cellspacing="0" border="0" style="background:rgba(255,255,255,0.06);border-radius:12px;padding:12px 20px;display:inline-table;">
                                         <tr>
                                             <td style="text-align:center;">
-                                                <p style="color:#D4ED57;font-size:18px;font-weight:900;margin:0;">🔒</p>
+                                                <p style="color:#D4ED57;font-size:18px;font-weight:900;margin:0;"></p>
                                                 <p style="color:rgba(255,255,255,0.5);font-size:11px;margin:4px 0 0;">SSL 256-bit</p>
                                             </td>
                                         </tr>
@@ -156,7 +156,7 @@
                                     <table cellpadding="0" cellspacing="0" border="0" style="background:rgba(255,255,255,0.06);border-radius:12px;padding:12px 20px;display:inline-table;">
                                         <tr>
                                             <td style="text-align:center;">
-                                                <p style="color:#D4ED57;font-size:18px;font-weight:900;margin:0;">🎯</p>
+                                                <p style="color:#D4ED57;font-size:18px;font-weight:900;margin:0;"></p>
                                                 <p style="color:rgba(255,255,255,0.5);font-size:11px;margin:4px 0 0;">One-time link</p>
                                             </td>
                                         </tr>

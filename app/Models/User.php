@@ -8,6 +8,7 @@ use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Storage;
 
 class User extends Authenticatable
 {
@@ -29,6 +30,7 @@ class User extends Authenticatable
         'role',
         'status',
         'terms_accepted_at',
+        'profile_completed_at',
     ];
 
     /**
@@ -49,9 +51,33 @@ class User extends Authenticatable
     protected function casts(): array
     {
         return [
-            'email_verified_at' => 'datetime',
-            'password' => 'hashed',
+            'email_verified_at'    => 'datetime',
+            'terms_accepted_at'    => 'datetime',
+            'profile_completed_at' => 'datetime',
+            'password'             => 'hashed',
         ];
+    }
+
+    protected static function booted(): void
+    {
+        static::deleting(function (User $user) {
+            // Delete receipt files before subscriptions are cascade-deleted by the DB
+            $user->subscriptions()
+                ->whereNotNull('receipt_path')
+                ->pluck('receipt_path')
+                ->each(fn ($path) => Storage::disk('local')->delete($path));
+
+            // meeting_bookings.user_id and subscription_id are both nullOnDelete —
+            // delete the rows outright (cover user_id path + subscription_id path)
+            $subscriptionIds = $user->subscriptions()->pluck('id');
+            if ($subscriptionIds->isNotEmpty()) {
+                MeetingBooking::whereIn('subscription_id', $subscriptionIds)->delete();
+            }
+            $user->meetingBookings()->delete();
+
+            // carts.user_id is nullOnDelete — delete carts (cart_items cascade via DB)
+            $user->carts()->delete();
+        });
     }
 
     public function sendPasswordResetNotification($token): void
@@ -92,5 +118,22 @@ class User extends Authenticatable
     public function meetingBookings()
     {
         return $this->hasMany(MeetingBooking::class);
+    }
+
+    public function evaluationsAsCoach()
+    {
+        return $this->hasMany(MemberEvaluation::class, 'coach_id');
+    }
+
+    public function coachRatings()
+    {
+        return $this->hasMany(CoachRating::class, 'coach_id');
+    }
+
+    // Average rating received as a coach (0.0–5.0, null if no ratings)
+    public function getAvgRatingAttribute(): ?float
+    {
+        $avg = $this->coachRatings()->avg('stars');
+        return $avg !== null ? round((float) $avg, 1) : null;
     }
 }

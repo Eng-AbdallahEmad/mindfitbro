@@ -52,13 +52,6 @@
 
             <!-- Left Side -->
             <div class="hidden lg:flex items-center gap-4">
-                @if (auth()->guest() || auth()->user()->role === 'user')
-                    <a href="{{ route('cart.index') }}"
-                       class="{{ $linkColor }} text-lg font-semibold transition flex items-center gap-1 nav-link">
-                        <span class="material-symbols-rounded text-[20px]">shopping_cart</span>
-                        {{ __('messages.nav.cart') }}
-                    </a>
-                @endif
 
                 {{-- Language Switcher --}}
                 <a href="{{ route('locale.switch', ['lang' => $nextLang]) }}"
@@ -99,9 +92,6 @@
                             </div>
                             <a href="{{ route('dashboard') }}" class="flex items-center gap-3 px-4 py-3 text-sm font-bold text-gray-700 hover:bg-gray-50 transition">
                                 <span class="material-symbols-rounded text-[18px]">dashboard</span> {{ __('messages.nav.dashboard') }}
-                            </a>
-                            <a href="" class="flex items-center gap-3 px-4 py-3 text-sm font-bold text-gray-700 hover:bg-gray-50 transition">
-                                <span class="material-symbols-rounded text-[18px]">edit_square</span> {{ __('messages.nav.edit_profile') }}
                             </a>
                             <form method="POST" action="{{ route('logout') }}">
                                 @csrf
@@ -152,9 +142,6 @@
                             </div>
                             <a href="{{ route('dashboard') }}" class="flex items-center gap-3 px-4 py-3 text-sm font-bold text-gray-700 hover:bg-gray-50 transition">
                                 <span class="material-symbols-rounded text-[18px]">dashboard</span> {{ __('messages.nav.dashboard') }}
-                            </a>
-                            <a href="" class="flex items-center gap-3 px-4 py-3 text-sm font-bold text-gray-700 hover:bg-gray-50 transition">
-                                <span class="material-symbols-rounded text-[18px]">edit_square</span> {{ __('messages.nav.edit_profile') }}
                             </a>
                             <form method="POST" action="{{ route('logout') }}">
                                 @csrf
@@ -223,11 +210,6 @@
             <a href="{{ route('home') }}#contact"
                class="mobile-menu-link font-arabic translate-y-8 opacity-0 text-2xl font-bold text-white transition-all duration-500 ease-out hover:text-[#D4ED57] hover:scale-110">
                 {{ __('messages.nav.contact') }}
-            </a>
-            <a href="{{ route('cart.index') }}"
-               class="mobile-menu-link font-arabic translate-y-8 opacity-0 text-2xl font-bold text-white transition-all duration-500 ease-out hover:text-[#D4ED57] hover:scale-110 flex items-center gap-2">
-                <span class="material-symbols-rounded">shopping_cart</span>
-                {{ __('messages.nav.cart') }}
             </a>
 
         </div>

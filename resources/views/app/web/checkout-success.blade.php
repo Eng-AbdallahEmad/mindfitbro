@@ -547,11 +547,10 @@
 @section('content')
 
 @php
-    $sarIcon = '<svg width="13" height="15" viewBox="0 0 16 18" fill="none" xmlns="http://www.w3.org/2000/svg" class="inline-block flex-shrink-0" style="vertical-align:middle"><path d="M9.36633 2.59339C10.0415 1.83554 10.4564 1.4953 11.2713 1.06514V13.6848L9.36633 14.0784V2.59339Z" fill="currentColor"/><path d="M15.4529 8.93793C15.8478 8.10434 15.8943 7.73386 16 6.87871L1.39805 10.0494C1.05179 10.8207 0.940326 11.2518 0.886964 12.0176L15.4529 8.93793Z" fill="currentColor"/><path d="M15.4529 12.8033C15.8478 11.9697 15.8943 11.5992 16 10.744L9.43602 12.1334C9.38956 12.8975 9.44292 13.2895 9.38956 14.0552L15.4529 12.8033Z" fill="currentColor"/><path d="M15.4529 16.668C15.8478 15.8345 15.8943 15.464 16 14.6088L10.0168 15.9077C9.7148 16.3245 9.52895 17.0191 9.38956 17.92L15.4529 16.668Z" fill="currentColor"/><path d="M5.95136 15.3519C6.53213 14.6341 7.13614 13.7311 7.5543 12.9901L0.51109 14.5167C0.164822 15.2881 0.0533618 15.7192 0 16.4849L5.95136 15.3519Z" fill="currentColor"/><path d="M5.64935 1.52825C6.32448 0.770398 6.73938 0.430158 7.5543 0V13.0364L5.64935 13.4301V1.52825Z" fill="currentColor"/></svg>';
-
-    $plans   = $subscription->plans_snapshot ?? [];
-    $isYearly = $subscription->is_yearly;
-    $periodWord = $isYearly ? __('messages.checkout_success.period_yearly_word') : __('messages.checkout_success.period_monthly_word');
+    $plans          = $subscription->plans_snapshot ?? [];
+    $durationMonths = $subscription->duration_months;
+    $subCurrency    = $subscription->currency ?? 'SAR';
+    $subDec         = \App\Services\Web\CurrencyService::META[$subCurrency]['decimals'] ?? 0;
 @endphp
 
 <x-web.navbar :transparent="false" />
@@ -631,8 +630,8 @@
                         </div>
                     </div>
                     <div class="plan-price">
-                        {!! $sarIcon !!}
-                        {{ number_format($plan['final_price'], 0) }}
+                        <x-web.currency-symbol :currency="$subCurrency" />
+                        {{ number_format($plan['final_price'], $subDec) }}
                     </div>
                 </div>
                 @endforeach
@@ -657,7 +656,13 @@
                     <span class="period-text">
                         {{ __('messages.checkout_success.period_from') }} <span>{{ $subscription->start_date->format('d M Y') }}</span>
                         {{ __('messages.checkout_success.period_to') }} <span>{{ $subscription->end_date->format('d M Y') }}</span>
-                        — <span>{{ $periodWord }}</span>
+                        @if($durationMonths)
+                            — <span>{{ $durationMonths == 3 ? __('messages.checkout_success.duration_3months') : __('messages.checkout_success.duration_6months') }}</span>
+                        @elseif($subscription->is_yearly)
+                            — <span>{{ __('messages.checkout_success.period_yearly_word') }}</span>
+                        @else
+                            — <span>{{ __('messages.checkout_success.period_monthly_word') }}</span>
+                        @endif
                     </span>
                 @endif
             </div>
@@ -667,8 +672,8 @@
                 <div class="s-row">
                     <span class="s-row-label">{{ __('messages.checkout_success.subtotal_label') }}</span>
                     <span class="s-row-value">
-                        {!! $sarIcon !!}
-                        {{ number_format($subscription->total + $subscription->coupon_discount + $subscription->yearly_discount, 0) }}
+                        <x-web.currency-symbol :currency="$subCurrency" />
+                        {{ number_format($subscription->total + $subscription->coupon_discount + $subscription->yearly_discount, $subDec) }}
                     </span>
                 </div>
 
@@ -676,8 +681,8 @@
                 <div class="s-row">
                     <span class="s-row-label">{{ __('messages.checkout_success.yearly_disc_label') }}</span>
                     <span class="s-row-value green">
-                        − {!! $sarIcon !!}
-                        {{ number_format($subscription->yearly_discount, 0) }}
+                        − <x-web.currency-symbol :currency="$subCurrency" />
+                        {{ number_format($subscription->yearly_discount, $subDec) }}
                     </span>
                 </div>
                 @endif
@@ -693,8 +698,8 @@
                         @endif
                     </span>
                     <span class="s-row-value green">
-                        − {!! $sarIcon !!}
-                        {{ number_format($subscription->coupon_discount, 0) }}
+                        − <x-web.currency-symbol :currency="$subCurrency" />
+                        {{ number_format($subscription->coupon_discount, $subDec) }}
                     </span>
                 </div>
                 @endif
@@ -704,10 +709,13 @@
             <div class="total-row">
                 <span class="total-label">{{ __('messages.checkout_success.total_label') }}</span>
                 <span class="total-value">
-                    {!! str_replace('fill="currentColor"', 'fill="#D4ED57"', $sarIcon) !!}
-                    {{ number_format($subscription->total, 0) }}
+                    <x-web.currency-symbol :currency="$subCurrency" :accent="true" />
+                    {{ number_format($subscription->total, $subDec) }}
                 </span>
             </div>
+
+            {{-- Payment Instructions --}}
+            <x-web.payment-instructions :subscription="$subscription" />
 
             {{-- CTAs --}}
             <a href="{{ url('/dashboard') }}" class="btn-primary">

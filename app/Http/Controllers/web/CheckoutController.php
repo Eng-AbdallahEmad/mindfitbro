@@ -149,13 +149,14 @@ class CheckoutController extends Controller
 
         DB::transaction(function () use ($request, $subscription) {
             $user = User::create([
-                'name'               => $request->name,
-                'username'           => $request->username,
-                'phone'              => $request->phone,
-                'email'              => $request->email,
-                'gender'             => $request->gender,
-                'password'           => Hash::make($request->password),
-                'terms_accepted_at'  => now(),
+                'name'                 => $request->name,
+                'username'             => $request->username,
+                'phone'                => $request->phone,
+                'email'                => $request->email,
+                'gender'               => $request->gender,
+                'password'             => Hash::make($request->password),
+                'terms_accepted_at'    => now(),
+                'profile_completed_at' => now(),
             ]);
 
             $subscription->update([
@@ -167,6 +168,6 @@ class CheckoutController extends Controller
         });
 
         return redirect()->route('booking.show', $subscription->id)
-            ->with('success', 'تم إنشاء حسابك ورُبط بباقتك 🎉 — حدد موعد جلستك الأولى');
+            ->with('success', 'تم إنشاء حسابك ورُبط بباقتك — حدد موعد جلستك الأولى');
     }
 }

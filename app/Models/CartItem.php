@@ -11,16 +11,15 @@ class CartItem extends Model
         'cart_id',
         'plan_id',
         'quantity',
-        'monthly_price',
-        'yearly_discount_rate',
+        'price',
         'final_price',
+        'currency',
     ];
 
     protected $casts = [
-        'quantity'              => 'integer',
-        'monthly_price'         => 'decimal:2',
-        'yearly_discount_rate'  => 'decimal:2',
-        'final_price'           => 'decimal:2',
+        'quantity'    => 'integer',
+        'price'       => 'decimal:3',
+        'final_price' => 'decimal:3',
     ];
 
     public function cart(): BelongsTo

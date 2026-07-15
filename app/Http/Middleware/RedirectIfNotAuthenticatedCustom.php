@@ -21,6 +21,13 @@ class RedirectIfNotAuthenticatedCustom
             return redirect()->route('login');
         }
 
+        if (Auth::user()->status === 'banned') {
+            Auth::logout();
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
+            return redirect()->route('login')->with('banned', env('CONTACT_PHONE', ''));
+        }
+
         return $next($request);
     }
 }

@@ -61,18 +61,19 @@ class AuthController extends Controller
 
         // إنشاء المستخدم
         $user = User::create([
-            'name'      => $request->name,
-            'username'  => $request->username,
-            'phone'     => $request->phone,
-            'email'     => $request->email,
-            'gender'    => $request->gender,
-            'password'  => Hash::make($request->password),
-            'terms_accepted_at' => now(),
+            'name'                 => $request->name,
+            'username'             => $request->username,
+            'phone'                => $request->phone,
+            'email'                => $request->email,
+            'gender'               => $request->gender,
+            'password'             => Hash::make($request->password),
+            'terms_accepted_at'    => now(),
+            'profile_completed_at' => now(),
         ]);
 
         Auth::login($user);
 
-        return redirect()->route('home')->with('success', 'تم إنشاء الحساب 🎉');
+        return redirect()->route('home')->with('success', 'تم إنشاء الحساب');
     }
 
     // ========================
@@ -88,20 +89,31 @@ class AuthController extends Controller
             'password.required' => 'كلمة المرور مطلوبة',
         ]);
 
-        // 🔥 Case Sensitive Check
+        // Case Sensitive Check
         $user = User::whereRaw('BINARY username = ?', [$request->username])->first();
 
         if (!$user) {
-            return back()->withErrors([
-                'username' => 'اسم المستخدم غير صحيح',
-            ])->withInput();
+            if ($request->wantsJson()) {
+                return response()->json(['message' => 'اسم المستخدم غير صحيح', 'errors' => ['username' => ['اسم المستخدم غير صحيح']]], 422);
+            }
+            return back()->withErrors(['username' => 'اسم المستخدم غير صحيح'])->withInput();
         }
 
         // Check Password
         if (!Hash::check($request->password, $user->password)) {
-            return back()->withErrors([
-                'password' => 'كلمة المرور غير صحيحة',
-            ])->withInput();
+            if ($request->wantsJson()) {
+                return response()->json(['message' => 'كلمة المرور غير صحيحة', 'errors' => ['password' => ['كلمة المرور غير صحيحة']]], 422);
+            }
+            return back()->withErrors(['password' => 'كلمة المرور غير صحيحة'])->withInput();
+        }
+
+        // Check Banned
+        if ($user->status === 'banned') {
+            $phone = env('CONTACT_PHONE', '');
+            if ($request->wantsJson()) {
+                return response()->json(['message' => "حسابك محظور. للتواصل: {$phone}"], 403);
+            }
+            return back()->with('banned', $phone)->withInput();
         }
 
         // Login
@@ -109,8 +121,12 @@ class AuthController extends Controller
 
         $request->session()->regenerate();
 
+        if ($request->wantsJson()) {
+            return response()->json(['ok' => true]);
+        }
+
         return redirect()->intended(route('home'))
-            ->with('success', 'تم تسجيل الدخول بنجاح 👋');
+            ->with('success', 'تم تسجيل الدخول بنجاح');
     }
 
     // ========================
@@ -123,7 +139,7 @@ class AuthController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return redirect()->route('login')->with('success', 'تم تسجيل الخروج 👋');
+        return redirect()->route('login')->with('success', 'تم تسجيل الخروج');
     }
 
     // ========================

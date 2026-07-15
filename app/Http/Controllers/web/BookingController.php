@@ -4,6 +4,7 @@ namespace App\Http\Controllers\web;
 
 use App\Http\Controllers\Controller;
 use App\Models\MeetingBooking;
+use App\Models\Setting;
 use App\Models\Subscription;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -22,7 +23,14 @@ class BookingController extends Controller
             ->latest()
             ->first();
 
-        return view('app.web.schedule-meeting', compact('subscription', 'booking'));
+        $availableDaysStr = Setting::get('booking_available_days', '0,1,2,3,4');
+        $availableDays    = array_map('intval', array_filter(array_map('trim', explode(',', $availableDaysStr))));
+        $daysOff          = array_values(array_diff(range(0, 6), $availableDays));
+
+        $timeSlotsStr = Setting::get('booking_time_slots', '09:00,10:00,11:00,13:00,14:00,15:00,16:00,17:00');
+        $timeSlots    = array_values(array_filter(array_map('trim', explode(',', $timeSlotsStr))));
+
+        return view('app.web.schedule-meeting', compact('subscription', 'booking', 'daysOff', 'timeSlots'));
     }
 
     public function store(Request $request)

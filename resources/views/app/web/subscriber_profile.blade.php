@@ -687,8 +687,8 @@
                     const data = await res.json();
                     if (data.success) {
                         this.todayStatus = data.status;
-                        const labels = { present: 'تم تسجيل الحضور ✓', late: 'تم تسجيل التأخر ✓', absent: 'تم تسجيل الغياب ✓' };
-                        this.showToast(labels[data.status] || 'تم الحفظ ✓');
+                        const labels = { present: 'تم تسجيل الحضور ', late: 'تم تسجيل التأخر ', absent: 'تم تسجيل الغياب ' };
+                        this.showToast(labels[data.status] || 'تم الحفظ ');
                     } else {
                         this.showToast('حدث خطأ، حاول مرة أخرى', false);
                     }

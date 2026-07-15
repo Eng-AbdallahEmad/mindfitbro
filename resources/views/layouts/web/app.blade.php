@@ -49,6 +49,47 @@
         </div>
         @yield('content')
 
+        {{-- ══════════════ FLASH TOASTS ══════════════ --}}
+        @php
+            $toasts = [];
+            foreach (['success' => '#10B981', 'warning' => '#F59E0B', 'error' => '#EF4444', 'info' => '#3B82F6'] as $type => $color) {
+                if (session($type)) {
+                    $toasts[] = ['type' => $type, 'msg' => session($type), 'color' => $color];
+                }
+            }
+        @endphp
+        @if(count($toasts))
+        <div id="flash-toasts"
+             class="fixed top-5 z-[99990] flex flex-col gap-3 font-arabic"
+             style="{{ app()->getLocale() === 'ar' ? 'right:1.25rem;' : 'left:1.25rem;' }} max-width:90vw; width:380px;">
+            @foreach($toasts as $toast)
+            <div x-data="{ show: true }" x-show="show" x-init="setTimeout(() => show = false, 5000)"
+                 x-transition:enter="transition ease-out duration-300"
+                 x-transition:enter-start="opacity-0 translate-y-[-12px]"
+                 x-transition:enter-end="opacity-100 translate-y-0"
+                 x-transition:leave="transition ease-in duration-200"
+                 x-transition:leave-start="opacity-100"
+                 x-transition:leave-end="opacity-0 scale-95"
+                 class="flex items-start gap-3 rounded-2xl px-4 py-3.5 shadow-xl text-white text-sm leading-relaxed"
+                 style="background-color: {{ $toast['color'] }};">
+                <span class="material-symbols-rounded text-[20px] mt-0.5 shrink-0"
+                      style="font-variation-settings:'FILL' 1;">
+                    @if($toast['type'] === 'success') check_circle
+                    @elseif($toast['type'] === 'warning') warning
+                    @elseif($toast['type'] === 'error') error
+                    @else info @endif
+                </span>
+                <span class="flex-1">{{ $toast['msg'] }}</span>
+                <button @click="show = false"
+                        class="shrink-0 mt-0.5 opacity-70 hover:opacity-100 transition-opacity">
+                    <span class="material-symbols-rounded text-[18px]">close</span>
+                </button>
+            </div>
+            @endforeach
+        </div>
+        @endif
+        {{-- ══════════════ END FLASH TOASTS ══════════════ --}}
+
         {{-- ══════════════ FLOATING ACTION BUTTONS ══════════════ --}}
         @if(! request()->routeIs('dashboard', 'coach.*', 'subscribers.*'))
         <div class="fixed bottom-6 left-6 z-[9999] flex flex-col-reverse gap-3">

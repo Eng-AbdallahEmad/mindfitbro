@@ -5,8 +5,8 @@
 @php
     $isRtl      = app()->getLocale() === 'ar';
     $alignStart = $isRtl ? 'text-right' : 'text-left';
-    $perMonth        = __('messages.programs.per_month');
-    $perMonthYearly  = __('messages.programs.per_month_yearly');
+    $dur3Label = __('messages.programs.duration_3months');
+    $dur6Label = __('messages.programs.duration_6months');
 @endphp
 
 @section('style')
@@ -90,7 +90,7 @@
 
         <div class="absolute transform -translate-x-[66.8rem] translate-y-[70px] max-w-[195px] hidden 2xl:block">
             <p class="text-white text-xl font-black font-arabic">
-                {!! __('messages.hero.success_count', ['count' => '<span class="text-[#D4ED57] font-bold">500</span>']) !!}
+                {!! __('messages.hero.success_count', ['count' => '<span class="text-[#D4ED57] font-bold">'.$settings->get('hero_success_count','500').'</span>']) !!}
             </p>
         </div>
 
@@ -109,7 +109,7 @@
 
             </div>
 
-            <div class="absolute top-1/2 left-1/2 {{ $isRtl ? 'md:translate-x-[-70%] xl:translate-x-[-60%]' : 'md:translate-x-[-70%] xl:translate-x-[-30%]' }} {{ $isRtl ? 'md:translate-y-[-42%] xl:translate-y-[-46%]' : 'md:translate-y-[-42%] xl:translate-y-[-45%]' }} hidden lg:block {{ $isRtl ? 'md:w-[800px]' : 'md:w-[900px]' }}">
+            <div class="absolute top-1/2 left-1/2 {{ $isRtl ? 'md:translate-x-[-70%] xl:translate-x-[-60%]' : 'md:translate-x-[-70%] xl:translate-x-[-30%]' }} {{ $isRtl ? 'md:translate-y-[-42%] xl:translate-y-[-46%]' : 'md:translate-y-[-42%] xl:translate-y-[-45%]' }} hidden lg:block {{ $isRtl ? 'md:w-[850px]' : 'md:w-[900px]' }}">
 
                 <!-- Image -->
                 <img
@@ -194,18 +194,19 @@
 
         <div class="swiper mySwiper w-full lg:w-[70%] h-[200px] lg:h-[500px]">
             <div class="swiper-wrapper">
+                @forelse($videos as $video)
                 <div class="swiper-slide">
                     <div class="video-card relative w-full h-full rounded-2xl overflow-hidden bg-black">
                         <div class="video-overlay absolute inset-0 z-10 transition-all duration-700 opacity-100">
                             <img
-                                src="{{ asset('assets/imgs/video-thumb-1.jpg') }}"
-                                alt="Video Thumbnail"
+                                src="{{ $video->thumbnail_src }}"
+                                alt="{{ $video->title }}"
                                 class="w-full h-full object-cover"
                                 loading="lazy"
                             >
                             <div class="absolute inset-0 bg-black/30"></div>
                             <a
-                                href="https://drive.google.com/file/d/1_uI2GML9pVNSK-3oa1JuXqbuXRBhwf13/view?usp=sharing"
+                                href="{{ $video->video_url }}"
                                 target="_blank"
                                 class="play-btn absolute inset-0 m-auto w-20 h-20 rounded-full bg-white/90 flex items-center justify-center shadow-xl hover:scale-110 transition duration-300">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="w-9 h-9 text-black mr-[-3px]" fill="currentColor" viewBox="0 0 24 24">
@@ -215,48 +216,21 @@
                         </div>
                     </div>
                 </div>
+                @empty
                 <div class="swiper-slide">
                     <div class="video-card relative w-full h-full rounded-2xl overflow-hidden bg-black">
                         <div class="video-overlay absolute inset-0 z-10 transition-all duration-700 opacity-100">
                             <img
-                                src="{{ asset('assets/imgs/video-thumb-1.jpg') }}"
-                                alt="Video Thumbnail"
+                                src="{{ asset('assets/imgs/video-thumb-1.png') }}"
+                                alt="Video"
                                 class="w-full h-full object-cover"
                                 loading="lazy"
                             >
                             <div class="absolute inset-0 bg-black/30"></div>
-                            <a
-                                href="https://drive.google.com/file/d/1_uI2GML9pVNSK-3oa1JuXqbuXRBhwf13/view?usp=sharing"
-                                target="_blank"
-                                class="play-btn absolute inset-0 m-auto w-20 h-20 rounded-full bg-white/90 flex items-center justify-center shadow-xl hover:scale-110 transition duration-300">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="w-9 h-9 text-black mr-[-3px]" fill="currentColor" viewBox="0 0 24 24">
-                                    <path d="M8 5.14v14l11-7-11-7z"/>
-                                </svg>
-                            </a>
                         </div>
                     </div>
                 </div>
-                <div class="swiper-slide">
-                    <div class="video-card relative w-full h-full rounded-2xl overflow-hidden bg-black">
-                        <div class="video-overlay absolute inset-0 z-10 transition-all duration-700 opacity-100">
-                            <img
-                                src="{{ asset('assets/imgs/video-thumb-1.jpg') }}"
-                                alt="Video Thumbnail"
-                                class="w-full h-full object-cover"
-                                loading="lazy"
-                            >
-                            <div class="absolute inset-0 bg-black/30"></div>
-                            <a
-                                href="https://drive.google.com/file/d/1_uI2GML9pVNSK-3oa1JuXqbuXRBhwf13/view?usp=sharing"
-                                target="_blank"
-                                class="play-btn absolute inset-0 m-auto w-20 h-20 rounded-full bg-white/90 flex items-center justify-center shadow-xl hover:scale-110 transition duration-300">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="w-9 h-9 text-black mr-[-3px]" fill="currentColor" viewBox="0 0 24 24">
-                                    <path d="M8 5.14v14l11-7-11-7z"/>
-                                </svg>
-                            </a>
-                        </div>
-                    </div>
-                </div>
+                @endforelse
             </div>
             <div class="swiper-pagination"></div>
         </div>
@@ -271,7 +245,7 @@
             <!-- Card 1 -->
             <div class="relative rounded-2xl p-8 pt-12 flex flex-col items-center text-center transition-all duration-300 hover:-translate-y-1 bg-primary hover:bg-primaryDark font-arabic border-4 border-white hover:border-accent">
                 <div class="absolute top-[-1.55rem] left-1/2 -translate-x-1/2 whitespace-nowrap px-6 py-2.5 rounded-full font-black text-lg text-textColor bg-accent">
-                +2,500 <span class="font-bold text-base">{{ __('messages.why_us.card1.badge') }}</span>
+                {{ $settings->get('whyus_card1_count', '+2,500') }} <span class="font-bold text-base">{{ __('messages.why_us.card1.badge') }}</span>
                 </div>
                 <div class="w-20 h-20 rounded-2xl flex items-center justify-center mb-6 mt-4 bg-[rgba(255,255,255,0.12)]">
                 <svg class="w-10 h-10 text-accent" fill="none" stroke="currentColor" stroke-width="1.6" viewBox="0 0 24 24">
@@ -288,7 +262,7 @@
             <!-- Card 2 -->
             <div class="relative rounded-2xl p-8 pt-12 flex flex-col items-center text-center transition-all duration-300 hover:-translate-y-1 bg-primary hover:bg-primaryDark font-arabic border-4 border-white hover:border-accent">
                 <div class="absolute top-[-1.55rem] left-1/2 -translate-x-1/2 whitespace-nowrap px-6 py-2.5 rounded-full font-black text-lg text-textColor bg-accent">
-                +20,000 <span class="font-bold text-base">{{ __('messages.why_us.card2.badge') }}</span>
+                {{ $settings->get('whyus_card2_count', '+20,000') }} <span class="font-bold text-base">{{ __('messages.why_us.card2.badge') }}</span>
                 </div>
                 <div class="w-20 h-20 rounded-2xl flex items-center justify-center mb-6 mt-4 bg-[rgba(255,255,255,0.12)]">
                 <svg class="w-10 h-10 text-accent" fill="none" stroke="currentColor" stroke-width="1.6" viewBox="0 0 24 24">
@@ -305,7 +279,7 @@
             <!-- Card 3 -->
             <div class="relative rounded-2xl p-8 pt-12 flex flex-col items-center text-center transition-all duration-300 hover:-translate-y-1 bg-primary hover:bg-primaryDark font-arabic border-4 border-white hover:border-accent">
                 <div class="absolute top-[-1.55rem] left-1/2 -translate-x-1/2 whitespace-nowrap px-6 py-2.5 rounded-full font-black text-lg text-textColor bg-accent">
-                +10,000 <span class="font-bold text-base">{{ __('messages.why_us.card3.badge') }}</span>
+                {{ $settings->get('whyus_card3_count', '+10,000') }} <span class="font-bold text-base">{{ __('messages.why_us.card3.badge') }}</span>
                 </div>
                 <div class="w-20 h-20 rounded-2xl flex items-center justify-center mb-6 mt-4 bg-[rgba(255,255,255,0.12)]">
                 <svg class="w-10 h-10 text-accent" fill="none" stroke="currentColor" stroke-width="1.6" viewBox="0 0 24 24">
@@ -354,32 +328,27 @@
 
             <!-- RIGHT: Slider -->
             <div class="w-full md:w-[420px] xl:w-[750px] flex-shrink-0 mx-auto md:mx-0 ipad-mini:w-[320px]">
-                <div class="swiper mySwiper2 w-full md:w-[100%] xl:w-[70%] h-[310px] lg:h-[550px] aspect-[9/16] rounded-2xl overflow-hidden shadow-2xl">
+                <div class="swiper mySwiper2 w-full md:w-[100%] xl:w-[70%] h-[310px] lg:h-[550px] aspect-[9/16] rounded-2xl overflow-hidden shadow-2xl" dir="ltr">
                     <div class="swiper-wrapper">
+                        @forelse($testimonials as $testimonial)
                         <div class="swiper-slide">
                             <div class="relative w-full h-full">
-                                <img src="{{ asset('assets/imgs/t1.png') }}"
+                                <img src="{{ $testimonial->image_src }}"
                                     class="w-full h-full object-cover"
-                                    alt="MindFitBro - Salim Taboubi"
+                                    alt="{{ $testimonial->alt_text ?: 'MindFitBro' }}"
                                     loading="lazy">
                             </div>
                         </div>
+                        @empty
                         <div class="swiper-slide">
                             <div class="relative w-full h-full">
-                                <img src="{{ asset('assets/imgs/t2.png') }}"
+                                <img src="{{ asset('assets/imgs/og-image.png') }}"
                                     class="w-full h-full object-cover"
-                                    alt="MindFitBro - Ahmed Mostafa"
+                                    alt="MindFitBro"
                                     loading="lazy">
                             </div>
                         </div>
-                        <div class="swiper-slide">
-                            <div class="relative w-full h-full">
-                                <img src="{{ asset('assets/imgs/t3.png') }}"
-                                    class="w-full h-full object-cover"
-                                    alt="MindFitBro - Mahmoud Ahab"
-                                    loading="lazy">
-                            </div>
-                        </div>
+                        @endforelse
                     </div>
                     <div class="swiper-pagination"></div>
                 </div>
@@ -507,16 +476,6 @@
     {{-- Before/After Section --}}
     <section id="before-after" class="w-full bg-white py-16 lg:py-28 flex flex-col justify-center items-center gap-14 overflow-hidden">
 
-        @php
-            $beforeAfterClients = [
-                ['name'=>'Client 1', 'image'=>asset('assets/imgs/c1.png')],
-                ['name'=>'Client 2', 'image'=>asset('assets/imgs/c2.png')],
-                ['name'=>'Client 3', 'image'=>asset('assets/imgs/c3.png')],
-                ['name'=>'Client 4', 'image'=>asset('assets/imgs/c4.png')],
-                ['name'=>'Client 5', 'image'=>asset('assets/imgs/c5.png')],
-            ];
-        @endphp
-
         {{-- Header --}}
         <div class="flex flex-col items-center gap-3 text-center px-6">
             <h2 class="font-display text-3xl lg:text-7xl cursor-default transition-all duration-300 text-textColor hover:text-primary font-semibold mb-4 lg:mb-7">
@@ -547,31 +506,47 @@
         <div class="relative w-full max-w-[1200px] mx-auto px-3 lg:px-6">
             <div class="swiper beforeAfterSwiper w-full py-8">
                 <div class="swiper-wrapper items-center">
-                    @foreach($beforeAfterClients as $client)
+                    @forelse($beforeAfters as $item)
                     <div class="swiper-slide">
                         <div class="rounded-[15px] overflow-hidden">
                             <img
-                                src="{{ $client['image'] }}"
-                                alt="{{ $client['name'] }}"
+                                src="{{ $item->image_src }}"
+                                alt="{{ $item->alt_text ?: 'MindFitBro' }}"
                                 class="w-full h-full object-cover object-top"
                                 loading="lazy"
                             />
                         </div>
                     </div>
-                    @endforeach
+                    @empty
+                    @for($i = 1; $i <= 5; $i++)
+                    <div class="swiper-slide">
+                        <div class="rounded-[15px] overflow-hidden">
+                            <img src="{{ asset('assets/imgs/c' . $i . '.png') }}" alt="Client {{ $i }}"
+                                class="w-full h-full object-cover object-top" loading="lazy"/>
+                        </div>
+                    </div>
+                    @endfor
+                    @endforelse
                 </div>
             </div>
         </div>
 
         {{-- Dots --}}
         <div class="flex justify-center items-center gap-2" id="baDots">
-            @foreach($beforeAfterClients as $index => $client)
+            @forelse($beforeAfters as $item)
             <button
-                data-index="{{ $index }}"
+                data-index="{{ $loop->index }}"
                 class="ba-dot rounded-full border-0 cursor-pointer transition-all duration-300 p-0
-                    {{ $index === 0 ? 'w-2.5 h-2.5 bg-primary' : 'w-2.5 h-2.5 bg-gray-300' }}"
+                    {{ $loop->first ? 'w-2.5 h-2.5 bg-primary' : 'w-2.5 h-2.5 bg-gray-300' }}"
             ></button>
-            @endforeach
+            @empty
+            @for($i = 0; $i < 5; $i++)
+            <button data-index="{{ $i }}"
+                class="ba-dot rounded-full border-0 cursor-pointer transition-all duration-300 p-0
+                    {{ $i === 0 ? 'w-2.5 h-2.5 bg-primary' : 'w-2.5 h-2.5 bg-gray-300' }}"
+            ></button>
+            @endfor
+            @endforelse
         </div>
 
         {{-- Our Message --}}
@@ -603,7 +578,7 @@
     </section>
 
     {{-- Subscription Section --}}
-    <section id="programs" class="w-full bg-lightBg py-10 lg:py-28 flex flex-col justify-center items-center gap-14 overflow-hidden" x-data="{ yearly: false }">
+    <section id="programs" class="w-full bg-lightBg py-10 lg:py-28 flex flex-col justify-center items-center gap-14 overflow-hidden" x-data="{ months: 3 }">
 
         {{-- Header --}}
         <div class="flex flex-col items-center gap-3 text-center px-6">
@@ -618,27 +593,125 @@
             </p>
         </div>
 
-        {{-- Toggle --}}
-        <div class="flex items-center gap-4">
-            <span class="font-arabic font-bold text-sm transition-colors duration-300" :class="!yearly ? 'text-primary' : 'text-gray-400'">{{ __('messages.programs.monthly') }}</span>
+        @if($plans->isEmpty())
 
-            <button @click="yearly = !yearly"
-                class="relative w-14 h-7 rounded-full transition-colors duration-300"
-                :class="yearly ? 'bg-primary' : 'bg-gray-300'">
-                <div class="absolute top-1 left-1 w-5 h-5 bg-white rounded-full shadow transition-transform duration-300"
-                    :class="yearly ? 'translate-x-7' : 'translate-x-0'"></div>
-            </button>
+        {{-- ══ Coming Soon State ══ --}}
+        <div class="w-full max-w-[980px] px-6 mx-auto">
+            <div class="relative rounded-[28px] overflow-hidden border border-gray-100 bg-white shadow-[0_20px_60px_rgba(23,77,173,0.08)]">
 
-            <span class="font-arabic font-bold text-sm transition-colors duration-300" :class="yearly ? 'text-primary' : 'text-gray-400'">{{ __('messages.programs.yearly') }}</span>
-            <span class="bg-accent text-darkBg text-[11px] font-black px-3 py-1 rounded-full font-arabic">{{ __('messages.programs.save_25') }}</span>
+                {{-- Top accent bar --}}
+                <div class="h-1.5 w-full bg-gradient-to-r from-primary via-blue-400 to-accent"></div>
+
+                <div class="flex flex-col lg:flex-row items-center gap-12 p-10 lg:p-16 font-arabic" dir="{{ $isRtl ? 'rtl' : 'ltr' }}">
+
+                    {{-- Left / Text side --}}
+                    <div class="flex-1 flex flex-col items-start gap-6 {{ $alignStart }}">
+
+                        <span class="inline-flex items-center gap-2 bg-primary/10 text-primary text-[11px] font-black tracking-widest px-4 py-1.5 rounded-full">
+                            <span class="w-1.5 h-1.5 rounded-full bg-primary animate-pulse"></span>
+                            {{ __('messages.programs.coming_soon_badge') }}
+                        </span>
+
+                        <div>
+                            <h3 class="font-display text-3xl lg:text-5xl font-black text-textColor leading-tight mb-3">
+                                {{ __('messages.programs.coming_soon_title') }}
+                            </h3>
+                            <p class="text-gray-500 text-sm lg:text-base leading-relaxed max-w-md">
+                                {{ __('messages.programs.coming_soon_desc') }}
+                            </p>
+                        </div>
+
+                        {{-- What's included preview --}}
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 w-full max-w-md">
+                            @foreach([
+                                ['icon' => 'fitness_center',    'text' => __('messages.programs.coming_feature_1')],
+                                ['icon' => 'restaurant_menu',   'text' => __('messages.programs.coming_feature_2')],
+                                ['icon' => 'monitor_heart',     'text' => __('messages.programs.coming_feature_3')],
+                                ['icon' => 'military_tech',     'text' => __('messages.programs.coming_feature_4')],
+                            ] as $feat)
+                            <div class="flex items-center gap-3 bg-[#F4F7FF] rounded-2xl px-4 py-3">
+                                <span class="material-symbols-rounded text-primary flex-shrink-0" style="font-size:20px;font-variation-settings:'FILL' 1">{{ $feat['icon'] }}</span>
+                                <span class="text-sm font-bold text-textColor">{{ $feat['text'] }}</span>
+                            </div>
+                            @endforeach
+                        </div>
+
+                        {{-- WhatsApp CTA --}}
+                        <a href="https://wa.me/{{ $settings->get('whatsapp_number', '966593035979') }}?text={{ urlencode(__('messages.programs.coming_soon_wa_msg')) }}"
+                           target="_blank" rel="noopener"
+                           class="inline-flex items-center gap-3 bg-[#25D366] text-white font-black text-sm px-7 py-3.5 rounded-full hover:bg-[#1ebe5d] transition-all duration-200 hover:-translate-y-0.5 shadow-[0_4px_16px_rgba(37,211,102,0.3)]">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+                            </svg>
+                            {{ __('messages.programs.coming_soon_cta') }}
+                        </a>
+
+                    </div>
+
+                    {{-- Right / Visual side --}}
+                    <div class="hidden lg:flex flex-col items-center gap-5 min-w-[240px]">
+
+                        {{-- Animated icon --}}
+                        <div class="relative">
+                            <div class="w-36 h-36 rounded-full bg-gradient-to-br from-primary to-blue-400 flex items-center justify-center shadow-[0_20px_48px_rgba(23,77,173,0.25)]">
+                                <span class="material-symbols-rounded text-white" style="font-size:64px;font-variation-settings:'FILL' 1">workspace_premium</span>
+                            </div>
+                            <div class="absolute -top-2 -right-2 w-10 h-10 rounded-full bg-accent flex items-center justify-center shadow-md">
+                                <span class="material-symbols-rounded text-darkBg" style="font-size:20px;font-variation-settings:'FILL' 1">bolt</span>
+                            </div>
+                        </div>
+
+                        {{-- Mock price cards --}}
+                        <div class="flex flex-col gap-3 w-full">
+                            @foreach([['٣ شهور', 'from-primary/10 to-primary/5', 'text-primary'], ['٦ شهور', 'from-accent/30 to-accent/10', 'text-amber-700']] as [$label, $grad, $col])
+                            <div class="flex items-center justify-between bg-gradient-to-l {{ $grad }} rounded-2xl px-5 py-3 border border-white/60 backdrop-blur-sm">
+                                <span class="text-sm font-black {{ $col }}">{{ $label }}</span>
+                                <div class="flex gap-1">
+                                    @for($i = 0; $i < 4; $i++)
+                                    <div class="h-2.5 rounded-full bg-current opacity-20 {{ $i === 0 ? 'w-10' : ($i === 1 ? 'w-6' : 'w-4') }} {{ $col }}"></div>
+                                    @endfor
+                                </div>
+                            </div>
+                            @endforeach
+                            <p class="text-center text-[11px] text-gray-400 font-bold mt-1">{{ __('messages.programs.coming_soon_price_hint') }}</p>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        @else
+
+        {{-- Duration Selector --}}
+        <div class="flex items-center gap-3">
+            <div class="flex items-center bg-gray-100 rounded-full p-1.5">
+                <button @click="months = 3"
+                    class="font-arabic font-bold text-sm px-5 py-2 rounded-full transition-all duration-200"
+                    :class="months === 3 ? 'bg-white text-primary shadow' : 'text-gray-400 hover:text-gray-600'">
+                    {{ __('messages.programs.duration_3months') }}
+                </button>
+                <button @click="months = 6"
+                    class="font-arabic font-bold text-sm px-5 py-2 rounded-full transition-all duration-200"
+                    :class="months === 6 ? 'bg-white text-primary shadow' : 'text-gray-400 hover:text-gray-600'">
+                    {{ __('messages.programs.duration_6months') }}
+                </button>
+            </div>
+            <span class="bg-accent text-darkBg text-[11px] font-black px-3 py-1 rounded-full font-arabic">{{ __('messages.programs.save_with_6months') }}</span>
         </div>
 
         @php
-            $familyPlanIds = [2, 3];
+            $familyPlanIds = array_filter(array_map('intval', explode(',', $settings->get('family_plan_ids', '2,3'))));
             $familyOffer = $subscription
                 && in_array($subscription->plan_id, $familyPlanIds);
 
-            $sarIcon = '<svg width="14" height="16" viewBox="0 0 16 18" fill="none" xmlns="http://www.w3.org/2000/svg" class="inline-block flex-shrink-0" style="vertical-align:middle"><path d="M9.36633 2.59339C10.0415 1.83554 10.4564 1.4953 11.2713 1.06514V13.6848L9.36633 14.0784V2.59339Z" fill="currentColor"/><path d="M15.4529 8.93793C15.8478 8.10434 15.8943 7.73386 16 6.87871L1.39805 10.0494C1.05179 10.8207 0.940326 11.2518 0.886964 12.0176L15.4529 8.93793Z" fill="currentColor"/><path d="M15.4529 12.8033C15.8478 11.9697 15.8943 11.5992 16 10.744L9.43602 12.1334C9.38956 12.8975 9.44292 13.2895 9.38956 14.0552L15.4529 12.8033Z" fill="currentColor"/><path d="M15.4529 16.668C15.8478 15.8345 15.8943 15.464 16 14.6088L10.0168 15.9077C9.7148 16.3245 9.52895 17.0191 9.38956 17.92L15.4529 16.668Z" fill="currentColor"/><path d="M5.95136 15.3519C6.53213 14.6341 7.13614 13.7311 7.5543 12.9901L0.51109 14.5167C0.164822 15.2881 0.0533618 15.7192 0 16.4849L5.95136 15.3519Z" fill="currentColor"/><path d="M5.64935 1.52825C6.32448 0.770398 6.73938 0.430158 7.5543 0V13.0364L5.64935 13.4301V1.52825Z" fill="currentColor"/></svg>';
+            $curLower    = strtolower($currency);
+            $fPrice3m    = (int)($settings->get("family_plan_price_{$curLower}_3m", '') ?: $settings->get('family_plan_price_sar_3m', 1399));
+            $fPrice6m    = (int)($settings->get("family_plan_price_{$curLower}_6m", '') ?: $settings->get('family_plan_price_sar_6m', 2399));
+            $fOriginal3m = (int)($settings->get("family_plan_original_price_{$curLower}_3m", '') ?: $settings->get('family_plan_original_price_sar_3m', 2396));
+            $fOriginal6m = (int)($settings->get("family_plan_original_price_{$curLower}_6m", '') ?: $settings->get('family_plan_original_price_sar_6m', 3999));
+            $fCurrencyFallback = $currency !== 'SAR' && !$settings->get("family_plan_price_{$curLower}_3m");
         @endphp
 
         {{-- Cards --}}
@@ -663,21 +736,27 @@
                 <h3 class="text-xl font-black text-textColor mb-2">{{ __('messages.plans_data.'.$plan->key.'.name', [], null) ?: $plan->name }}</h3>
                 <p class="text-gray-400 text-sm leading-relaxed mb-6">{{ __('messages.plans_data.'.$plan->key.'.desc', [], null) ?: $plan->desc }}</p>
 
+                @php
+                    $price3m      = (float)($plan->priceFor($currency, 3)?->price ?? $plan->priceFor('SAR', 3)?->price ?? $plan->price);
+                    $price6m      = (float)($plan->priceFor($currency, 6)?->price ?? $plan->priceFor('SAR', 6)?->price ?? $plan->price);
+                    $showFallback = !$plan->priceFor($currency, 3) && $currency !== 'SAR';
+                @endphp
+
                 <div class="flex items-baseline gap-1.5 mb-1 text-gray-400">
-                    {!! $sarIcon !!}
+                    <x-web.currency-symbol :currency="$currency" />
                     <span class="text-5xl font-black font-display text-textColor leading-none"
-                        x-text="yearly ? Math.round({{ $plan->price }} * {{ $plan->yearly_discount_rate }}) : {{ $plan->price }}">
-                        {{ $plan->price }}
+                        x-text="months === 3 ? {{ $price3m }} : {{ $price6m }}">
+                        {{ $price3m }}
                     </span>
-                    <span class="text-sm" x-text="yearly ? '{{ $perMonthYearly }}' : '{{ $perMonth }}'">{{ $perMonth }}</span>
+                    <span class="text-sm font-arabic"
+                        x-text="months === 3 ? '{{ $dur3Label }}' : '{{ $dur6Label }}'">{{ $dur3Label }}</span>
                 </div>
 
-                <div class="h-5 mb-4">
-                    <div x-show="yearly" x-transition class="flex items-center gap-1 text-xs text-gray-300 font-arabic">
-                        {{ __('messages.programs.original_price') }} {!! $sarIcon !!}
-                        <span>{{ number_format($plan->price, 2) }}{{ $perMonth }}</span>
-                    </div>
-                </div>
+                @if($showFallback)
+                <p class="text-[11px] text-amber-600 font-bold font-arabic mb-1">السعر بالريال السعودي</p>
+                @endif
+
+                <div class="h-5 mb-4"></div>
 
                 <hr class="border-gray-100 mb-5">
 
@@ -699,26 +778,18 @@
                             class="block w-full py-3 rounded-[14px] font-black text-sm text-center font-arabic {{ $plan->btn_class }} opacity-75 cursor-not-allowed">
                         {{ __('messages.programs.already_subscribed') }}
                     </button>
-                @elseif($cart && $cart->items->count())
-                    <a href="{{ route('cart.index') }}"
-                            class="block w-full py-3 rounded-[14px] font-black text-sm text-center transition-all duration-300 font-arabic {{ $plan->btn_class }}">
-                        {{ __('messages.programs.complete_payment') }}
-                    </a>
                 @elseif (auth()->check() && auth()->user()->role === 'coach')
                         <button type="button"
                             class="block w-full py-3 rounded-[14px] font-black text-sm text-center font-arabic {{ $plan->btn_class }} opacity-75 cursor-not-allowed">
                             {{ __('messages.programs.coach_cant_subscribe') }}
                         </button>
                 @else
-                    <form method="POST" action="{{ route('cart.add') }}">
-                        @csrf
-                        <input type="hidden" name="plan_id" value="{{ $plan->id }}">
-                        <input type="hidden" name="quantity" value="1">
-                        <button type="submit"
-                                class="block w-full py-3 rounded-[14px] font-black text-sm text-center transition-all duration-300 font-arabic {{ $plan->btn_class }}">
-                            {{ __('messages.programs.subscribe_now') }}
-                        </button>
-                    </form>
+                    <a
+                        :href="'{{ route('purchase.form', $plan) }}?duration=' + months"
+                        class="block w-full py-3 rounded-[14px] font-black text-sm text-center transition-all duration-300 font-arabic {{ $plan->btn_class }}"
+                    >
+                        {{ __('messages.programs.subscribe_now') }}
+                    </a>
                 @endif
             </div>
             @endforeach
@@ -773,25 +844,24 @@
                             <div class="text-center">
                                 <p class="text-xs text-gray-400 font-arabic mb-1">{{ __('messages.programs.instead_price') }}</p>
                                 <p class="text-gray-300 text-lg font-bold line-through font-display mb-1">
-                                    {!! $sarIcon !!} 2,396
+                                    <x-web.currency-symbol :currency="$currency" />
+                                    <span x-text="months === 3 ? {{ $fOriginal3m }} : {{ $fOriginal6m }}">{{ $fOriginal3m }}</span>
                                 </p>
                                 <div class="flex items-baseline justify-center gap-1.5 text-textColor">
-                                    {!! $sarIcon !!}
+                                    <x-web.currency-symbol :currency="$currency" />
                                     <span class="text-6xl font-black font-display leading-none"
-                                        x-text="yearly ? Math.round(1399 * 0.75) : 1399">
-                                        1399
+                                        x-text="months === 3 ? {{ $fPrice3m }} : {{ $fPrice6m }}">
+                                        {{ $fPrice3m }}
                                     </span>
                                 </div>
                                 <span class="text-sm text-gray-400 font-arabic"
-                                    x-text="yearly ? '{{ $perMonthYearly }}' : '{{ $perMonth }}'">{{ $perMonth }}</span>
+                                    x-text="months === 3 ? '{{ $dur3Label }}' : '{{ $dur6Label }}'">{{ $dur3Label }}</span>
+                                @if($fCurrencyFallback)
+                                <p class="text-[11px] text-amber-600 font-bold font-arabic mt-1">السعر بالريال السعودي</p>
+                                @endif
                             </div>
 
-                            <div class="h-4">
-                                <p class="text-xs text-gray-300 font-arabic flex items-center gap-1"
-                                    x-show="yearly" x-transition>
-                                    {{ __('messages.programs.original_price') }} {!! $sarIcon !!} 1,399{{ $perMonth }}
-                                </p>
-                            </div>
+                            <div class="h-4"></div>
 
                             <a href="#"
                                 class="w-full py-3.5 rounded-[14px] font-black text-sm text-center transition-all duration-300 font-arabic bg-accent text-darkBg hover:bg-yellow-300 flex items-center justify-center gap-2">
@@ -810,6 +880,8 @@
                 </div>
             </div>
         @endif
+
+        @endif {{-- end plans empty/full --}}
 
         {{-- Guarantee --}}
         <p class="flex items-center gap-2 text-gray-400 text-sm font-arabic font-semibold px-3 lg:px-0">
@@ -836,7 +908,7 @@
                     'title'  => 'Jan 15, 2026',
                     'avatar' => 'https://ui-avatars.com/api/?name=Muhammad+Alhamdan&background=E8FE61&color=000&size=44',
                     'rating' => 5,
-                    'text'   => 'The best of the best very informed almost a doctor!! 👍',
+                    'text'   => 'The best of the best very informed almost a doctor!!',
                 ],
                 [
                     'name'   => 'Omar Hassan',
@@ -850,7 +922,7 @@
                     'title'  => 'Dec 29, 2025',
                     'avatar' => 'https://ui-avatars.com/api/?name=Naife+Al+Bassam&background=1D9E75&color=fff&size=44',
                     'rating' => 5,
-                    'text'   => 'والله كويس المدرب عجبتني الحصة شكرا لكم 💜',
+                    'text'   => 'والله كويس المدرب عجبتني الحصة شكرا لكم',
                 ],
                 [
                     'name'   => 'سامي مؤمنة',
@@ -889,8 +961,8 @@
                 <span
                     class="font-display text-3xl lg:text-5xl font-semibold text-textColor"
                     data-suffix="+"
-                    data-count="500" dir="ltr">
-                    500+
+                    data-count="{{ $settings->get('testimonials_clients', '500') }}" dir="ltr">
+                    {{ $settings->get('testimonials_clients', '500') }}+
                 </span>
                 <span class="text-gray-500 text-xs lg:text-sm font-medium">{{ __('messages.testimonials.happy_clients') }}</span>
             </div>
@@ -900,9 +972,9 @@
             <div class="flex flex-col items-center gap-1">
                 <span
                     class="font-display text-3xl lg:text-5xl font-semibold text-textColor"
-                    data-count="5.0"
+                    data-count="{{ $settings->get('testimonials_rating', '5.0') }}"
                     data-decimals="1">
-                    5.0
+                    {{ $settings->get('testimonials_rating', '5.0') }}
                 </span>
                 <div class="flex gap-0.5">
                     @for($i = 0; $i < 5; $i++)
@@ -916,10 +988,10 @@
             <div class="flex flex-col items-center gap-1">
                 <span
                     class="font-display text-3xl lg:text-5xl font-semibold text-textColor"
-                    data-count="100"
+                    data-count="{{ $settings->get('testimonials_satisfaction', '100') }}"
                     data-suffix="%"
                     data-decimals="0">
-                    100%
+                    {{ $settings->get('testimonials_satisfaction', '100') }}%
                 </span>
                 <span class="text-gray-500 text-xs lg:text-sm font-arabic font-medium">{{ __('messages.testimonials.satisfaction_rate') }}</span>
             </div>
@@ -1059,7 +1131,7 @@
 
                 <div class="flex flex-col items-center gap-1">
                     <span class="font-display text-xl md:text-4xl font-semibold text-textColor"
-                        data-count="20" data-suffix="+">20+</span>
+                        data-count="{{ $settings->get('partners_certified', '20') }}" data-suffix="+">{{ $settings->get('partners_certified', '20') }}+</span>
                     <span class="text-gray-400 text-sm font-medium">{{ __('messages.partners.certified') }}</span>
                 </div>
 
@@ -1067,7 +1139,7 @@
 
                 <div class="flex flex-col items-center gap-1">
                     <span class="font-display text-xl md:text-4xl font-semibold text-textColor"
-                        data-count="8" data-suffix="{{ __('messages.partners.countries_suffix') }}">8{{ __('messages.partners.countries_suffix') }}</span>
+                        data-count="{{ $settings->get('partners_countries', '8') }}" data-suffix="{{ __('messages.partners.countries_suffix') }}">{{ $settings->get('partners_countries', '8') }}{{ __('messages.partners.countries_suffix') }}</span>
                     <span class="text-gray-400 text-sm font-medium">{{ __('messages.partners.coverage') }}</span>
                 </div>
 
@@ -1075,7 +1147,7 @@
 
                 <div class="flex flex-col items-center gap-1">
                     <span class="font-display text-xl md:text-4xl font-semibold text-textColor"
-                        data-count="3" data-suffix="{{ __('messages.partners.years_suffix') }}">3{{ __('messages.partners.years_suffix') }}</span>
+                        data-count="{{ $settings->get('partners_years', '3') }}" data-suffix="{{ __('messages.partners.years_suffix') }}">{{ $settings->get('partners_years', '3') }}{{ __('messages.partners.years_suffix') }}</span>
                     <span class="text-gray-400 text-sm font-medium">{{ __('messages.partners.partnership_years') }}</span>
                 </div>
 
@@ -1110,11 +1182,11 @@
                 </div>
                 <span class="text-lg font-black text-textColor">{{ __('messages.contact.phone_title') }}</span>
                 <span class="text-xs text-gray-400 font-semibold leading-relaxed">{{ __('messages.contact.phone_hours') }}</span>
-                <span class="text-sm font-bold text-primary" dir="ltr">+966593035979</span>
+                <span class="text-sm font-bold text-primary" dir="ltr">{{ $settings->get('contact_phone', '+966593035979') }}</span>
             </div>
 
             {{-- WhatsApp --}}
-            <a href="https://wa.me/966593035979" target="_blank" rel="noopener noreferrer"
+            <a href="https://wa.me/{{ $settings->get('whatsapp_number', '966593035979') }}" target="_blank" rel="noopener noreferrer"
                 class="group relative rounded-[20px] p-6 bg-white border-2 border-white hover:border-accent flex flex-col items-center text-center gap-3 transition-all duration-300 hover:-translate-y-1 font-arabic cursor-pointer">
                 <div class="w-14 h-14 rounded-[14px] bg-[#EFF5FF] flex items-center justify-center">
                     <span class="material-symbols-rounded text-primary" style="font-size:28px">chat</span>
@@ -1131,7 +1203,7 @@
                 </div>
                 <span class="text-lg font-black text-textColor">{{ __('messages.contact.email_title') }}</span>
                 <span class="text-xs text-gray-400 font-semibold leading-relaxed">{{ __('messages.contact.email_hours') }}</span>
-                <a href="mailto:info@mindfitbro.com" class="text-sm font-bold text-primary hover:underline">info@mindfitbro.com</a>
+                <a href="mailto:{{ $settings->get('contact_email', 'info@mindfitbro.com') }}" class="text-sm font-bold text-primary hover:underline">{{ $settings->get('contact_email', 'info@mindfitbro.com') }}</a>
             </div>
 
         </div>
@@ -1180,7 +1252,7 @@
                         </div>
                         <div>
                             <p class="text-[11px] text-white/50 font-semibold mb-0.5">{{ __('messages.contact.phone_label') }}</p>
-                            <p class="text-sm font-bold text-white" dir="ltr">+966 593 035 979</p>
+                            <p class="text-sm font-bold text-white" dir="ltr">{{ $settings->get('contact_phone_display', '+966 593 035 979') }}</p>
                         </div>
                     </div>
 
@@ -1190,18 +1262,18 @@
                 <div class="mt-auto">
                     <p class="text-[11px] text-white/40 font-semibold mb-3">{{ __('messages.contact.follow_us') }}</p>
                     <div class="flex gap-2.5">
-                        <a href="#" class="w-10 h-10 rounded-[10px] bg-white/10 border border-white/20 flex items-center justify-center hover:bg-accent/20 transition-colors duration-200">
+                        <a href="{{ $settings->get('instagram_url', '#') }}" class="w-10 h-10 rounded-[10px] bg-white/10 border border-white/20 flex items-center justify-center hover:bg-accent/20 transition-colors duration-200">
                             <svg viewBox="0 0 20 20" width="20" height="20" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" fill="currentColor" class="text-accent">
                                 <g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
                                 <g id="SVGRepo_iconCarrier"><g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd"><g id="Dribbble-Light-Preview" transform="translate(-340.000000, -7439.000000)" fill="currentColor"><g id="icons" transform="translate(56.000000, 160.000000)"><path d="M289.869652,7279.12273 C288.241769,7279.19618 286.830805,7279.5942 285.691486,7280.72871 C284.548187,7281.86918 284.155147,7283.28558 284.081514,7284.89653 C284.035742,7285.90201 283.768077,7293.49818 284.544207,7295.49028 C285.067597,7296.83422 286.098457,7297.86749 287.454694,7298.39256 C288.087538,7298.63872 288.809936,7298.80547 289.869652,7298.85411 C298.730467,7299.25511 302.015089,7299.03674 303.400182,7295.49028 C303.645956,7294.859 303.815113,7294.1374 303.86188,7293.08031 C304.26686,7284.19677 303.796207,7282.27117 302.251908,7280.72871 C301.027016,7279.50685 299.5862,7278.67508 289.869652,7279.12273 M289.951245,7297.06748 C288.981083,7297.0238 288.454707,7296.86201 288.103459,7296.72603 C287.219865,7296.3826 286.556174,7295.72155 286.214876,7294.84312 C285.623823,7293.32944 285.819846,7286.14023 285.872583,7284.97693 C285.924325,7283.83745 286.155174,7282.79624 286.959165,7281.99226 C287.954203,7280.99968 289.239792,7280.51332 297.993144,7280.90837 C299.135448,7280.95998 300.179243,7281.19026 300.985224,7281.99226 C301.980262,7282.98483 302.473801,7284.28014 302.071806,7292.99991 C302.028024,7293.96767 301.865833,7294.49274 301.729513,7294.84312 C300.829003,7297.15085 298.757333,7297.47145 289.951245,7297.06748 M298.089663,7283.68956 C298.089663,7284.34665 298.623998,7284.88065 299.283709,7284.88065 C299.943419,7284.88065 300.47875,7284.34665 300.47875,7283.68956 C300.47875,7283.03248 299.943419,7282.49847 299.283709,7282.49847 C298.623998,7282.49847 298.089663,7283.03248 298.089663,7283.68956 M288.862673,7288.98792 C288.862673,7291.80286 291.150266,7294.08479 293.972194,7294.08479 C296.794123,7294.08479 299.081716,7291.80286 299.081716,7288.98792 C299.081716,7286.17298 296.794123,7283.89205 293.972194,7283.89205 C291.150266,7283.89205 288.862673,7286.17298 288.862673,7288.98792 M290.655732,7288.98792 C290.655732,7287.16159 292.140329,7285.67967 293.972194,7285.67967 C295.80406,7285.67967 297.288657,7287.16159 297.288657,7288.98792 C297.288657,7290.81525 295.80406,7292.29716 293.972194,7292.29716 C292.140329,7292.29716 290.655732,7290.81525 290.655732,7288.98792" id="instagram-[#167]"></path></g></g></g></g>
                             </svg>
                         </a>
-                        <a href="#" class="w-10 h-10 rounded-[10px] bg-white/10 border border-white/20 flex items-center justify-center hover:bg-accent/20 transition-colors duration-200">
+                        <a href="{{ $settings->get('tiktok_url', '#') }}" class="w-10 h-10 rounded-[10px] bg-white/10 border border-white/20 flex items-center justify-center hover:bg-accent/20 transition-colors duration-200">
                             <svg class="text-accent" fill="currentColor" viewBox="0 0 32 32" width="20" height="20" xmlns="http://www.w3.org/2000/svg">
                                 <path d="M16.656 1.029c1.637-0.025 3.262-0.012 4.886-0.025 0.054 2.031 0.878 3.859 2.189 5.213l-0.002-0.002c1.411 1.271 3.247 2.095 5.271 2.235l0.028 0.002v5.036c-1.912-0.048-3.71-0.489-5.331-1.247l0.082 0.034c-0.784-0.377-1.447-0.764-2.077-1.196l0.052 0.034c-0.012 3.649 0.012 7.298-0.025 10.934-0.103 1.853-0.719 3.543-1.707 4.954l0.020-0.031c-1.652 2.366-4.328 3.919-7.371 4.011l-0.014 0c-0.123 0.006-0.268 0.009-0.414 0.009-1.73 0-3.347-0.482-4.725-1.319l0.040 0.023c-2.508-1.509-4.238-4.091-4.558-7.094l-0.004-0.041c-0.025-0.625-0.037-1.25-0.012-1.862 0.49-4.779 4.494-8.476 9.361-8.476 0.547 0 1.083 0.047 1.604 0.136l-0.056-0.008c0.025 1.849-0.050 3.699-0.050 5.548-0.423-0.153-0.911-0.242-1.42-0.242-1.868 0-3.457 1.194-4.045 2.861l-0.009 0.030c-0.133 0.427-0.21 0.918-0.21 1.426 0 0.206 0.013 0.41 0.037 0.61l-0.002-0.024c0.332 2.046 2.086 3.59 4.201 3.59 0.061 0 0.121-0.001 0.181-0.004l-0.009 0c1.463-0.044 2.733-0.831 3.451-1.994l0.010-0.018c0.267-0.372 0.45-0.822 0.511-1.311l0.001-0.014c0.125-2.237 0.075-4.461 0.087-6.698 0.012-5.036-0.012-10.060 0.025-15.083z"/>
                             </svg>
                         </a>
-                        <a href="#" class="w-10 h-10 rounded-[10px] bg-white/10 border border-white/20 flex items-center justify-center hover:bg-accent/20 transition-colors duration-200">
+                        <a href="{{ $settings->get('youtube_url', '#') }}" class="w-10 h-10 rounded-[10px] bg-white/10 border border-white/20 flex items-center justify-center hover:bg-accent/20 transition-colors duration-200">
                             <svg class="text-accent" width="20" height="20" fill="currentColor" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
                                 <path d="M12.932 20.459v-8.917l7.839 4.459zM30.368 8.735c-0.354-1.301-1.354-2.307-2.625-2.663l-0.027-0.006c-3.193-0.406-6.886-0.638-10.634-0.638-0.381 0-0.761 0.002-1.14 0.007l0.058-0.001c-0.322-0.004-0.701-0.007-1.082-0.007-3.748 0-7.443 0.232-11.070 0.681l0.434-0.044c-1.297 0.363-2.297 1.368-2.644 2.643l-0.006 0.026c-0.4 2.109-0.628 4.536-0.628 7.016 0 0.088 0 0.176 0.001 0.263l-0-0.014c-0 0.074-0.001 0.162-0.001 0.25 0 2.48 0.229 4.906 0.666 7.259l-0.038-0.244c0.354 1.301 1.354 2.307 2.625 2.663l0.027 0.006c3.193 0.406 6.886 0.638 10.634 0.638 0.38 0 0.76-0.002 1.14-0.007l-0.058 0.001c0.322 0.004 0.702 0.007 1.082 0.007 3.749 0 7.443-0.232 11.070-0.681l-0.434 0.044c1.298-0.362 2.298-1.368 2.646-2.643l0.006-0.026c0.399-2.109 0.627-4.536 0.627-7.015 0-0.088-0-0.176-0.001-0.263l0 0.013c0-0.074 0.001-0.162 0.001-0.25 0-2.48-0.229-4.906-0.666-7.259l0.038 0.244z"/>
                             </svg>
@@ -1285,6 +1357,8 @@
 
 @section('script')
     <script>
+        window.MFB_CURRENCY = @json($currencyMeta);
+
         // ─── Register GSAP plugins once ───
         gsap.registerPlugin(ScrollTrigger, ScrollToPlugin);
 

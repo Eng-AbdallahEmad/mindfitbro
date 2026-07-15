@@ -538,14 +538,9 @@
 @section('content')
 
 @php
-    $meetLink = config('app.meet_link', 'https://meet.google.com/xxx-xxxx-xxx');
+    $meetLink  = config('app.meet_link', 'https://meet.google.com/xxx-xxxx-xxx');
     $meetShort = parse_url($meetLink, PHP_URL_HOST) . parse_url($meetLink, PHP_URL_PATH);
-
-    // Available time slots per day (can be moved to config/db later)
-    $timeSlots = ['09:00', '10:00', '11:00', '13:00', '14:00', '15:00', '16:00', '17:00'];
-
-    // Days off (0=Sunday, 5=Friday, 6=Saturday)
-    $daysOff = [5, 6];
+    // $daysOff and $timeSlots are passed from BookingController (loaded from admin settings)
 @endphp
 
 @php
@@ -690,7 +685,7 @@
             <span id="bookedDetailText">
                 @if($hasBooking)
                     {{ \Carbon\Carbon::parse($booking->meeting_date)->locale($locale)->translatedFormat(__('messages.schedule_meeting.booked_date_format')) }}
-                    — {{ __('messages.schedule_meeting.time_at') }} {{ \Carbon\Carbon::parse($booking->meeting_time)->format('H:i') }}
+                    — {{ __('messages.schedule_meeting.time_at') }} {{ \Carbon\Carbon::parse($booking->meeting_time)->format('g:i A') }}
                 @else
                     —
                 @endif
@@ -749,6 +744,13 @@ const SCHED_TRANS = {
 
 function formatStr(template, vars) {
     return template.replace(/:(\w+)/g, (_, k) => vars[k] ?? '');
+}
+
+function to12H(time24) {
+    const [h, m] = time24.split(':').map(Number);
+    const ampm = h >= 12 ? 'PM' : 'AM';
+    const h12  = h % 12 || 12;
+    return `${h12}:${m.toString().padStart(2, '0')} ${ampm}`;
 }
 
 let state = {
@@ -863,7 +865,7 @@ function renderSlots(date) {
     TIME_SLOTS.forEach(slot => {
         const btn = document.createElement('button');
         btn.className = 'slot-btn';
-        btn.textContent = slot;
+        btn.textContent = to12H(slot);
         btn.onclick = () => selectSlot(slot, btn);
         grid.appendChild(btn);
     });
@@ -886,7 +888,7 @@ function selectSlot(time, btn) {
         month: SCHED_TRANS.months[date.getMonth()],
         year:  date.getFullYear(),
     });
-    document.getElementById('sumTime').textContent = formatStr(SCHED_TRANS.sum_time_format, { time });
+    document.getElementById('sumTime').textContent = formatStr(SCHED_TRANS.sum_time_format, { time: to12H(time) });
 
     document.getElementById('confirmWrap').classList.add('show');
     document.getElementById('confirmWrap').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
@@ -906,7 +908,7 @@ async function confirmBooking() {
         date:  date.getDate(),
         month: SCHED_TRANS.months[date.getMonth()],
         year:  date.getFullYear(),
-        time:  state.selectedTime,
+        time:  to12H(state.selectedTime),
     });
 
     const isEdit = bookingMode === 'edit' && currentBookingId;

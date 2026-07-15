@@ -13,10 +13,15 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->web(append: [
             \App\Http\Middleware\SetLocale::class,
+            \App\Http\Middleware\DetectCurrency::class,
         ]);
         $middleware->alias([
-            'guest.custom' => \App\Http\Middleware\RedirectIfAuthenticatedCustom::class,
-            'auth.custom' => \App\Http\Middleware\RedirectIfNotAuthenticatedCustom::class,
+            'guest.custom'     => \App\Http\Middleware\RedirectIfAuthenticatedCustom::class,
+            'auth.custom'      => \App\Http\Middleware\RedirectIfNotAuthenticatedCustom::class,
+            'admin.auth'       => \App\Http\Middleware\AdminAuthenticated::class,
+            'admin.guest'      => \App\Http\Middleware\AdminGuest::class,
+            'profile.complete' => \App\Http\Middleware\RequireProfileComplete::class,
+            'gate.expired'     => \App\Http\Middleware\GateExpiredSubscription::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

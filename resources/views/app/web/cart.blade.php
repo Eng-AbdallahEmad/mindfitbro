@@ -414,7 +414,8 @@
 @section('content')
 
 @php
-    $sarIcon = '<svg width="14" height="16" viewBox="0 0 16 18" fill="none" xmlns="http://www.w3.org/2000/svg" class="inline-block flex-shrink-0" style="vertical-align:middle"><path d="M9.36633 2.59339C10.0415 1.83554 10.4564 1.4953 11.2713 1.06514V13.6848L9.36633 14.0784V2.59339Z" fill="currentColor"/><path d="M15.4529 8.93793C15.8478 8.10434 15.8943 7.73386 16 6.87871L1.39805 10.0494C1.05179 10.8207 0.940326 11.2518 0.886964 12.0176L15.4529 8.93793Z" fill="currentColor"/><path d="M15.4529 12.8033C15.8478 11.9697 15.8943 11.5992 16 10.744L9.43602 12.1334C9.38956 12.8975 9.44292 13.2895 9.38956 14.0552L15.4529 12.8033Z" fill="currentColor"/><path d="M15.4529 16.668C15.8478 15.8345 15.8943 15.464 16 14.6088L10.0168 15.9077C9.7148 16.3245 9.52895 17.0191 9.38956 17.92L15.4529 16.668Z" fill="currentColor"/><path d="M5.95136 15.3519C6.53213 14.6341 7.13614 13.7311 7.5543 12.9901L0.51109 14.5167C0.164822 15.2881 0.0533618 15.7192 0 16.4849L5.95136 15.3519Z" fill="currentColor"/><path d="M5.64935 1.52825C6.32448 0.770398 6.73938 0.430158 7.5543 0V13.0364L5.64935 13.4301V1.52825Z" fill="currentColor"/></svg>';
+    $cartCurrency = $cart->currency ?? 'SAR';
+    $cartDec      = \App\Services\Web\CurrencyService::META[$cartCurrency]['decimals'] ?? 0;
 @endphp
 
 <x-web.navbar :transparent="false" />
@@ -487,18 +488,15 @@
 
                         {{-- Price --}}
                         <div class="item-price">
-                            <span id="original-price-{{ $item->id }}"
-                                style="{{ $cart->is_yearly ? '' : 'display:none' }}; text-decoration:line-through; font-size:13px; color:var(--gray-muted); font-weight:500;">
-                                {{ number_format($item->monthly_price * 12 * $item->quantity, 0) }}
-                            </span>
-                            <span id="price-{{ $item->id }}">{{ number_format($item->final_price, 0) }}</span>
+                            <span id="price-{{ $item->id }}">{{ number_format($item->price * $item->quantity, $cartDec) }}</span>
                             <span class="unit">
-                                {!! $sarIcon !!}/<span class="unit-period">{{ $cart->is_yearly ? __('messages.cart.period_yearly') : __('messages.cart.period_monthly') }}</span>
+                                <x-web.currency-symbol :currency="$cartCurrency" />
+                                <span class="unit-period">{{ ($cart->duration_months ?? 3) == 3 ? __('messages.cart.duration_3months') : __('messages.cart.duration_6months') }}</span>
                             </span>
                         </div>
 
                         {{-- Remove --}}
-                        <button class="remove-btn" onclick="removeItem({{ $item->id }})" title="{{ __('messages.cart.remove_title') }}">✕</button>
+                        <button class="remove-btn" onclick="removeItem({{ $item->id }})" title="{{ __('messages.cart.remove_title') }}"><span class="material-symbols-rounded" style="font-size:14px">close</span></button>
 
                         {{-- Loading overlay --}}
                         <div class="loading-overlay"><div class="spinner"></div></div>
@@ -510,7 +508,7 @@
 
                 {{-- Empty State --}}
                 <div class="empty-state {{ $cart->items->isEmpty() ? 'show' : '' }}" id="emptyState">
-                    <div class="empty-icon">🛒</div>
+                    <div class="empty-icon"><span class="material-symbols-rounded" style="font-size:48px;font-variation-settings:'FILL' 1">shopping_cart</span></div>
                     <div class="empty-title">{{ __('messages.cart.empty_title') }}</div>
                     <div class="empty-sub">{{ __('messages.cart.empty_sub') }}</div>
                     <a href="{{ url('/') }}#programs"
@@ -555,17 +553,22 @@
                 <div class="summary-card font-arabic">
                     <div class="summary-title font-arabic">{{ __('messages.cart.summary_title') }}</div>
 
-                    {{-- Yearly Toggle --}}
+                    {{-- Duration Selector --}}
                     <div class="billing-toggle">
                         <div>
-                            <div class="billing-label">{{ __('messages.cart.billing_label') }}</div>
-                            <div class="billing-sub">{{ __('messages.cart.billing_sub') }}</div>
+                            <div class="billing-label">{{ __('messages.cart.duration_label') }}</div>
                         </div>
-                        <div class="toggle-wrap">
-                            <span class="toggle-text" id="toggleText">{{ $cart->is_yearly ? __('messages.cart.toggle_yearly') : __('messages.cart.toggle_monthly') }}</span>
-                            <button class="toggle-pill {{ $cart->is_yearly ? 'on' : '' }}"
-                                    id="yearlyToggle"
-                                    onclick="toggleYearly()"></button>
+                        <div style="display:flex;gap:6px;">
+                            <button id="dur3Btn" onclick="setDuration(3)"
+                                class="font-arabic text-xs font-bold px-3 py-1.5 rounded-full border transition-all"
+                                style="{{ ($cart->duration_months ?? 3) == 3 ? 'background:var(--primary);color:#fff;border-color:var(--primary)' : 'background:transparent;color:var(--gray-muted);border-color:var(--border)' }}">
+                                {{ __('messages.cart.duration_3months') }}
+                            </button>
+                            <button id="dur6Btn" onclick="setDuration(6)"
+                                class="font-arabic text-xs font-bold px-3 py-1.5 rounded-full border transition-all"
+                                style="{{ ($cart->duration_months ?? 3) == 6 ? 'background:var(--primary);color:#fff;border-color:var(--primary)' : 'background:transparent;color:var(--gray-muted);border-color:var(--border)' }}">
+                                {{ __('messages.cart.duration_6months') }}
+                            </button>
                         </div>
                     </div>
 
@@ -576,8 +579,8 @@
                         <div class="summary-row">
                             <span class="s-label">{{ __('messages.cart.subtotal_label') }}</span>
                             <span class="s-value" id="subtotalVal">
-                                {!! $sarIcon !!}
-                                <span id="subtotalNum">{{ number_format($cart->subtotal, 0) }}</span>
+                                <x-web.currency-symbol :currency="$cartCurrency" />
+                                <span id="subtotalNum">{{ number_format($cart->subtotal, $cartDec) }}</span>
                             </span>
                         </div>
 
@@ -586,22 +589,12 @@
                              style="{{ $cart->coupon_discount > 0 ? '' : 'display:none' }}">
                             <span class="s-label">{{ __('messages.cart.coupon_disc_label') }}</span>
                             <span class="s-value discount" id="discountVal">
-                                {!! $sarIcon !!}
-                                <span id="discountNum">{{ number_format($cart->coupon_discount, 0) }}</span>
+                                <x-web.currency-symbol :currency="$cartCurrency" />
+                                <span id="discountNum">{{ number_format($cart->coupon_discount, $cartDec) }}</span>
                                 <span>−</span>
                             </span>
                         </div>
 
-                        {{-- Yearly Discount --}}
-                        <div class="summary-row" id="yearlyDiscRow"
-                             style="{{ $cart->yearly_discount > 0 ? '' : 'display:none' }}">
-                            <span class="s-label">{{ __('messages.cart.yearly_disc_label') }}</span>
-                            <span class="s-value discount" id="yearlyDiscVal">
-                                {!! $sarIcon !!}
-                                <span id="yearlyDiscNum">{{ number_format($cart->yearly_discount, 0) }}</span>
-                                <span>−</span>
-                            </span>
-                        </div>
                     </div>
 
                     <div class="summary-divider"></div>
@@ -610,8 +603,8 @@
                     <div class="summary-total-row">
                         <div class="total-label">{{ __('messages.cart.total_label') }}</div>
                         <div class="total-value">
-                            {!! $sarIcon !!}
-                            <span id="totalVal">{{ number_format($cart->total, 0) }}</span>
+                            <x-web.currency-symbol :currency="$cartCurrency" />
+                            <span id="totalVal">{{ number_format($cart->total, $cartDec) }}</span>
                         </div>
                     </div>
 
@@ -633,7 +626,7 @@
                                            value="{{ old('guest_name') }}"
                                            required>
                                     @error('guest_name')
-                                        <p class="guest-error">⚠ {{ $message }}</p>
+                                        <p class="guest-error"><span class="material-symbols-rounded" style="font-size:13px;font-variation-settings:'FILL' 1;vertical-align:middle">warning</span> {{ $message }}</p>
                                     @enderror
                                 </div>
                                 <div>
@@ -643,11 +636,11 @@
                                            value="{{ old('guest_email') }}"
                                            required>
                                     @error('guest_email')
-                                        <p class="guest-error">⚠ {{ $message }}</p>
+                                        <p class="guest-error"><span class="material-symbols-rounded" style="font-size:13px;font-variation-settings:'FILL' 1;vertical-align:middle">warning</span> {{ $message }}</p>
                                     @enderror
                                 </div>
                             </div>
-                            <p class="guest-hint">📧 {{ __('messages.cart.guest_email_hint') }}</p>
+                            <p class="guest-hint"><span class="material-symbols-rounded" style="font-size:13px;font-variation-settings:'FILL' 1;vertical-align:middle">mail</span> {{ __('messages.cart.guest_email_hint') }}</p>
                             <div class="guest-divider"><span>{{ __('messages.cart.guest_or') }}</span></div>
                             <a href="{{ route('login') }}" class="login-link-btn">
                                 <span class="material-symbols-rounded" style="font-size:15px">login</span>
@@ -694,21 +687,21 @@
 
 @section('script')
 <script>
+window.MFB_CURRENCY = @json(array_merge(\App\Services\Web\CurrencyService::META[$cartCurrency] ?? \App\Services\Web\CurrencyService::META['SAR'], ['code' => $cartCurrency]));
+
 const CART_TRANS = {
-    items_label:    @json(__('messages.cart.items_label')),
-    total_items:    @json(__('messages.cart.total_items')),
-    toggle_yearly:  @json(__('messages.cart.toggle_yearly')),
-    toggle_monthly: @json(__('messages.cart.toggle_monthly')),
-    period_yearly:  @json(__('messages.cart.period_yearly')),
-    period_monthly: @json(__('messages.cart.period_monthly')),
-    coupon_btn:     @json(__('messages.cart.coupon_btn')),
+    items_label:      @json(__('messages.cart.items_label')),
+    total_items:      @json(__('messages.cart.total_items')),
+    duration_3months: @json(__('messages.cart.duration_3months')),
+    duration_6months: @json(__('messages.cart.duration_6months')),
+    coupon_btn:       @json(__('messages.cart.coupon_btn')),
 };
 
 const ROUTES = {
-    updateQty:    '{{ route('cart.updateQty') }}',
-    remove:       '{{ route('cart.remove') }}',
-    toggleYearly: '{{ route('cart.toggleYearly') }}',
-    applyCoupon:  '{{ route('cart.applyCoupon') }}',
+    updateQty:   '{{ route('cart.updateQty') }}',
+    remove:      '{{ route('cart.remove') }}',
+    setDuration: '{{ route('cart.setDuration') }}',
+    applyCoupon: '{{ route('cart.applyCoupon') }}',
 };
 
 const CSRF = '{{ csrf_token() }}';
@@ -730,7 +723,7 @@ async function cartRequest(url, data) {
 }
 
 // ─── Update Summary UI ────────────────────────────────────────
-// ✅ الـ JS بس بيغير الأرقام — الـ SAR icon فاضل في الـ HTML
+// الـ JS بس بيغير الأرقام — الـ SAR icon فاضل في الـ HTML
 function updateSummaryUI(data) {
     const count = data.count;
 
@@ -750,7 +743,7 @@ function updateSummaryUI(data) {
     const couponSec = document.getElementById('couponSection');
     if (couponSec) couponSec.style.display = count === 0 ? 'none' : '';
 
-    // ✅ بس بنغير الـ span الرقم مش الـ element كله
+    // بس بنغير الـ span الرقم مش الـ element كله
     document.getElementById('subtotalNum').textContent = formatNum(data.subtotal);
     document.getElementById('totalVal').textContent    = formatNum(data.total);
 
@@ -758,28 +751,27 @@ function updateSummaryUI(data) {
     document.getElementById('discountRow').style.display = couponDisc > 0 ? '' : 'none';
     document.getElementById('discountNum').textContent   = formatNum(data.coupon_discount);
 
-    const yearlyDisc = parseFloat(data.yearly_discount);
-    document.getElementById('yearlyDiscRow').style.display = yearlyDisc > 0 ? '' : 'none';
-    document.getElementById('yearlyDiscNum').textContent   = formatNum(data.yearly_discount);
+    // ─── Duration buttons ─────────────────────────────────────
+    const dur = parseInt(data.duration_months) || 3;
+    const dur3 = document.getElementById('dur3Btn');
+    const dur6 = document.getElementById('dur6Btn');
+    if (dur3 && dur6) {
+        const on  = 'background:var(--primary);color:#fff;border-color:var(--primary)';
+        const off = 'background:transparent;color:var(--gray-muted);border-color:var(--border)';
+        dur3.style.cssText = dur === 3 ? on : off;
+        dur6.style.cssText = dur === 6 ? on : off;
+    }
 
     // ─── Update each item ─────────────────────────────────────
     data.items.forEach(item => {
         const itemEl = document.getElementById('item-' + item.id);
         if (!itemEl) return;
 
-        // ✅ بس بنغير الرقم
         const priceEl = document.getElementById('price-' + item.id);
         if (priceEl) priceEl.textContent = formatNum(item.final_price);
 
-        // ✅ بس بنغير الـ period (شهر/سنة) مش الـ SAR icon
         const periodEl = itemEl.querySelector('.unit-period');
-        if (periodEl) periodEl.textContent = data.is_yearly ? CART_TRANS.period_yearly : CART_TRANS.period_monthly;
-
-        const origEl = document.getElementById('original-price-' + item.id);
-        if (origEl) {
-            origEl.textContent = formatNum(item.original_price);
-            origEl.style.display = data.is_yearly ? '' : 'none';
-        }
+        if (periodEl) periodEl.textContent = dur === 3 ? CART_TRANS.duration_3months : CART_TRANS.duration_6months;
 
         // qty
         const qtyEl = document.getElementById('qty-' + item.id);
@@ -800,7 +792,9 @@ function updateSummaryUI(data) {
 // ─── Format Number ────────────────────────────────────────────
 function formatNum(n) {
     const num = parseFloat(String(n).replace(/,/g, ''));
-    return new Intl.NumberFormat('en-US').format(Math.round(num));
+    const dec = window.MFB_CURRENCY?.decimals ?? 0;
+    const loc = window.MFB_CURRENCY?.locale   ?? 'en-US';
+    return new Intl.NumberFormat(loc, { minimumFractionDigits: dec, maximumFractionDigits: dec }).format(num);
 }
 
 // ─── Change Quantity ──────────────────────────────────────────
@@ -840,23 +834,13 @@ async function removeItem(itemId) {
     }
 }
 
-// ─── Toggle Yearly ────────────────────────────────────────────
-async function toggleYearly() {
-    const btn      = document.getElementById('yearlyToggle');
-    const isYearly = !btn.classList.contains('on');
-
-    // Optimistic UI
-    btn.classList.toggle('on', isYearly);
-    document.getElementById('toggleText').textContent = isYearly ? CART_TRANS.toggle_yearly : CART_TRANS.toggle_monthly;
-
+// ─── Set Duration ─────────────────────────────────────────────
+async function setDuration(months) {
     try {
-        const data = await cartRequest(ROUTES.toggleYearly, { is_yearly: isYearly });
+        const data = await cartRequest(ROUTES.setDuration, { duration_months: months });
         updateSummaryUI(data);
     } catch (e) {
-        // Revert on failure
-        btn.classList.toggle('on', !isYearly);
-        document.getElementById('toggleText').textContent = !isYearly ? CART_TRANS.toggle_yearly : CART_TRANS.toggle_monthly;
-        console.error('Failed to toggle yearly', e);
+        console.error('Failed to set duration', e);
     }
 }
 
