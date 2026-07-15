@@ -1222,7 +1222,7 @@
 @section('script')
 <script>
 function switchTab(tab, btn) {
-    ['general','social','stats','videos','testimonials','before-after','pricing','booking'].forEach(t => {
+    ['general','social','stats','videos','testimonials','before-after','family-reward','booking'].forEach(t => {
         document.getElementById('tab-' + t).classList.add('hidden');
     });
     document.querySelectorAll('.tab-nav-item').forEach(b => b.classList.remove('active'));

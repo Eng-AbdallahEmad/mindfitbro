@@ -110,6 +110,17 @@ return [
         'activation_note'      => 'The plan will be activated after the intro session with the coach',
         'expires'              => 'Expires',
         'guarantee'            => 'Full refund guarantee within 7 days — no conditions',
+        'reward_badge'         => 'Exclusive Perk for Elite Members',
+        'reward_desc'          => 'As an Elite member, you can send exclusive discount invitations to your friends and family to help them join MindFitBro at a reduced price.',
+        'reward_discount_label'=> 'Discount for each person you invite',
+        'reward_discount_sub'  => 'on any plan',
+        'reward_cta'           => 'Send Invitations from Dashboard',
+        'reward_features'      => [
+            'Personal discount code per invitee',
+            'Valid for 30 days',
+            'Single-use only',
+            'Applies to any plan',
+        ],
 
         // Coming soon state
         'coming_soon_badge'     => 'Coming Soon',
@@ -214,6 +225,7 @@ return [
         'weekly_follow'   => 'Weekly Follow-up',
         'daily_follow'    => 'Daily Follow-up',
         'medical_follow'  => 'Medical Follow-up (as needed)',
+        'family_plan'     => 'Friend & Family Discount Invitations',
         'program_updates' => 'Program Adjustments Based on Progress',
     ],
 
