@@ -14,7 +14,7 @@ use App\Http\Controllers\Auth\AdminAuthController;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\LocaleController;
 use App\Http\Controllers\Web\BookingController;
-use App\Http\Controllers\Web\CheckoutController;
+use App\Http\Controllers\Web\GuestAccountController;
 use App\Http\Controllers\Web\DashboardController;
 use App\Http\Controllers\Web\CurrencyController;
 use App\Http\Controllers\Web\HomeController;
@@ -77,13 +77,9 @@ Route::prefix('purchase')->name('purchase.')->group(function () {
     Route::post('/{plan:key}',       [PurchaseController::class, 'submit'])->name('submit');
 });
 
-// ── Legacy Checkout (removed in Batch 3) ────────────────────────
-Route::post('/checkout', [CheckoutController::class, 'process'])->name('checkout.process');
-Route::get('/checkout/success/{id}', [CheckoutController::class, 'success'])->name('checkout.success');
-
 // ── Complete Account (guest email link) ─────────────────────────
-Route::get('/complete-account/{token}', [CheckoutController::class, 'completeAccount'])->name('complete-account.show');
-Route::post('/complete-account/{token}', [CheckoutController::class, 'storeCompleteAccount'])->name('complete-account.store');
+Route::get('/complete-account/{token}', [GuestAccountController::class, 'completeAccount'])->name('complete-account.show');
+Route::post('/complete-account/{token}', [GuestAccountController::class, 'storeCompleteAccount'])->name('complete-account.store');
 
 Route::middleware('auth.custom')->group(function () {
     // Complete profile — not gated by profile.complete (would cause infinite redirect)
