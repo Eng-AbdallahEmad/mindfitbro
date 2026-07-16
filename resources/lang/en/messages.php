@@ -111,10 +111,11 @@ return [
         'expires'              => 'Expires',
         'guarantee'            => 'Full refund guarantee within 7 days — no conditions',
         'reward_badge'         => 'Exclusive Perk for Elite Members',
-        'reward_desc'          => 'As an Elite member, you can send exclusive discount invitations to your friends and family to help them join MindFitBro at a reduced price.',
+        'reward_desc'          => 'Elite members get an exclusive perk: send discount invitations to friends and family so they can join MindFitBro at a reduced price.',
         'reward_discount_label'=> 'Discount for each person you invite',
         'reward_discount_sub'  => 'on any plan',
-        'reward_cta'           => 'Send Invitations from Dashboard',
+        'reward_cta'              => 'Send Invitations Now',
+        'reward_cta_subscribe'    => 'Join :plan',
         'reward_features'      => [
             'Personal discount code per invitee',
             'Valid for 30 days',

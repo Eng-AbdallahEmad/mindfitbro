@@ -8,17 +8,37 @@
    responsive classes that may not be compiled.
 ══════════════════════════════════════════════════ */
 
+/* ── ensure this page is always scrollable regardless of loader state ── */
+body { overflow-y: auto !important; overflow-x: hidden; }
+
+/* ── guarantee icon rendering: Tailwind's base or the Arabic font stack
+      can shadow the Google Fonts .material-symbols-rounded rule ── */
+.material-symbols-rounded {
+    font-family: 'Material Symbols Rounded' !important;
+    font-feature-settings: 'liga' 1 !important;
+    -webkit-font-feature-settings: 'liga' 1 !important;
+    direction: ltr;
+    display: inline-block;
+    white-space: nowrap;
+    word-wrap: normal;
+    letter-spacing: normal;
+    text-transform: none;
+    line-height: 1;
+}
+
 /* page shell */
 .jny-page {
     min-height: 100vh;
     background: #EEF2FB;
     font-family: 'Noto Kufi Arabic', 'Cairo', sans-serif;
+    width: 100%;
+    display: block;
 }
 
 /* ── hero ── */
 .jny-hero {
     background: linear-gradient(135deg, #174DAD 0%, #0f3a87 100%);
-    padding: 52px 24px 80px;
+    padding: 52px 24px 96px;  /* generous bottom — stats overlap this space */
     text-align: center;
     position: relative;
     overflow: hidden;
@@ -45,11 +65,12 @@
 
 /* ── content wrapper ── */
 .jny-wrap {
-    max-width: 760px;
-    margin: -44px auto 0;   /* slight overlap into hero bottom */
-    padding: 0 16px 80px;
+    max-width: 1000px;
+    width: calc(100% - 32px);   /* explicit width so margin:auto always centers */
+    margin: -52px auto 0;
+    padding: 0 0 80px;
     position: relative;
-    z-index: 2;             /* ensures cards sit above hero background */
+    z-index: 10;                 /* well above the hero's z-index:auto */
 }
 
 /* ── stats grid ── */
@@ -59,7 +80,7 @@
     gap: 12px;
     margin-bottom: 16px;
 }
-@media (min-width: 600px) {
+@media (min-width: 480px) {
     .stats-grid { grid-template-columns: repeat(4, 1fr); }
 }
 

@@ -10,6 +10,8 @@ use App\Models\Program;
 use App\Models\UserProfile;
 use App\Models\WeightLog;
 use App\Models\ProgramDay;
+use App\Models\FamilyInvitation;
+use App\Models\Setting;
 use App\Models\Subscription;
 use App\Models\Plan;
 use App\Mail\MeetingLinkMail;
@@ -187,6 +189,27 @@ class DashboardController extends Controller
                 : 0;
         }
 
+        // ── 7. Family Reward (active + meeting_phase) ─────────────────────────
+        $canSendInvitations = false;
+        $invitations        = collect();
+        $usedInvites        = 0;
+        $maxInvites         = 0;
+
+        if (in_array($dashboardState, ['active', 'meeting_phase']) && $subscription) {
+            $rewardEnabled = Setting::get('family_reward_enabled', '0') === '1';
+            $rewardPlanId  = (int) Setting::get('family_reward_plan_id', 0);
+            $maxInvites    = (int) Setting::get('family_reward_max_invites', 5);
+
+            if ($rewardEnabled && $rewardPlanId && $subscription->plan_id === $rewardPlanId) {
+                $canSendInvitations = true;
+                $invitations        = FamilyInvitation::where('subscription_id', $subscription->id)
+                    ->with('coupon')
+                    ->orderByDesc('sent_at')
+                    ->get();
+                $usedInvites = $invitations->count();
+            }
+        }
+
         return view('app.web.dashboard', compact(
             'dashboardState', 'subscription', 'plan', 'booking', 'hasBooking',
             'bookingStep', 'meetingDone', 'rejectedRecent',
@@ -194,7 +217,8 @@ class DashboardController extends Controller
             'startWeight', 'currentWeight', 'goalWeight',
             'wRange', 'wDone', 'wPct', 'wRemaining', 'wLosing',
             'weeksDone', 'totalWeeks', 'pct', 'streak', 'weekDays',
-            'todayDayStatus', 'evaluations', 'attendancePct', 'progress'
+            'todayDayStatus', 'evaluations', 'attendancePct', 'progress',
+            'canSendInvitations', 'invitations', 'usedInvites', 'maxInvites'
         ));
     }
 

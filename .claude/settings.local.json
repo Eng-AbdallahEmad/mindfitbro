@@ -69,7 +69,10 @@
       "Bash(php -l app/Http/Controllers/Web/DashboardController.php)",
       "Bash(git reset *)",
       "Bash(git commit *)",
-      "Bash(git tag *)"
+      "Bash(git tag *)",
+      "Bash(composer dump-autoload *)",
+      "Bash(xargs grep -l \"journey\")",
+      "Bash(grep -n '$s\\\\b\\\\|grouped\\\\|defaults' resources/views/app/admin/settings/index.blade.php)"
     ]
   }
 }

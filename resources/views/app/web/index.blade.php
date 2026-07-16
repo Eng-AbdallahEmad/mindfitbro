@@ -702,16 +702,16 @@
         </div>
 
         @php
-            $rewardEnabled  = $settings->get('family_reward_enabled', '0') === '1';
-            $rewardPlanId   = (int) ($settings->get('family_reward_plan_id') ?: 0);
-            $familyOffer    = $rewardEnabled
-                && $rewardPlanId
-                && $subscription
+            $rewardEnabled      = $settings->get('family_reward_enabled', '0') === '1';
+            $rewardPlanId       = (int) ($settings->get('family_reward_plan_id') ?: 0);
+            $isEliteSubscriber  = $subscription
                 && $subscription->plan_id === $rewardPlanId
                 && in_array($subscription->status, ['approved', 'active']);
-            $familyDiscount = $settings->get('family_reward_discount_mode', 'fixed') === 'range'
+            $showRewardCard     = $rewardEnabled && $rewardPlanId && $isEliteSubscriber;
+            $familyDiscount     = $settings->get('family_reward_discount_mode', 'fixed') === 'range'
                 ? ((int) $settings->get('family_reward_discount_min', 10) . '–' . (int) $settings->get('family_reward_discount_max', 30))
                 : ((int) $settings->get('family_reward_discount_value', 20));
+            $rewardPlan         = $plans->firstWhere('id', $rewardPlanId);
         @endphp
 
         {{-- Cards --}}
@@ -795,63 +795,83 @@
             @endforeach
         </div>
 
-        @if($familyOffer)
+        @if($showRewardCard)
         <div class="w-full max-w-[980px] px-6 mx-auto">
-            <div class="relative rounded-[24px] border-2 border-dashed border-accent bg-gradient-to-l from-[#fffde8] to-[#f0f5ff] overflow-hidden font-arabic" dir="{{ $isRtl ? 'rtl' : 'ltr' }}">
+            <div class="relative rounded-[28px] overflow-hidden font-arabic shadow-[0_24px_64px_rgba(18,0,46,0.15)]" dir="{{ $isRtl ? 'rtl' : 'ltr' }}">
+                <div class="flex flex-col lg:flex-row items-stretch">
 
-                <div class="w-full bg-accent flex items-center justify-center gap-2 py-2 px-4">
-                    <span class="material-symbols-rounded text-darkBg" style="font-size:16px;font-variation-settings:'FILL' 1">card_giftcard</span>
-                    <p class="text-darkBg text-xs font-black tracking-widest">{{ __('messages.programs.reward_badge') }}</p>
-                    <span class="material-symbols-rounded text-darkBg" style="font-size:16px;font-variation-settings:'FILL' 1">card_giftcard</span>
-                </div>
+                    {{-- Content side (right in RTL) --}}
+                    <div class="flex-1 bg-white p-8 lg:p-10 {{ $alignStart }}">
 
-                <div class="flex flex-col lg:flex-row items-center gap-8 p-8">
-
-                    <div class="flex-1 {{ $alignStart }}">
-                        <div class="flex items-center gap-3 mb-4 flex-row justify-start">
-                            <div class="w-12 h-12 rounded-2xl flex items-center justify-center bg-accent/20">
-                                <span class="material-symbols-rounded text-[26px] text-yellow-600" style="font-variation-settings:'FILL' 1">emoji_events</span>
-                            </div>
-                            <div>
-                                <h3 class="text-2xl font-black text-textColor leading-none">{{ __('messages.family_reward.title') }}</h3>
-                                <span class="text-xs font-bold text-yellow-700 bg-yellow-100 px-2 py-0.5 rounded-full">{{ __('messages.programs.reward_badge') }}</span>
-                            </div>
+                        <div class="inline-flex items-center gap-1.5 bg-accent/15 text-yellow-700 text-[11px] font-black px-3 py-1.5 rounded-full mb-5">
+                            <span class="material-symbols-rounded" style="font-size:13px;font-variation-settings:'FILL' 1">card_giftcard</span>
+                            {{ __('messages.programs.reward_badge') }}
                         </div>
 
-                        <p class="text-gray-500 text-sm leading-relaxed mb-6 max-w-md">
+                        <h3 class="text-2xl font-black text-textColor mb-3 leading-snug">{{ __('messages.family_reward.title') }}</h3>
+
+                        <p class="text-gray-400 text-sm leading-relaxed mb-7">
                             {{ __('messages.programs.reward_desc') }}
                         </p>
 
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-2.5 mb-6">
+                        <div class="grid grid-cols-2 gap-x-8 gap-y-3.5">
                             @foreach(__('messages.programs.reward_features') as $feat)
                             <div class="flex items-center gap-2 text-sm font-semibold text-textColor">
-                                <span class="material-symbols-rounded text-green-500 flex-shrink-0" style="font-size:16px;font-variation-settings:'FILL' 1">check_circle</span>
+                                <span class="material-symbols-rounded text-green-500 flex-shrink-0" style="font-size:17px;font-variation-settings:'FILL' 1">check_circle</span>
                                 {{ $feat }}
                             </div>
                             @endforeach
                         </div>
+
                     </div>
 
-                    <div class="hidden lg:block w-px self-stretch bg-accent/30 mx-2"></div>
+                    {{-- Dark panel: discount + CTA (left in RTL) --}}
+                    <div class="lg:w-[260px] flex-shrink-0 relative flex flex-col items-center justify-center gap-6 p-8" style="background: linear-gradient(145deg, #12002E 0%, #1f0050 100%);">
 
-                    <div class="flex flex-col items-center gap-4 min-w-[220px]">
-                        <div class="w-20 h-20 rounded-2xl bg-accent/20 flex items-center justify-center">
-                            <span class="material-symbols-rounded text-yellow-600" style="font-size:44px;font-variation-settings:'FILL' 1">send</span>
+                        {{-- Decorative glow spots --}}
+                        <div class="absolute top-0 right-0 w-48 h-48 rounded-full opacity-20 pointer-events-none" style="background:radial-gradient(circle, #EAB308 0%, transparent 70%); transform: translate(30%, -30%);"></div>
+                        <div class="absolute bottom-0 left-0 w-36 h-36 rounded-full opacity-10 pointer-events-none" style="background:radial-gradient(circle, #174DAD 0%, transparent 70%); transform: translate(-30%, 30%);"></div>
+
+                        {{-- Discount circle --}}
+                        <div class="relative z-10">
+                            <div class="w-32 h-32 rounded-full flex flex-col items-center justify-center" style="border: 2px solid rgba(234,179,8,0.35); background: rgba(234,179,8,0.08); box-shadow: 0 0 40px rgba(234,179,8,0.18);">
+                                <div class="flex items-end leading-none gap-0.5">
+                                    <span class="font-black font-display text-accent" style="font-size:52px; line-height:1">{{ $familyDiscount }}</span>
+                                    <span class="font-black text-accent mb-1" style="font-size:22px">%</span>
+                                </div>
+                                <span class="text-white/40 text-[10px] font-arabic mt-1">{{ __('messages.programs.reward_discount_sub') }}</span>
+                            </div>
+                            <div class="absolute -top-2 -right-2 w-8 h-8 rounded-full bg-accent flex items-center justify-center shadow-lg">
+                                <span class="material-symbols-rounded text-darkBg" style="font-size:17px;font-variation-settings:'FILL' 1">card_giftcard</span>
+                            </div>
                         </div>
-                        <div class="text-center">
-                            <p class="text-gray-400 text-xs font-arabic mb-1">{{ __('messages.programs.reward_discount_label') }}</p>
-                            <p class="text-4xl font-black font-display text-textColor leading-none">{{ $familyDiscount }}%</p>
-                            <p class="text-sm text-gray-400 font-arabic mt-1">{{ __('messages.programs.reward_discount_sub') }}</p>
-                        </div>
+
+                        <p class="text-white/50 text-xs font-arabic text-center leading-relaxed z-10">
+                            {{ __('messages.programs.reward_discount_label') }}
+                        </p>
+
+                        @if($isEliteSubscriber)
                         <a href="{{ route('dashboard') }}#family-reward"
-                            class="w-full py-3.5 rounded-[14px] font-black text-sm text-center transition-all duration-300 font-arabic bg-accent text-darkBg hover:bg-yellow-300 flex items-center justify-center gap-2">
-                            <span class="material-symbols-rounded" style="font-size:16px;font-variation-settings:'FILL' 1">send</span>
+                            class="w-full py-4 rounded-2xl font-black text-sm text-center font-arabic text-darkBg flex items-center justify-center gap-2 z-10 transition-all duration-300 hover:scale-[1.03] whitespace-nowrap"
+                            style="background:linear-gradient(135deg,#EAB308 0%,#F59E0B 100%);box-shadow:0 6px 28px rgba(234,179,8,0.45);">
+                            <span class="material-symbols-rounded" style="font-size:16px;font-variation-settings:'FILL' 1">card_giftcard</span>
                             {{ __('messages.programs.reward_cta') }}
                         </a>
+                        @elseif($rewardPlan)
+                        <div class="w-full z-10 flex flex-col items-center gap-2">
+                            <a href="{{ route('purchase.form', $rewardPlan->key) }}"
+                                class="w-full py-4 rounded-2xl font-black text-base text-center font-arabic text-darkBg flex items-center justify-center gap-2 transition-all duration-300 hover:scale-[1.03] whitespace-nowrap"
+                                style="background:linear-gradient(135deg,#EAB308 0%,#F59E0B 100%);box-shadow:0 6px 28px rgba(234,179,8,0.45);">
+                                <span class="material-symbols-rounded" style="font-size:16px;font-variation-settings:'FILL' 1">workspace_premium</span>
+                                {{ __('messages.programs.reward_cta_subscribe', ['plan' => $rewardPlan->name]) }}
+                            </a>
+                            <p class="text-white/30 text-[11px] font-arabic text-center">{{ __('messages.programs.reward_discount_label') }}</p>
+                        </div>
+                        @endif
+
                     </div>
 
                 </div>
-
             </div>
         </div>
         @endif
