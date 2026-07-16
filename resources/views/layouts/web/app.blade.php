@@ -95,7 +95,7 @@
         <div class="fixed bottom-6 left-6 z-[9999] flex flex-col-reverse gap-3">
 
             {{-- WhatsApp --}}
-            <a href="https://wa.me/966593035979"
+            <a href="https://wa.me/{{ \App\Models\Setting::get('whatsapp_number', '966593035979') }}"
                target="_blank"
                rel="noopener noreferrer"
                title="{{ __('messages.fab.whatsapp_title') }}"
