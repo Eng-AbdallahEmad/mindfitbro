@@ -94,6 +94,7 @@
                         'family-reward'=> ['icon' => 'card_giftcard',  'label' => 'جائزة الأبطال'],
                         'booking'      => ['icon' => 'event_available','label' => 'مواعيد الحجز'],
                         'marquee'      => ['icon' => 'campaign',        'label' => 'الشريط الإعلاني'],
+                        'sections'     => ['icon' => 'view_agenda',     'label' => 'أقسام الصفحة'],
                     ];
                 @endphp
                 @foreach($tabs as $key => $tab)
@@ -757,6 +758,43 @@
                                   class="form-input resize-none leading-relaxed" dir="ltr"
                                   placeholder="Write each item on a separate line...">{{ $s->get('marquee_items_en', "April Discounts 40%\nEid Offers Are Still Going!\nReady for What's Coming?") }}</textarea>
                     </div>
+
+                </div>
+            </div>
+
+            {{-- ════ SECTIONS ════ --}}
+            <div id="tab-sections" class="settings-card hidden">
+                <div class="settings-card-header">
+                    <span class="w-8 h-8 rounded-lg bg-violet-50 flex items-center justify-center flex-shrink-0">
+                        <span class="material-symbols-rounded text-violet-500" style="font-size:18px;font-variation-settings:'FILL' 1">view_agenda</span>
+                    </span>
+                    <div>
+                        <h3 class="text-sm font-black text-slate-800">أقسام الصفحة الرئيسية</h3>
+                        <p class="text-[11px] text-slate-400 font-semibold">تحكم في إظهار أو إخفاء أقسام الصفحة الرئيسية</p>
+                    </div>
+                </div>
+                <div class="p-6 space-y-3">
+
+                    {{-- Partners --}}
+                    @php $partnersVisible = $s->get('section_partners_visible', '1') === '1'; @endphp
+                    <label class="flex items-center justify-between gap-4 p-4 rounded-xl border border-slate-100 bg-slate-50 cursor-pointer hover:bg-slate-100 transition-colors">
+                        <div class="flex items-center gap-3">
+                            <span class="w-9 h-9 rounded-xl bg-white border border-slate-200 flex items-center justify-center flex-shrink-0">
+                                <span class="material-symbols-rounded text-slate-500" style="font-size:18px;font-variation-settings:'FILL' 1">handshake</span>
+                            </span>
+                            <div>
+                                <p class="text-sm font-black text-slate-800">قسم الشركاء</p>
+                                <p class="text-[11px] text-slate-400 font-semibold">بنتشارك مع الأفضل — شعارات الشركاء والإحصائيات</p>
+                            </div>
+                        </div>
+                        <div class="relative flex-shrink-0">
+                            <input type="hidden" name="settings[section_partners_visible]" value="0">
+                            <input type="checkbox" name="settings[section_partners_visible]" value="1"
+                                   class="sr-only peer" {{ $partnersVisible ? 'checked' : '' }}>
+                            <div class="w-11 h-6 bg-slate-200 peer-checked:bg-blue-600 rounded-full transition-colors duration-200"></div>
+                            <div class="absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform duration-200 peer-checked:translate-x-5"></div>
+                        </div>
+                    </label>
 
                 </div>
             </div>

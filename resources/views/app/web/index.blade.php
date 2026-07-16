@@ -1077,7 +1077,7 @@
     </section>
 
     {{-- Partners Section --}}
-    @php $showPartners = true; @endphp
+    @php $showPartners = $settings->get('section_partners_visible', '1') === '1'; @endphp
 
     @if($showPartners)
         <section class="w-full bg-white py-10 lg:py-28 flex flex-col justify-center items-center gap-12 overflow-hidden">

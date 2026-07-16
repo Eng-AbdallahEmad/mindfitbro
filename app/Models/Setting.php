@@ -83,6 +83,9 @@ class Setting extends Model
                 'marquee_items_ar' => "خصومات إبريل 40%\nعروض العيد لسه مخلصتش\nجاهز للجاي...؟\nيلا ننزل الكرش اللي عندك\nمش ناوي تعمل فورمة العيد؟\nالعيد خلص بس عروضنا لسه مخلصتش",
                 'marquee_items_en' => "April Discounts 40%\nEid Offers Are Still Going!\nReady for What's Coming?\nLet's Work on That Body!\nDon't You Want to Get in Shape?\nEid is Over but Our Offers Continue!",
             ],
+            'sections' => [
+                'section_partners_visible' => '1',
+            ],
             'family_reward' => [
                 'family_reward_enabled'        => '0',
                 'family_reward_plan_id'        => '',
