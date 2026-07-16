@@ -1079,15 +1079,8 @@
     {{-- Partners Section --}}
     @php $showPartners = $settings->get('section_partners_visible', '1') === '1'; @endphp
 
-    @if($showPartners)
+    @if($showPartners && $partners->isNotEmpty())
         <section class="w-full bg-white py-10 lg:py-28 flex flex-col justify-center items-center gap-12 overflow-hidden">
-
-            @php
-                $partners = [
-                    ['name' => 'برو تيمز', 'logo' => asset('assets/logo/pro2.png')],
-                    ['name' => 'برو تيمز', 'logo' => asset('assets/logo/pro3.png')],
-                ];
-            @endphp
 
             {{-- Header --}}
             <div class="flex flex-col items-center gap-3 text-center px-6">
@@ -1120,13 +1113,13 @@
                                     transition-all duration-300 px-5 group cursor-default my-4"
                         >
                             <img
-                                src="{{ $partner['logo'] }}"
-                                alt="{{ $partner['name'] }}"
+                                src="{{ $partner->logoSrc }}"
+                                alt="{{ $partner->name }}"
                                 class="h-8 w-auto object-contain grayscale group-hover:grayscale-0 opacity-50 group-hover:opacity-100 transition-all duration-300"
                                 loading="lazy"
                             />
                             <span class="text-[11px] font-bold text-gray-400 group-hover:text-primary font-arabic transition-colors duration-300">
-                                {{ $partner['name'] }}
+                                {{ $partner->name }}
                             </span>
                         </div>
                     @endforeach

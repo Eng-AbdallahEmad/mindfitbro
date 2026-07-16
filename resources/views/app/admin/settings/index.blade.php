@@ -775,7 +775,7 @@
                 </div>
                 <div class="p-6 space-y-3">
 
-                    {{-- Partners --}}
+                    {{-- Visibility Toggle --}}
                     @php $partnersVisible = $s->get('section_partners_visible', '1') === '1'; @endphp
                     <label class="flex items-center justify-between gap-4 p-4 rounded-xl border border-slate-100 bg-slate-50 cursor-pointer hover:bg-slate-100 transition-colors">
                         <div class="flex items-center gap-3">
@@ -796,6 +796,73 @@
                         </div>
                     </label>
 
+                </div>
+
+                {{-- Partners List --}}
+                <div class="px-6 pb-6">
+                    <div class="flex items-center justify-between mb-3">
+                        <p class="section-divider mb-0 border-0">لوجوهات الشركاء — {{ $partners->count() }} شريك</p>
+                        <button type="button" onclick="openPartnerModal()"
+                            class="flex items-center gap-1.5 bg-violet-500 hover:bg-violet-600 text-white text-xs font-bold px-3 py-1.5 rounded-lg transition-colors">
+                            <span class="material-symbols-rounded" style="font-size:15px">add</span>
+                            إضافة شريك
+                        </button>
+                    </div>
+
+                    @if($partners->isEmpty())
+                    <div class="text-center py-8 rounded-xl bg-slate-50 border border-dashed border-slate-200">
+                        <span class="material-symbols-rounded text-slate-300" style="font-size:40px">handshake</span>
+                        <p class="text-slate-400 font-bold text-sm mt-2">لا يوجد شركاء بعد</p>
+                        <button type="button" onclick="openPartnerModal()" class="mt-2 text-violet-500 font-bold text-xs hover:underline">
+                            أضف أول شريك
+                        </button>
+                    </div>
+                    @else
+                    <div class="space-y-2">
+                        @foreach($partners as $partner)
+                        <div class="flex items-center gap-3 p-3 rounded-xl border border-slate-100 bg-slate-50 hover:border-slate-200 transition-colors group">
+
+                            {{-- Logo Preview --}}
+                            <div class="w-16 h-10 rounded-lg overflow-hidden bg-white border border-slate-200 flex items-center justify-center flex-shrink-0 p-1">
+                                <img src="{{ $partner->logoSrc }}" alt="{{ $partner->name }}"
+                                     class="h-full w-full object-contain">
+                            </div>
+
+                            {{-- Name --}}
+                            <div class="flex-1 min-w-0">
+                                <p class="text-sm font-bold text-slate-800 truncate">{{ $partner->name }}</p>
+                                <p class="text-[11px] text-slate-400 font-mono truncate mt-0.5">{{ $partner->logo_path }}</p>
+                            </div>
+
+                            {{-- Order --}}
+                            <span class="text-xs font-black text-slate-300 bg-slate-100 w-6 h-6 rounded-lg flex items-center justify-center flex-shrink-0">{{ $partner->sort_order }}</span>
+
+                            {{-- Toggle --}}
+                            <button type="button"
+                                onclick="togglePartner({{ $partner->id }})"
+                                title="{{ $partner->is_active ? 'إخفاء' : 'إظهار' }}"
+                                class="w-8 h-8 rounded-lg flex items-center justify-center transition-colors flex-shrink-0
+                                       {{ $partner->is_active ? 'bg-green-50 text-green-500 hover:bg-green-100' : 'bg-slate-100 text-slate-400 hover:bg-slate-200' }}">
+                                <span class="material-symbols-rounded" style="font-size:16px;font-variation-settings:'FILL' 1">{{ $partner->is_active ? 'visibility' : 'visibility_off' }}</span>
+                            </button>
+
+                            {{-- Edit --}}
+                            <button type="button"
+                                onclick="openEditPartnerModal({{ $partner->id }}, '{{ addslashes($partner->name) }}', '{{ $partner->logoSrc }}', {{ $partner->sort_order }})"
+                                class="w-8 h-8 rounded-lg bg-blue-50 hover:bg-blue-100 text-blue-500 flex items-center justify-center transition-colors flex-shrink-0">
+                                <span class="material-symbols-rounded" style="font-size:15px">edit</span>
+                            </button>
+
+                            {{-- Delete --}}
+                            <button type="button"
+                                onclick="openDeletePartnerModal({{ $partner->id }}, '{{ addslashes($partner->name) }}')"
+                                class="w-8 h-8 rounded-lg bg-red-50 hover:bg-red-100 text-red-500 flex items-center justify-center transition-colors flex-shrink-0">
+                                <span class="material-symbols-rounded" style="font-size:15px">delete</span>
+                            </button>
+                        </div>
+                        @endforeach
+                    </div>
+                    @endif
                 </div>
             </div>
 
@@ -1611,5 +1678,183 @@ document.addEventListener('DOMContentLoaded', function() {
         if (btn) switchTab(tab, btn);
     }
 });
+
+// ── Partners ────────────────────────────────────────────────────────────────
+function togglePartner(id) {
+    const token = document.querySelector('input[name="_token"]').value;
+    fetch(`/admin/partners/${id}/toggle`, {
+        method: 'PATCH',
+        headers: { 'X-CSRF-TOKEN': token, 'Accept': 'application/json' }
+    }).then(() => window.location.reload())
+      .catch(() => alert('حدث خطأ، يرجى المحاولة مرة أخرى'));
+}
+
+function openPartnerModal() {
+    const m = document.getElementById('partnerModal');
+    const b = document.getElementById('partnerModalBox');
+    m.classList.remove('opacity-0','pointer-events-none');
+    m.classList.add('opacity-100');
+    b.classList.remove('translate-y-4');
+}
+function closePartnerModal() {
+    const m = document.getElementById('partnerModal');
+    const b = document.getElementById('partnerModalBox');
+    m.classList.add('opacity-0','pointer-events-none');
+    m.classList.remove('opacity-100');
+    b.classList.add('translate-y-4');
+}
+
+function openEditPartnerModal(id, name, logoSrc, sortOrder) {
+    document.getElementById('editPartnerForm').action = `/admin/partners/${id}`;
+    document.getElementById('editPartnerName').value = name;
+    document.getElementById('editPartnerSortOrder').value = sortOrder;
+    const preview = document.getElementById('editPartnerLogoPreview');
+    preview.src = logoSrc;
+    preview.classList.remove('hidden');
+    const m = document.getElementById('editPartnerModal');
+    const b = document.getElementById('editPartnerModalBox');
+    m.classList.remove('opacity-0','pointer-events-none');
+    m.classList.add('opacity-100');
+    b.classList.remove('translate-y-4');
+}
+function closeEditPartnerModal() {
+    const m = document.getElementById('editPartnerModal');
+    const b = document.getElementById('editPartnerModalBox');
+    m.classList.add('opacity-0','pointer-events-none');
+    m.classList.remove('opacity-100');
+    b.classList.add('translate-y-4');
+}
+
+function openDeletePartnerModal(id, name) {
+    document.getElementById('deletePartnerForm').action = `/admin/partners/${id}`;
+    document.getElementById('deletePartnerName').textContent = name;
+    const m = document.getElementById('deletePartnerModal');
+    const b = document.getElementById('deletePartnerModalBox');
+    m.classList.remove('opacity-0','pointer-events-none');
+    m.classList.add('opacity-100');
+    b.classList.remove('translate-y-4');
+}
+function closeDeletePartnerModal() {
+    const m = document.getElementById('deletePartnerModal');
+    const b = document.getElementById('deletePartnerModalBox');
+    m.classList.add('opacity-0','pointer-events-none');
+    m.classList.remove('opacity-100');
+    b.classList.add('translate-y-4');
+}
 </script>
+
+{{-- ══════════ PARTNER MODALS ══════════ --}}
+
+{{-- Add Partner --}}
+<div id="partnerModal" class="fixed inset-0 bg-black/60 z-[500] flex items-center justify-center p-4 opacity-0 pointer-events-none transition-all duration-200">
+    <div id="partnerModalBox" class="bg-white rounded-2xl w-full max-w-md shadow-2xl flex flex-col max-h-[90vh] transform translate-y-4 transition-transform duration-200">
+        <div class="flex items-center gap-3 px-5 py-4 border-b border-slate-100 flex-shrink-0">
+            <div class="w-8 h-8 rounded-lg bg-violet-50 flex items-center justify-center">
+                <span class="material-symbols-rounded text-violet-500" style="font-size:17px;font-variation-settings:'FILL' 1">handshake</span>
+            </div>
+            <h3 class="text-sm font-black text-slate-800 flex-1">إضافة شريك</h3>
+            <button type="button" onclick="closePartnerModal()" class="w-8 h-8 rounded-lg hover:bg-slate-100 flex items-center justify-center text-slate-400">
+                <span class="material-symbols-rounded" style="font-size:18px">close</span>
+            </button>
+        </div>
+        <form method="POST" action="{{ route('admin.partners.store') }}" enctype="multipart/form-data" class="flex flex-col overflow-y-auto p-5 gap-4">
+            @csrf
+            <div>
+                <label class="form-label">اسم الشريك</label>
+                <input type="text" name="name" class="form-input font-arabic" placeholder="مثال: برو تيمز" required>
+            </div>
+            <div>
+                <label class="form-label">صورة اللوجو <span class="text-red-500">*</span></label>
+                <input type="file" name="logo_file" accept="image/*" required
+                       class="w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-bold file:bg-violet-50 file:text-violet-600 hover:file:bg-violet-100 transition-colors">
+                <p class="form-hint">PNG, JPG, SVG, WebP — حد أقصى 2MB</p>
+            </div>
+            <div>
+                <label class="form-label">الترتيب</label>
+                <input type="number" name="sort_order" class="form-input" placeholder="0" min="0">
+            </div>
+            <div class="flex gap-3 pt-2">
+                <button type="submit" class="flex-1 bg-violet-600 hover:bg-violet-700 text-white font-bold py-2.5 rounded-xl text-sm transition-colors">
+                    إضافة
+                </button>
+                <button type="button" onclick="closePartnerModal()" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-2.5 rounded-xl text-sm transition-colors">
+                    إلغاء
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+{{-- Edit Partner --}}
+<div id="editPartnerModal" class="fixed inset-0 bg-black/60 z-[500] flex items-center justify-center p-4 opacity-0 pointer-events-none transition-all duration-200">
+    <div id="editPartnerModalBox" class="bg-white rounded-2xl w-full max-w-md shadow-2xl flex flex-col max-h-[90vh] transform translate-y-4 transition-transform duration-200">
+        <div class="flex items-center gap-3 px-5 py-4 border-b border-slate-100 flex-shrink-0">
+            <div class="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center">
+                <span class="material-symbols-rounded text-blue-500" style="font-size:17px;font-variation-settings:'FILL' 1">edit</span>
+            </div>
+            <h3 class="text-sm font-black text-slate-800 flex-1">تعديل الشريك</h3>
+            <button type="button" onclick="closeEditPartnerModal()" class="w-8 h-8 rounded-lg hover:bg-slate-100 flex items-center justify-center text-slate-400">
+                <span class="material-symbols-rounded" style="font-size:18px">close</span>
+            </button>
+        </div>
+        <form id="editPartnerForm" method="POST" enctype="multipart/form-data" class="flex flex-col overflow-y-auto p-5 gap-4">
+            @csrf
+            @method('PUT')
+            <div>
+                <label class="form-label">اسم الشريك</label>
+                <input type="text" id="editPartnerName" name="name" class="form-input font-arabic" required>
+            </div>
+            <div>
+                <label class="form-label">اللوجو الحالي</label>
+                <img id="editPartnerLogoPreview" src="" alt="logo" class="h-12 w-auto object-contain rounded-lg border border-slate-200 p-1 hidden">
+            </div>
+            <div>
+                <label class="form-label">لوجو جديد (اختياري)</label>
+                <input type="file" name="logo_file" accept="image/*"
+                       class="w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-bold file:bg-blue-50 file:text-blue-600 hover:file:bg-blue-100 transition-colors">
+                <p class="form-hint">اتركه فارغاً للإبقاء على اللوجو الحالي</p>
+            </div>
+            <div>
+                <label class="form-label">الترتيب</label>
+                <input type="number" id="editPartnerSortOrder" name="sort_order" class="form-input" min="0">
+            </div>
+            <div class="flex gap-3 pt-2">
+                <button type="submit" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 rounded-xl text-sm transition-colors">
+                    حفظ التعديلات
+                </button>
+                <button type="button" onclick="closeEditPartnerModal()" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-2.5 rounded-xl text-sm transition-colors">
+                    إلغاء
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+{{-- Delete Partner --}}
+<div id="deletePartnerModal" class="fixed inset-0 bg-black/60 z-[500] flex items-center justify-center p-4 opacity-0 pointer-events-none transition-all duration-200">
+    <div id="deletePartnerModalBox" class="bg-white rounded-2xl w-full max-w-sm shadow-2xl transform translate-y-4 transition-transform duration-200">
+        <div class="p-6 text-center">
+            <div class="w-12 h-12 rounded-2xl bg-red-50 flex items-center justify-center mx-auto mb-4">
+                <span class="material-symbols-rounded text-red-500" style="font-size:24px;font-variation-settings:'FILL' 1">delete</span>
+            </div>
+            <h3 class="text-base font-black text-slate-800 mb-1">حذف الشريك</h3>
+            <p class="text-sm text-slate-500 font-semibold mb-5">
+                هتحذف "<span id="deletePartnerName" class="text-slate-800 font-black"></span>" — مش هيتعمل undo.
+            </p>
+            <form id="deletePartnerForm" method="POST">
+                @csrf
+                @method('DELETE')
+                <div class="flex gap-3">
+                    <button type="submit" class="flex-1 bg-red-600 hover:bg-red-700 text-white font-bold py-2.5 rounded-xl text-sm transition-colors">
+                        نعم، احذف
+                    </button>
+                    <button type="button" onclick="closeDeletePartnerModal()" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-2.5 rounded-xl text-sm transition-colors">
+                        إلغاء
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
 @endsection

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\web;
 
 use App\Http\Controllers\Controller;
+use App\Models\Partner;
 use App\Models\Setting;
 use App\Models\BeforeAfter;
 use App\Models\Testimonial;
@@ -26,6 +27,7 @@ class HomeController extends Controller
         $videos        = Video::active()->orderBy('sort_order')->get();
         $testimonials  = Testimonial::active()->orderBy('sort_order')->get();
         $beforeAfters  = BeforeAfter::active()->orderBy('sort_order')->get();
+        $partners      = Partner::where('is_active', true)->orderBy('sort_order')->get();
 
         $currency     = $this->currencyService->current();
         $currencyMeta = $this->currencyService->jsConfig($currency);
@@ -37,6 +39,7 @@ class HomeController extends Controller
             'videos'       => $videos,
             'testimonials' => $testimonials,
             'beforeAfters' => $beforeAfters,
+            'partners'     => $partners,
             'currency'     => $currency,
             'currencyMeta' => $currencyMeta,
         ]);

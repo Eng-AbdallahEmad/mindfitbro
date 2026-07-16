@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Partner;
 use App\Models\Plan;
 use App\Models\Setting;
 use App\Models\BeforeAfter;
@@ -19,9 +20,10 @@ class SettingsController extends Controller
         $videos       = Video::orderBy('sort_order')->get();
         $testimonials = Testimonial::orderBy('sort_order')->get();
         $beforeAfters = BeforeAfter::orderBy('sort_order')->get();
+        $partners     = Partner::orderBy('sort_order')->get();
         $plans        = Plan::where('is_active', true)->orderBy('sort_order')->get(['id', 'name']);
 
-        return view('app.admin.settings.index', compact('grouped', 'defaults', 'videos', 'testimonials', 'beforeAfters', 'plans'));
+        return view('app.admin.settings.index', compact('grouped', 'defaults', 'videos', 'testimonials', 'beforeAfters', 'partners', 'plans'));
     }
 
     public function update(Request $request)

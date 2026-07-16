@@ -10,6 +10,7 @@ use App\Http\Controllers\Admin\TestimonialsController as AdminTestimonialsContro
 use App\Http\Controllers\Admin\VideosController as AdminVideosController;
 use App\Http\Controllers\Admin\CouponsController as AdminCouponsController;
 use App\Http\Controllers\Admin\FamilyInvitationsController as AdminFamilyInvitationsController;
+use App\Http\Controllers\Admin\PartnersController as AdminPartnersController;
 use App\Http\Controllers\Admin\SubscriptionsController as AdminSubscriptionsController;
 use App\Http\Controllers\Auth\AdminAuthController;
 use App\Http\Controllers\Auth\AuthController;
@@ -215,6 +216,12 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::put('testimonials/{testimonial}', [AdminTestimonialsController::class, 'update'])->name('testimonials.update');
         Route::patch('testimonials/{testimonial}/toggle', [AdminTestimonialsController::class, 'toggleActive'])->name('testimonials.toggle');
         Route::delete('testimonials/{testimonial}', [AdminTestimonialsController::class, 'destroy'])->name('testimonials.destroy');
+
+        // Partners (managed from settings page → sections tab)
+        Route::post('partners', [AdminPartnersController::class, 'store'])->name('partners.store');
+        Route::put('partners/{partner}', [AdminPartnersController::class, 'update'])->name('partners.update');
+        Route::patch('partners/{partner}/toggle', [AdminPartnersController::class, 'toggleActive'])->name('partners.toggle');
+        Route::delete('partners/{partner}', [AdminPartnersController::class, 'destroy'])->name('partners.destroy');
 
         Route::get('members', [AdminMembersController::class, 'index'])->name('members.index');
         Route::get('members/create', [AdminMembersController::class, 'create'])->name('members.create');
