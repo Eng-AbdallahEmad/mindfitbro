@@ -118,7 +118,7 @@
         <div class="lg:col-span-3 space-y-0">
 
             {{-- ════ GENERAL ════ --}}
-            <div id="tab-general" class="settings-card">
+            <div id="tab-general" class="settings-card" data-tab-panel>
                 <div class="settings-card-header">
                     <span class="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center flex-shrink-0">
                         <span class="material-symbols-rounded text-blue-500" style="font-size:18px;font-variation-settings:'FILL' 1">tune</span>
@@ -179,7 +179,7 @@
             </div>
 
             {{-- ════ SOCIAL ════ --}}
-            <div id="tab-social" class="settings-card hidden">
+            <div id="tab-social" class="settings-card hidden" data-tab-panel>
                 <div class="settings-card-header">
                     <span class="w-8 h-8 rounded-lg bg-purple-50 flex items-center justify-center flex-shrink-0">
                         <span class="material-symbols-rounded text-purple-500" style="font-size:18px;font-variation-settings:'FILL' 1">share</span>
@@ -237,7 +237,7 @@
             </div>
 
             {{-- ════ STATS ════ --}}
-            <div id="tab-stats" class="settings-card hidden">
+            <div id="tab-stats" class="settings-card hidden" data-tab-panel>
                 <div class="settings-card-header">
                     <span class="w-8 h-8 rounded-lg bg-green-50 flex items-center justify-center flex-shrink-0">
                         <span class="material-symbols-rounded text-green-500" style="font-size:18px;font-variation-settings:'FILL' 1">bar_chart</span>
@@ -319,7 +319,7 @@
             </div>
 
             {{-- ════ VIDEOS ════ --}}
-            <div id="tab-videos" class="settings-card hidden">
+            <div id="tab-videos" class="settings-card hidden" data-tab-panel>
                 <div class="settings-card-header">
                     <span class="w-8 h-8 rounded-lg bg-red-50 flex items-center justify-center flex-shrink-0">
                         <span class="material-symbols-rounded text-red-500" style="font-size:18px;font-variation-settings:'FILL' 1">play_circle</span>
@@ -406,7 +406,7 @@
             </div>
 
             {{-- ════ TESTIMONIALS ════ --}}
-            <div id="tab-testimonials" class="settings-card hidden">
+            <div id="tab-testimonials" class="settings-card hidden" data-tab-panel>
                 <div class="settings-card-header">
                     <span class="w-8 h-8 rounded-lg bg-purple-50 flex items-center justify-center flex-shrink-0">
                         <span class="material-symbols-rounded text-purple-500" style="font-size:18px;font-variation-settings:'FILL' 1">face</span>
@@ -482,7 +482,7 @@
             </div>
 
             {{-- ════ BEFORE / AFTER ════ --}}
-            <div id="tab-before-after" class="settings-card hidden">
+            <div id="tab-before-after" class="settings-card hidden" data-tab-panel>
                 <div class="settings-card-header">
                     <span class="w-8 h-8 rounded-lg bg-teal-50 flex items-center justify-center flex-shrink-0">
                         <span class="material-symbols-rounded text-teal-500" style="font-size:18px;font-variation-settings:'FILL' 1">compare</span>
@@ -558,7 +558,7 @@
             </div>
 
             {{-- ════ FAMILY REWARD ════ --}}
-            <div id="tab-family-reward" class="settings-card hidden"
+            <div id="tab-family-reward" class="settings-card hidden" data-tab-panel
                  x-data="{ mode: '{{ $s->get('family_reward_discount_mode', 'fixed') }}' }">
                 <div class="settings-card-header">
                     <span class="w-8 h-8 rounded-lg bg-yellow-50 flex items-center justify-center flex-shrink-0">
@@ -678,7 +678,7 @@
             </div>
 
             {{-- ════ BOOKING ════ --}}
-            <div id="tab-booking" class="settings-card hidden">
+            <div id="tab-booking" class="settings-card hidden" data-tab-panel>
                 <div class="settings-card-header">
                     <span class="w-8 h-8 rounded-lg bg-emerald-50 flex items-center justify-center flex-shrink-0">
                         <span class="material-symbols-rounded text-emerald-500" style="font-size:18px;font-variation-settings:'FILL' 1">event_available</span>
@@ -716,7 +716,7 @@
             </div>
 
             {{-- ════ MARQUEE ════ --}}
-            <div id="tab-marquee" class="settings-card hidden">
+            <div id="tab-marquee" class="settings-card hidden" data-tab-panel>
                 <div class="settings-card-header">
                     <span class="w-8 h-8 rounded-lg bg-orange-50 flex items-center justify-center flex-shrink-0">
                         <span class="material-symbols-rounded text-orange-500" style="font-size:18px;font-variation-settings:'FILL' 1">campaign</span>
@@ -763,7 +763,7 @@
             </div>
 
             {{-- ════ SECTIONS ════ --}}
-            <div id="tab-sections" class="settings-card hidden">
+            <div id="tab-sections" class="settings-card hidden" data-tab-panel>
                 <div class="settings-card-header">
                     <span class="w-8 h-8 rounded-lg bg-violet-50 flex items-center justify-center flex-shrink-0">
                         <span class="material-symbols-rounded text-violet-500" style="font-size:18px;font-variation-settings:'FILL' 1">view_agenda</span>
@@ -1308,9 +1308,7 @@
 @section('script')
 <script>
 function switchTab(tab, btn) {
-    ['general','social','stats','videos','testimonials','before-after','family-reward','booking'].forEach(t => {
-        document.getElementById('tab-' + t).classList.add('hidden');
-    });
+    document.querySelectorAll('[data-tab-panel]').forEach(p => p.classList.add('hidden'));
     document.querySelectorAll('.tab-nav-item').forEach(b => b.classList.remove('active'));
     document.getElementById('tab-' + tab).classList.remove('hidden');
     btn.classList.add('active');
