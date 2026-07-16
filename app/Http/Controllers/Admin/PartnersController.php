@@ -24,7 +24,7 @@ class PartnersController extends Controller
         Partner::create([
             'name'       => $request->name,
             'logo_path'  => $this->saveLogo($request),
-            'sort_order' => $request->input('sort_order', (int) Partner::max('sort_order') + 1),
+            'sort_order' => (int) ($request->input('sort_order') ?? ((int) Partner::max('sort_order') + 1)),
             'is_active'  => true,
         ]);
 
@@ -51,7 +51,7 @@ class PartnersController extends Controller
         $partner->update([
             'name'       => $request->name,
             'logo_path'  => $this->saveLogo($request, $partner->logo_path),
-            'sort_order' => $request->input('sort_order', $partner->sort_order),
+            'sort_order' => (int) ($request->input('sort_order') ?? $partner->sort_order),
         ]);
 
         return redirect()->route('admin.settings.index', ['tab' => 'sections'])
