@@ -1078,7 +1078,9 @@
 
     {{-- Partners Section --}}
     @php
-        $partners     = $partners ?? collect();
+        $partners     = isset($partners) && $partners->isNotEmpty()
+                            ? $partners
+                            : \App\Models\Partner::where('is_active', true)->orderBy('sort_order')->get();
         $showPartners = $settings->get('section_partners_visible', '1') === '1';
     @endphp
 
