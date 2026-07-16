@@ -95,6 +95,7 @@
                         'booking'      => ['icon' => 'event_available','label' => 'مواعيد الحجز'],
                         'marquee'      => ['icon' => 'campaign',        'label' => 'الشريط الإعلاني'],
                         'sections'     => ['icon' => 'view_agenda',     'label' => 'أقسام الصفحة'],
+                        'maintenance'  => ['icon' => 'construction',    'label' => 'وضع الصيانة'],
                     ];
                 @endphp
                 @foreach($tabs as $key => $tab)
@@ -863,6 +864,75 @@
                         @endforeach
                     </div>
                     @endif
+                </div>
+            </div>
+
+            {{-- ════ MAINTENANCE ════ --}}
+            @php $maintenanceOn = $s->get('maintenance_mode_enabled', '0') === '1'; @endphp
+            <div id="tab-maintenance" class="settings-card hidden" data-tab-panel>
+                <div class="settings-card-header">
+                    <span class="w-8 h-8 rounded-lg {{ $maintenanceOn ? 'bg-red-50' : 'bg-slate-50' }} flex items-center justify-center flex-shrink-0">
+                        <span class="material-symbols-rounded {{ $maintenanceOn ? 'text-red-500' : 'text-slate-400' }}" style="font-size:18px;font-variation-settings:'FILL' 1">construction</span>
+                    </span>
+                    <div class="flex-1">
+                        <h3 class="text-sm font-black text-slate-800">وضع الصيانة</h3>
+                        <p class="text-[11px] text-slate-400 font-semibold">عند التفعيل يظهر للزوار صفحة صيانة بدل الموقع — الأدمن يمر بشكل طبيعي</p>
+                    </div>
+                    @if($maintenanceOn)
+                    <span class="flex items-center gap-1.5 bg-red-100 text-red-600 text-[10px] font-black px-2.5 py-1 rounded-full">
+                        <span class="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse"></span>
+                        مُفعَّل الآن
+                    </span>
+                    @endif
+                </div>
+
+                <div class="p-6 space-y-5">
+
+                    @if($maintenanceOn)
+                    <div class="rounded-xl bg-red-50 border border-red-200 p-4 flex items-start gap-3">
+                        <span class="material-symbols-rounded text-red-500 flex-shrink-0 mt-0.5" style="font-size:18px;font-variation-settings:'FILL' 1">warning</span>
+                        <p class="text-sm font-bold text-red-700">وضع الصيانة مُفعَّل — الموقع غير مرئي للزوار الآن. أوقف التفعيل واحفظ عند الانتهاء.</p>
+                    </div>
+                    @endif
+
+                    {{-- Toggle --}}
+                    <label class="flex items-center justify-between gap-4 p-4 rounded-xl border {{ $maintenanceOn ? 'border-red-200 bg-red-50' : 'border-slate-100 bg-slate-50' }} cursor-pointer hover:bg-opacity-80 transition-colors">
+                        <div class="flex items-center gap-3">
+                            <span class="w-9 h-9 rounded-xl bg-white border border-slate-200 flex items-center justify-center flex-shrink-0">
+                                <span class="material-symbols-rounded text-slate-500" style="font-size:18px;font-variation-settings:'FILL' 1">power_settings_new</span>
+                            </span>
+                            <div>
+                                <p class="text-sm font-black text-slate-800">تفعيل وضع الصيانة</p>
+                                <p class="text-[11px] text-slate-400 font-semibold">الزوار العاديون والمشتركون سيرون صفحة الصيانة</p>
+                            </div>
+                        </div>
+                        <div class="relative flex-shrink-0">
+                            <input type="hidden" name="settings[maintenance_mode_enabled]" value="0">
+                            <input type="checkbox" name="settings[maintenance_mode_enabled]" value="1"
+                                   class="sr-only peer" {{ $maintenanceOn ? 'checked' : '' }}>
+                            <div class="w-11 h-6 bg-slate-200 peer-checked:bg-red-500 rounded-full transition-colors duration-200"></div>
+                            <div class="absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform duration-200 peer-checked:translate-x-5"></div>
+                        </div>
+                    </label>
+
+                    {{-- Custom message --}}
+                    <div>
+                        <label class="form-label">رسالة الصيانة (اختياري)</label>
+                        <textarea name="settings[maintenance_message]" rows="3"
+                                  class="form-input font-arabic resize-none leading-relaxed" dir="rtl"
+                                  placeholder="نعمل على تحسينات لتجربتك. سنعود قريباً!">{{ $s->get('maintenance_message', '') }}</textarea>
+                        <p class="form-hint">اتركه فارغاً لاستخدام الرسالة الافتراضية</p>
+                    </div>
+
+                    {{-- ETA --}}
+                    <div>
+                        <label class="form-label">وقت العودة المتوقع (اختياري)</label>
+                        <input type="datetime-local" name="settings[maintenance_eta]"
+                               class="form-input" dir="ltr"
+                               value="{{ $s->get('maintenance_eta', '') }}">
+                        <p class="form-hint">يظهر للزوار كعداد تنازلي — اتركه فارغاً لإخفائه</p>
+                    </div>
+
                 </div>
             </div>
 

@@ -86,6 +86,11 @@ class Setting extends Model
             'sections' => [
                 'section_partners_visible' => '1',
             ],
+            'maintenance' => [
+                'maintenance_mode_enabled' => '0',
+                'maintenance_message'      => '',
+                'maintenance_eta'          => '',
+            ],
             'family_reward' => [
                 'family_reward_enabled'        => '0',
                 'family_reward_plan_id'        => '',
