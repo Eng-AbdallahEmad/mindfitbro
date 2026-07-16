@@ -147,7 +147,7 @@
     </section>
 
     {{-- Marquee / Ticker Section --}}
-    <section class="bg-lightBg border-y border-gray-200 py-[14px] overflow-hidden w-full group">
+    <section id="tickerSection" class="bg-lightBg border-y border-gray-200 py-[14px] overflow-hidden w-full group">
             @php
                 $lang        = app()->getLocale();
                 $rawMarquee  = $settings->get("marquee_items_{$lang}", '');
@@ -156,10 +156,10 @@
                     : __('messages.marquee.items');
             @endphp
 
-        <div class="flex w-max {{ $isRtl ? "animate-marquee" : "animate-marquee-ltr" }} group-hover:[animation-play-state:paused]">
+        <div id="tickerTrack" class="flex w-max {{ $isRtl ? "animate-marquee" : "animate-marquee-ltr" }} group-hover:[animation-play-state:paused]">
 
-            @foreach(array_merge($items, $items) as $item)
-                <span class="flex items-center gap-[28px] px-[28px] whitespace-nowrap text-[14px] font-bold text-textColor tracking-[0.01em] font-arabic">
+            @foreach($items as $item)
+                <span class="ticker-item flex items-center gap-[28px] px-[28px] whitespace-nowrap text-[14px] font-bold text-textColor tracking-[0.01em] font-arabic">
 
                     {{ $item }}
 
@@ -1475,6 +1475,47 @@
                     onComplete() { el.textContent = prefix + (dec ? target.toFixed(dec) : target) + suffix; },
                 });
             });
+
+            // Text Ticker Marquee
+            const tickerSection = document.getElementById("tickerSection");
+            const tickerTrack   = document.getElementById("tickerTrack");
+            if (tickerSection && tickerTrack) {
+                const buildTicker = () => {
+                    if (!tickerTrack.querySelector(".ticker-item[data-original]")) {
+                        tickerTrack.querySelectorAll(".ticker-item").forEach(el => el.setAttribute("data-original", "true"));
+                    }
+                    tickerTrack.querySelectorAll(".ticker-item[data-clone]").forEach(c => c.remove());
+
+                    const baseItems = Array.from(tickerTrack.querySelectorAll(".ticker-item[data-original]"));
+                    if (!baseItems.length) return;
+
+                    while (tickerTrack.scrollWidth < tickerSection.offsetWidth * 2) {
+                        baseItems.forEach(item => {
+                            const clone = item.cloneNode(true);
+                            clone.setAttribute("data-clone", "true");
+                            clone.setAttribute("aria-hidden", "true");
+                            tickerTrack.appendChild(clone);
+                        });
+                    }
+
+                    const allItems = tickerTrack.querySelectorAll(".ticker-item");
+                    if (allItems.length % baseItems.length !== 0 || tickerTrack.scrollWidth < tickerSection.offsetWidth * 2.5) {
+                        baseItems.forEach(item => {
+                            const clone = item.cloneNode(true);
+                            clone.setAttribute("data-clone", "true");
+                            clone.setAttribute("aria-hidden", "true");
+                            tickerTrack.appendChild(clone);
+                        });
+                    }
+                };
+
+                buildTicker();
+                let tickerResizeTimeout;
+                window.addEventListener("resize", () => {
+                    clearTimeout(tickerResizeTimeout);
+                    tickerResizeTimeout = setTimeout(buildTicker, 150);
+                });
+            }
 
             // Partners Marquee
             const marquee = document.getElementById("partnersMarquee");
