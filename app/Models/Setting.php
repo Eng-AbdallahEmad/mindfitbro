@@ -79,6 +79,10 @@ class Setting extends Model
                 'booking_available_days' => '0,1,2,3,4',
                 'booking_time_slots'     => '09:00,10:00,11:00,12:00,14:00,15:00,16:00,17:00,18:00',
             ],
+            'marquee' => [
+                'marquee_items_ar' => "خصومات إبريل 40%\nعروض العيد لسه مخلصتش\nجاهز للجاي...؟\nيلا ننزل الكرش اللي عندك\nمش ناوي تعمل فورمة العيد؟\nالعيد خلص بس عروضنا لسه مخلصتش",
+                'marquee_items_en' => "April Discounts 40%\nEid Offers Are Still Going!\nReady for What's Coming?\nLet's Work on That Body!\nDon't You Want to Get in Shape?\nEid is Over but Our Offers Continue!",
+            ],
             'family_reward' => [
                 'family_reward_enabled'        => '0',
                 'family_reward_plan_id'        => '',

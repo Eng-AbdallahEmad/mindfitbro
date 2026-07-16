@@ -93,6 +93,7 @@
                         'before-after' => ['icon' => 'compare',        'label' => 'قبل وبعد'],
                         'family-reward'=> ['icon' => 'card_giftcard',  'label' => 'جائزة الأبطال'],
                         'booking'      => ['icon' => 'event_available','label' => 'مواعيد الحجز'],
+                        'marquee'      => ['icon' => 'campaign',        'label' => 'الشريط الإعلاني'],
                     ];
                 @endphp
                 @foreach($tabs as $key => $tab)
@@ -708,6 +709,53 @@
                         <p class="section-divider">الأوقات المتاحة للحجز</p>
                         <p class="text-[11px] text-slate-400 font-semibold mb-3">اضغط على الوقت لتفعيله أو إيقافه — الأوقات بتوقيت المنطقة الزمنية للموقع</p>
                         <div class="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 gap-2" id="timeToggles"></div>
+                    </div>
+
+                </div>
+            </div>
+
+            {{-- ════ MARQUEE ════ --}}
+            <div id="tab-marquee" class="settings-card hidden">
+                <div class="settings-card-header">
+                    <span class="w-8 h-8 rounded-lg bg-orange-50 flex items-center justify-center flex-shrink-0">
+                        <span class="material-symbols-rounded text-orange-500" style="font-size:18px;font-variation-settings:'FILL' 1">campaign</span>
+                    </span>
+                    <div>
+                        <h3 class="text-sm font-black text-slate-800">الشريط الإعلاني</h3>
+                        <p class="text-[11px] text-slate-400 font-semibold">النصوص التي تظهر في الشريط المتحرك أسفل الهيرو</p>
+                    </div>
+                </div>
+                <div class="p-6 space-y-6">
+
+                    <div class="rounded-xl bg-amber-50 border border-amber-200 p-4 flex items-start gap-3">
+                        <span class="material-symbols-rounded text-amber-500 flex-shrink-0" style="font-size:18px;font-variation-settings:'FILL' 1">info</span>
+                        <p class="text-xs font-bold text-amber-700">كل سطر = عنصر واحد في الشريط. ابدأ سطرًا جديدًا لإضافة عنصر.</p>
+                    </div>
+
+                    {{-- Arabic items --}}
+                    <div>
+                        <label class="form-label mb-1">
+                            <span class="inline-flex items-center gap-1">
+                                <span class="w-5 h-5 rounded-md bg-green-100 flex items-center justify-center text-[10px] font-black text-green-700">ع</span>
+                                العناصر بالعربية
+                            </span>
+                        </label>
+                        <textarea name="settings[marquee_items_ar]" rows="7"
+                                  class="form-input font-arabic resize-none leading-relaxed" dir="rtl"
+                                  placeholder="اكتب كل عنصر في سطر منفصل...">{{ $s->get('marquee_items_ar', "خصومات إبريل 40%\nعروض العيد لسه مخلصتش\nجاهز للجاي...؟") }}</textarea>
+                    </div>
+
+                    {{-- English items --}}
+                    <div>
+                        <label class="form-label mb-1">
+                            <span class="inline-flex items-center gap-1">
+                                <span class="w-5 h-5 rounded-md bg-blue-100 flex items-center justify-center text-[10px] font-black text-blue-700">EN</span>
+                                العناصر بالإنجليزية
+                            </span>
+                        </label>
+                        <textarea name="settings[marquee_items_en]" rows="7"
+                                  class="form-input resize-none leading-relaxed" dir="ltr"
+                                  placeholder="Write each item on a separate line...">{{ $s->get('marquee_items_en', "April Discounts 40%\nEid Offers Are Still Going!\nReady for What's Coming?") }}</textarea>
                     </div>
 
                 </div>

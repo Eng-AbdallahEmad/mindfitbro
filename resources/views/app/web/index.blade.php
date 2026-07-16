@@ -149,7 +149,11 @@
     {{-- Marquee / Ticker Section --}}
     <section class="bg-lightBg border-y border-gray-200 py-[14px] overflow-hidden w-full group">
             @php
-                $items = __('messages.marquee.items');
+                $lang        = app()->getLocale();
+                $rawMarquee  = $settings->get("marquee_items_{$lang}", '');
+                $items       = $rawMarquee
+                    ? array_values(array_filter(array_map('trim', explode("\n", $rawMarquee))))
+                    : __('messages.marquee.items');
             @endphp
 
         <div class="flex w-max {{ $isRtl ? "animate-marquee" : "animate-marquee-ltr" }} group-hover:[animation-play-state:paused]">
