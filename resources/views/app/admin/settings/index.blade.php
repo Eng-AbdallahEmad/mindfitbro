@@ -75,7 +75,7 @@
 </div>
 @endif
 
-<form method="POST" action="{{ route('admin.settings.update') }}">
+<form method="POST" action="{{ route('admin.settings.update') }}" novalidate>
     @csrf
 
     <div class="grid grid-cols-1 lg:grid-cols-4 gap-5">
@@ -197,8 +197,8 @@
                         </div>
                         <div class="flex-1">
                             <label class="form-label mb-1">Instagram</label>
-                            <input type="url" name="settings[instagram_url]" dir="ltr"
-                                   value="{{ $s->get('instagram_url', '#') }}" class="form-input"
+                            <input type="text" name="settings[instagram_url]" dir="ltr"
+                                   value="{{ $s->get('instagram_url', '') }}" class="form-input"
                                    placeholder="https://instagram.com/mindfitbro">
                         </div>
                     </div>
@@ -211,8 +211,8 @@
                         </div>
                         <div class="flex-1">
                             <label class="form-label mb-1">TikTok</label>
-                            <input type="url" name="settings[tiktok_url]" dir="ltr"
-                                   value="{{ $s->get('tiktok_url', '#') }}" class="form-input"
+                            <input type="text" name="settings[tiktok_url]" dir="ltr"
+                                   value="{{ $s->get('tiktok_url', '') }}" class="form-input"
                                    placeholder="https://tiktok.com/@mindfitbro">
                         </div>
                     </div>
@@ -225,8 +225,8 @@
                         </div>
                         <div class="flex-1">
                             <label class="form-label mb-1">YouTube</label>
-                            <input type="url" name="settings[youtube_url]" dir="ltr"
-                                   value="{{ $s->get('youtube_url', '#') }}" class="form-input"
+                            <input type="text" name="settings[youtube_url]" dir="ltr"
+                                   value="{{ $s->get('youtube_url', '') }}" class="form-input"
                                    placeholder="https://youtube.com/@mindfitbro">
                         </div>
                     </div>
