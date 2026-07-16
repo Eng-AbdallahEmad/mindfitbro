@@ -41,9 +41,9 @@ class PlanSeeder extends Seeder
                 'icon_color' => 'text-primary',
                 'desc'       => 'للمبتدئين اللي عايزين يبدأوا رحلتهم بثقة',
                 'price'      => 999,    // SAR 3m — kept as convenience field
-                'popular'    => false,
-                'btn_class'  => 'border-2 border-primary text-primary hover:bg-blue-50',
-                'sort_order' => 1,
+                'popular'       => false,
+                'style_variant' => 'outline',
+                'sort_order'    => 1,
                 'is_active'  => true,
                 'features'   => [
                     ['key' => 'training',       'check' => true],
@@ -77,9 +77,9 @@ class PlanSeeder extends Seeder
                 'icon_color' => 'text-accent',
                 'desc'       => 'للجادين اللي عايزين نتيجة سريعة ومتابعة مكثفة',
                 'price'      => 1699,   // SAR 3m — convenience field
-                'popular'    => true,
-                'btn_class'  => 'bg-accent text-darkBg hover:bg-yellow-300',
-                'sort_order' => 2,
+                'popular'       => true,
+                'style_variant' => 'accent',
+                'sort_order'    => 2,
                 'is_active'  => true,
                 'features'   => [
                     ['key' => 'training',       'check' => true],

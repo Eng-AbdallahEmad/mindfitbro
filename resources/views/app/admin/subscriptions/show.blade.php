@@ -381,7 +381,7 @@
                     $snapshot = $subscription->plans_snapshot;
                     // normalize: array of items → flatten to first item's fields
                     $snapFlat = isset($snapshot[0]) && is_array($snapshot[0]) ? $snapshot[0] : $snapshot;
-                    $skipKeys = ['id','created_at','updated_at','btn_class','icon_bg','icon_color'];
+                    $skipKeys = ['id','created_at','updated_at','style_variant','icon_bg','icon_color'];
                 @endphp
                 <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
                     @foreach($snapFlat as $key => $val)

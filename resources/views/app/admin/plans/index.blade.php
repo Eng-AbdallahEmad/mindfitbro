@@ -178,13 +178,10 @@
             <div class="p-6">
                 {{-- Icon + Name --}}
                 <div class="flex items-center gap-3 mb-4 mt-2">
-                    @if($plan->icon)
-                    <div class="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0"
-                         style="background:{{ $plan->icon_bg ?: '#f1f5f9' }}">
-                        <span class="material-symbols-rounded"
-                              style="font-size:22px;color:{{ $plan->icon_color ?: '#64748b' }};font-variation-settings:'FILL' 1">{{ $plan->icon }}</span>
+                    <div class="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0 {{ $plan->iconBgClass }}">
+                        <span class="material-symbols-rounded {{ $plan->iconColorClass }}"
+                              style="font-size:22px;font-variation-settings:'FILL' 1">{{ $plan->iconName }}</span>
                     </div>
-                    @endif
                     <div>
                         <h3 class="text-base font-black text-slate-800">{{ $plan->name }}</h3>
                         <span class="text-[11px] text-slate-400 font-semibold font-mono">{{ $plan->key }}</span>
@@ -433,18 +430,33 @@
                 </div>
             </div>
 
+            {{-- Style Variant --}}
+            <div>
+                <label class="form-label">شكل زر الاشتراك <span class="text-red-500">*</span></label>
+                <div class="grid grid-cols-3 gap-2 mt-1">
+                    @foreach(['outline' => ['label'=>'إطار', 'cls'=>'border-2 border-blue-600 text-blue-600'], 'solid' => ['label'=>'ممتلئ', 'cls'=>'bg-blue-600 text-white'], 'accent' => ['label'=>'مميز', 'cls'=>'bg-yellow-400 text-gray-900']] as $val => $meta)
+                    <label class="flex flex-col items-center gap-1.5 cursor-pointer">
+                        <input type="radio" name="style_variant" value="{{ $val }}" class="sr-only peer" {{ $val === 'outline' ? 'checked' : '' }}>
+                        <div class="w-full py-2 rounded-xl text-xs font-black text-center border-2 border-transparent peer-checked:border-blue-500 peer-checked:ring-2 peer-checked:ring-blue-200 transition-all {{ $meta['cls'] }}">
+                            {{ $meta['label'] }}
+                        </div>
+                    </label>
+                    @endforeach
+                </div>
+            </div>
+
             <div class="grid grid-cols-3 gap-4">
                 <div>
                     <label class="form-label">أيقونة Material</label>
                     <input type="text" name="icon" placeholder="fitness_center" class="form-input font-mono">
                 </div>
                 <div>
-                    <label class="form-label">لون خلفية الأيقونة</label>
-                    <input type="text" name="icon_bg" placeholder="#f0fdf4" class="form-input font-mono">
+                    <label class="form-label">خلفية الأيقونة <span class="text-slate-400 font-normal text-[11px]">(Tailwind)</span></label>
+                    <input type="text" name="icon_bg" placeholder="bg-blue-50" class="form-input font-mono">
                 </div>
                 <div>
-                    <label class="form-label">لون الأيقونة</label>
-                    <input type="text" name="icon_color" placeholder="#22c55e" class="form-input font-mono">
+                    <label class="form-label">لون الأيقونة <span class="text-slate-400 font-normal text-[11px]">(Tailwind)</span></label>
+                    <input type="text" name="icon_color" placeholder="text-primary" class="form-input font-mono">
                 </div>
             </div>
 
@@ -560,17 +572,32 @@
                     @endforeach
                 </div>
             </div>
+            {{-- Style Variant --}}
+            <div>
+                <label class="form-label">شكل زر الاشتراك <span class="text-red-500">*</span></label>
+                <div class="grid grid-cols-3 gap-2 mt-1" id="editVariantGroup">
+                    @foreach(['outline' => ['label'=>'إطار', 'cls'=>'border-2 border-blue-600 text-blue-600'], 'solid' => ['label'=>'ممتلئ', 'cls'=>'bg-blue-600 text-white'], 'accent' => ['label'=>'مميز', 'cls'=>'bg-yellow-400 text-gray-900']] as $val => $meta)
+                    <label class="flex flex-col items-center gap-1.5 cursor-pointer">
+                        <input type="radio" name="style_variant" value="{{ $val }}" class="sr-only peer edit-variant-radio" data-val="{{ $val }}">
+                        <div class="w-full py-2 rounded-xl text-xs font-black text-center border-2 border-transparent peer-checked:border-blue-500 peer-checked:ring-2 peer-checked:ring-blue-200 transition-all {{ $meta['cls'] }}">
+                            {{ $meta['label'] }}
+                        </div>
+                    </label>
+                    @endforeach
+                </div>
+            </div>
+
             <div class="grid grid-cols-3 gap-4">
                 <div>
                     <label class="form-label">أيقونة Material</label>
                     <input type="text" name="icon" id="editIcon" class="form-input font-mono">
                 </div>
                 <div>
-                    <label class="form-label">لون خلفية الأيقونة</label>
+                    <label class="form-label">خلفية الأيقونة <span class="text-slate-400 font-normal text-[11px]">(Tailwind)</span></label>
                     <input type="text" name="icon_bg" id="editIconBg" class="form-input font-mono">
                 </div>
                 <div>
-                    <label class="form-label">لون الأيقونة</label>
+                    <label class="form-label">لون الأيقونة <span class="text-slate-400 font-normal text-[11px]">(Tailwind)</span></label>
                     <input type="text" name="icon_color" id="editIconColor" class="form-input font-mono">
                 </div>
             </div>
@@ -745,15 +772,21 @@ function openEditModal(id) {
     if (!p) return;
 
     document.getElementById('editForm').action = `/admin/plans/${id}`;
-    document.getElementById('editName').value      = p.name;
-    document.getElementById('editKey').value       = p.key;
-    document.getElementById('editDesc').value      = p.desc || '';
-    document.getElementById('editIcon').value      = p.icon || '';
-    document.getElementById('editIconBg').value    = p.icon_bg || '';
-    document.getElementById('editIconColor').value = p.icon_color || '';
-    document.getElementById('editSortOrder').value = p.sort_order;
-    document.getElementById('editPopular').checked = p.popular;
+    document.getElementById('editName').value       = p.name;
+    document.getElementById('editKey').value        = p.key;
+    document.getElementById('editDesc').value       = p.desc || '';
+    document.getElementById('editIcon').value       = p.icon || '';
+    document.getElementById('editIconBg').value     = p.icon_bg || '';
+    document.getElementById('editIconColor').value  = p.icon_color || '';
+    document.getElementById('editSortOrder').value  = p.sort_order;
+    document.getElementById('editPopular').checked  = p.popular;
     document.getElementById('editIsActive').checked = p.is_active;
+
+    // Style variant radio
+    const variant = p.style_variant || 'outline';
+    document.querySelectorAll('.edit-variant-radio').forEach(r => {
+        r.checked = r.dataset.val === variant;
+    });
 
     // Feature checkboxes
     document.querySelectorAll('.edit-feature-cb').forEach(cb => {

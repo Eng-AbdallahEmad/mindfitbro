@@ -708,6 +708,7 @@
                 && $subscription->plan_id === $rewardPlanId
                 && in_array($subscription->status, ['approved', 'active']);
             $showRewardCard     = $rewardEnabled && $rewardPlanId && $isEliteSubscriber;
+            $showRewardBadge    = $rewardEnabled && $rewardPlanId;
             $familyDiscount     = $settings->get('family_reward_discount_mode', 'fixed') === 'range'
                 ? ((int) $settings->get('family_reward_discount_min', 10) . '–' . (int) $settings->get('family_reward_discount_max', 30))
                 : ((int) $settings->get('family_reward_discount_value', 20));
@@ -729,12 +730,19 @@
                 </div>
                 @endif
 
-                <div class="w-12 h-12 rounded-2xl flex items-center justify-center mb-5 {{ $plan->icon_bg }}">
-                    <span class="material-symbols-rounded text-[26px] {{ $plan->icon_color }}">{{ $plan->icon }}</span>
+                <div class="w-12 h-12 rounded-2xl flex items-center justify-center mb-4 {{ $plan->iconBgClass }}">
+                    <span class="material-symbols-rounded text-[26px] {{ $plan->iconColorClass }}" style="font-variation-settings:'FILL' 1">{{ $plan->iconName }}</span>
                 </div>
 
+                @if($showRewardBadge && $plan->id === $rewardPlanId)
+                <div class="inline-flex items-center gap-1 bg-accent/15 text-yellow-700 text-[10px] font-black px-2.5 py-1 rounded-full mb-3">
+                    <span class="material-symbols-rounded" style="font-size:11px;font-variation-settings:'FILL' 1">card_giftcard</span>
+                    {{ __('messages.programs.reward_plan_badge') }}
+                </div>
+                @endif
+
                 <h3 class="text-xl font-black text-textColor mb-2">{{ __('messages.plans_data.'.$plan->key.'.name', [], null) ?: $plan->name }}</h3>
-                <p class="text-gray-400 text-sm leading-relaxed mb-6">{{ __('messages.plans_data.'.$plan->key.'.desc', [], null) ?: $plan->desc }}</p>
+                <p class="text-gray-400 text-sm leading-relaxed mb-6">{{ __('messages.plans_data.'.$plan->key.'.desc', [], null) ?: ($plan->desc ?: '') }}</p>
 
                 @php
                     $price3m      = (float)($plan->priceFor($currency, 3)?->price ?? $plan->priceFor('SAR', 3)?->price ?? $plan->price);
@@ -775,18 +783,18 @@
 
                 @if($subscription)
                     <button type="button"
-                            class="block w-full py-3 rounded-[14px] font-black text-sm text-center font-arabic {{ $plan->btn_class }} opacity-75 cursor-not-allowed">
+                            class="block w-full py-3 rounded-[14px] font-black text-sm text-center font-arabic {{ $plan->buttonClasses }} opacity-75 cursor-not-allowed">
                         {{ __('messages.programs.already_subscribed') }}
                     </button>
                 @elseif (auth()->check() && auth()->user()->role === 'coach')
                         <button type="button"
-                            class="block w-full py-3 rounded-[14px] font-black text-sm text-center font-arabic {{ $plan->btn_class }} opacity-75 cursor-not-allowed">
+                            class="block w-full py-3 rounded-[14px] font-black text-sm text-center font-arabic {{ $plan->buttonClasses }} opacity-75 cursor-not-allowed">
                             {{ __('messages.programs.coach_cant_subscribe') }}
                         </button>
                 @else
                     <a
                         :href="'{{ route('purchase.form', $plan) }}?duration=' + months"
-                        class="block w-full py-3 rounded-[14px] font-black text-sm text-center transition-all duration-300 font-arabic {{ $plan->btn_class }}"
+                        class="block w-full py-3 rounded-[14px] font-black text-sm text-center transition-all duration-300 font-arabic {{ $plan->buttonClasses }}"
                     >
                         {{ __('messages.programs.subscribe_now') }}
                     </a>
