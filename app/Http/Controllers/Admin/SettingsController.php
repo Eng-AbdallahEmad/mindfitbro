@@ -34,6 +34,16 @@ class SettingsController extends Controller
             Setting::updateOrCreate(['key' => $key], ['value' => $value]);
         }
 
-        return back()->with('success', 'تم حفظ الإعدادات بنجاح');
+        // Ensure the per-request static cache is invalidated so the very next
+        // read in this same process gets a fresh value from the DB.
+        Setting::flushCache();
+
+        $maintenanceEnabled = ($settings['maintenance_mode_enabled'] ?? '0') === '1';
+
+        $message = $maintenanceEnabled
+            ? 'وضع الصيانة مُفعَّل الآن — الموقع غير مرئي للزوار فوراً'
+            : 'تم حفظ الإعدادات بنجاح';
+
+        return back()->with('success', $message);
     }
 }

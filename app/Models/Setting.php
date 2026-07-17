@@ -24,7 +24,12 @@ class Setting extends Model
     public static function set(string $key, mixed $value, string $group = 'general'): void
     {
         static::updateOrCreate(['key' => $key], ['value' => $value, 'group' => $group]);
-        static::$cache = null; // invalidate cache
+        static::$cache = null;
+    }
+
+    public static function flushCache(): void
+    {
+        static::$cache = null;
     }
 
     public static function allGrouped(): Collection
