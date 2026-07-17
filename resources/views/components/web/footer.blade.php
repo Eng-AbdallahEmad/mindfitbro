@@ -3,9 +3,10 @@
 ])
 
 @php
-    $isRtl      = app()->getLocale() === 'ar';
+    $isRtl          = app()->getLocale() === 'ar';
     $footerSettings = \App\Models\Setting::pluck('value', 'key');
-    $footerPlans    = \App\Models\Plan::where('is_active', true)->orderBy('sort_order')->get(['name', 'price', 'icon']);
+    $footerCurrency = app(\App\Services\Web\CurrencyService::class)->current();
+    $footerPlans    = \App\Models\Plan::where('is_active', true)->orderBy('sort_order')->with('prices')->get(['id', 'name', 'price', 'icon']);
 @endphp
 
 {{-- ═══════════════════════════════════════════
@@ -86,7 +87,7 @@
             @if (!$hidden)
                 {{-- ── Column 2: Quick Links ── --}}
                 <div class="flex flex-col gap-5 font-arabic">
-                    <h4 class="text-white font-black text-base relative pb-3 after:content-[''] after:absolute after:bottom-0 after:{{ $isRtl ? 'right' : 'left' }}-0 after:w-8 after:h-[2px] after:bg-[#D4ED57] after:rounded-full">
+                    <h4 class="text-white font-black text-base relative pb-3 after:content-[''] after:absolute after:bottom-0 {{ $isRtl ? 'after:right-0' : 'after:left-0' }} after:w-8 after:h-[2px] after:bg-[#D4ED57] after:rounded-full">
                         {{ __('messages.footer.quick_links') }}
                     </h4>
                     <ul class="flex flex-col gap-3.5">
@@ -112,7 +113,7 @@
 
             {{-- ── Column 3: Plans ── --}}
             <div class="flex flex-col gap-5 font-arabic">
-                <h4 class="text-white font-black text-base relative pb-3 after:content-[''] after:absolute after:bottom-0 after:{{ $isRtl ? 'right' : 'left' }}-0 after:w-8 after:h-[2px] after:bg-[#D4ED57] after:rounded-full">
+                <h4 class="text-white font-black text-base relative pb-3 after:content-[''] after:absolute after:bottom-0 {{ $isRtl ? 'after:right-0' : 'after:left-0' }} after:w-8 after:h-[2px] after:bg-[#D4ED57] after:rounded-full">
                     {{ __('messages.footer.plans') }}
                 </h4>
                 <ul class="flex flex-col gap-4">
@@ -125,15 +126,8 @@
                                 <span class="text-sm font-bold text-white/70 group-hover:text-white transition-colors">{{ $plan->name }}</span>
                             </div>
                             <span class="text-xs font-black text-[#D4ED57]/60 group-hover:text-[#D4ED57] transition-colors font-display flex items-center gap-1">
-                                {{ number_format($plan->price, 0) }}
-                                <svg width="10" height="12" viewBox="0 0 16 18" fill="none" xmlns="http://www.w3.org/2000/svg" class="inline-block flex-shrink-0 opacity-60 group-hover:opacity-100 transition-opacity">
-                                    <path d="M9.36633 2.59339C10.0415 1.83554 10.4564 1.4953 11.2713 1.06514V13.6848L9.36633 14.0784V2.59339Z" fill="currentColor"/>
-                                    <path d="M15.4529 8.93793C15.8478 8.10434 15.8943 7.73386 16 6.87871L1.39805 10.0494C1.05179 10.8207 0.940326 11.2518 0.886964 12.0176L15.4529 8.93793Z" fill="currentColor"/>
-                                    <path d="M15.4529 12.8033C15.8478 11.9697 15.8943 11.5992 16 10.744L9.43602 12.1334C9.38956 12.8975 9.44292 13.2895 9.38956 14.0552L15.4529 12.8033Z" fill="currentColor"/>
-                                    <path d="M15.4529 16.668C15.8478 15.8345 15.8943 15.464 16 14.6088L10.0168 15.9077C9.7148 16.3245 9.52895 17.0191 9.38956 17.92L15.4529 16.668Z" fill="currentColor"/>
-                                    <path d="M5.95136 15.3519C6.53213 14.6341 7.13614 13.7311 7.5543 12.9901L0.51109 14.5167C0.164822 15.2881 0.0533618 15.7192 0 16.4849L5.95136 15.3519Z" fill="currentColor"/>
-                                    <path d="M5.64935 1.52825C6.32448 0.770398 6.73938 0.430158 7.5543 0V13.0364L5.64935 13.4301V1.52825Z" fill="currentColor"/>
-                                </svg>
+                                {{ number_format($plan->priceFor($footerCurrency, 3)?->price ?? $plan->priceFor('SAR', 3)?->price ?? $plan->price, 0) }}
+                                <x-web.currency-symbol :currency="$footerCurrency" size="10" />
                             </span>
                         </a>
                     </li>
@@ -156,7 +150,7 @@
 
             {{-- ── Column 4: Contact ── --}}
             <div class="flex flex-col gap-5 font-arabic">
-                <h4 class="text-white font-black text-base relative pb-3 after:content-[''] after:absolute after:bottom-0 after:{{ $isRtl ? 'right-0' : 'left-0' }} after:w-8 after:h-[2px] after:bg-[#D4ED57] after:rounded-full">
+                <h4 class="text-white font-black text-base relative pb-3 after:content-[''] after:absolute after:bottom-0 {{ $isRtl ? 'after:right-0' : 'after:left-0' }} after:w-8 after:h-[2px] after:bg-[#D4ED57] after:rounded-full">
                     {{ __('messages.footer.stay_connected') }}
                 </h4>
 
