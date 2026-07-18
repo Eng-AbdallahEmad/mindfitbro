@@ -59,9 +59,11 @@ class Setting extends Model
                 'contact_phone_display' => '+966 593 035 979',
             ],
             'social' => [
-                'instagram_url' => '#',
-                'tiktok_url'    => '#',
-                'youtube_url'   => '#',
+                'instagram_url'   => '#',
+                'tiktok_url'      => '#',
+                'youtube_url'     => '#',
+                'google_play_url' => '#',
+                'app_store_url'   => '#',
             ],
             'stats' => [
                 'hero_success_count'        => '500',

@@ -555,6 +555,9 @@ return [
         'copyright'         => 'جميع الحقوق محفوظة',
         'privacy'           => 'سياسة الخصوصية',
         'terms'             => 'الشروط والأحكام',
+        'download_app'      => 'حمّل التطبيق',
+        'get_it_on'         => 'احصل عليه من',
+        'download_on'       => 'حمّل من',
     ],
 
     'user_dashboard' => [
