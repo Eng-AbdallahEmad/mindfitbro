@@ -18,6 +18,7 @@ class OrderApprovedMail extends Mailable
         public string $customerName,
         public bool $accountAutoCreated = false,
         public ?string $passwordSetUrl = null,
+        public bool $isGuest = false,
     ) {}
 
     public function envelope(): Envelope

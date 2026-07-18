@@ -118,8 +118,9 @@ class SubscriptionsController extends Controller
         $passwordSetUrl     = null;
         $customerName       = '';
         $customerEmail      = '';
+        $isGuest            = false;
 
-        DB::transaction(function () use ($subscription, &$accountAutoCreated, &$passwordSetUrl, &$customerName, &$customerEmail) {
+        DB::transaction(function () use ($subscription, &$accountAutoCreated, &$passwordSetUrl, &$customerName, &$customerEmail, &$isGuest) {
             $subscription->update([
                 'status'      => Subscription::STATUS_APPROVED,
                 'reviewed_by' => Auth::guard('admin')->id(),
@@ -127,6 +128,7 @@ class SubscriptionsController extends Controller
             ]);
 
             if (is_null($subscription->user_id) && $subscription->guest_email) {
+                $isGuest    = true;
                 $guestEmail = $subscription->guest_email;
                 $guestName  = $subscription->guest_name ?: 'العميل';
 
@@ -183,7 +185,7 @@ class SubscriptionsController extends Controller
         if ($customerEmail) {
             try {
                 Mail::to($customerEmail)->send(
-                    new OrderApprovedMail($subscription, $customerName, $accountAutoCreated, $passwordSetUrl)
+                    new OrderApprovedMail($subscription, $customerName, $accountAutoCreated, $passwordSetUrl, $isGuest)
                 );
             } catch (\Throwable $e) {
                 Log::error('OrderApprovedMail failed', ['sub' => $subscription->id, 'err' => $e->getMessage()]);

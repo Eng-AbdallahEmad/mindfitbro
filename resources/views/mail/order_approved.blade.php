@@ -125,13 +125,14 @@ body { margin:0; padding:0; background:#F0F4FB; font-family:'Cairo','Segoe UI',T
         </div>
 
         {{-- CTA ── --}}
-        @if($accountAutoCreated && $passwordSetUrl)
+        @if($isGuest && $accountAutoCreated && $passwordSetUrl)
+        {{-- Guest with new auto-created account: must set password to access dashboard --}}
         <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:12px;">
             <tr>
                 <td align="center">
                     <a href="{{ $passwordSetUrl }}"
                        style="display:inline-block;background:#D4ED57;color:#1C1C1C;font-size:15px;font-weight:900;padding:16px 40px;border-radius:14px;text-decoration:none;font-family:'Cairo','Segoe UI',Tahoma,Arial,sans-serif;">
-                        عيّن كلمة المرور
+                        أكمل بياناتك
                     </a>
                 </td>
             </tr>
@@ -139,12 +140,32 @@ body { margin:0; padding:0; background:#F0F4FB; font-family:'Cairo','Segoe UI',T
                 <td align="center" style="padding-top:10px;">
                     <p style="font-size:12px;color:#9CA3AF;line-height:1.7;margin:0;font-family:'Cairo','Segoe UI',Tahoma,Arial,sans-serif;">
                         تم إنشاء حسابك تلقائياً على MindFitBro.<br>
-                        اضغط الزر لتعيين كلمة المرور والدخول للوحة التحكم.
+                        اضغط الزر لتعيين كلمة المرور وإكمال ملفك الشخصي.
+                    </p>
+                </td>
+            </tr>
+        </table>
+        @elseif($isGuest)
+        {{-- Guest whose email already had an existing account: just login --}}
+        <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:12px;">
+            <tr>
+                <td align="center">
+                    <a href="{{ url('/login') }}"
+                       style="display:inline-block;background:#D4ED57;color:#1C1C1C;font-size:15px;font-weight:900;padding:16px 40px;border-radius:14px;text-decoration:none;font-family:'Cairo','Segoe UI',Tahoma,Arial,sans-serif;">
+                        أكمل بياناتك
+                    </a>
+                </td>
+            </tr>
+            <tr>
+                <td align="center" style="padding-top:10px;">
+                    <p style="font-size:12px;color:#9CA3AF;line-height:1.7;margin:0;font-family:'Cairo','Segoe UI',Tahoma,Arial,sans-serif;">
+                        سجّل دخولك للوصول إلى لوحة التحكم وإكمال ملفك الشخصي.
                     </p>
                 </td>
             </tr>
         </table>
         @else
+        {{-- Logged-in user at time of purchase: no profile completion needed --}}
         <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:12px;">
             <tr>
                 <td align="center">
