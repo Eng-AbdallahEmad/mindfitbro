@@ -4,14 +4,14 @@
     'newClientsThisMonth' => 0,
     'firstSessionTime'    => null,
     'pendingBookings'     => 0,
-    'monthlyRevenue'      => 0,
+    'monthlyRevenueByCurrency' => [],
     'pendingBookingsList' => collect(),
     'activeClients'       => collect(),
 ])
 
 @php
     $coach = auth()->user();
-    $sarIcon = '<svg width="14" height="16" viewBox="0 0 16 18" fill="none" xmlns="http://www.w3.org/2000/svg" class="inline-block flex-shrink-0" style="vertical-align:middle"><path d="M9.36633 2.59339C10.0415 1.83554 10.4564 1.4953 11.2713 1.06514V13.6848L9.36633 14.0784V2.59339Z" fill="currentColor"/><path d="M15.4529 8.93793C15.8478 8.10434 15.8943 7.73386 16 6.87871L1.39805 10.0494C1.05179 10.8207 0.940326 11.2518 0.886964 12.0176L15.4529 8.93793Z" fill="currentColor"/><path d="M15.4529 12.8033C15.8478 11.9697 15.8943 11.5992 16 10.744L9.43602 12.1334C9.38956 12.8975 9.44292 13.2895 9.38956 14.0552L15.4529 12.8033Z" fill="currentColor"/><path d="M15.4529 16.668C15.8478 15.8345 15.8943 15.464 16 14.6088L10.0168 15.9077C9.7148 16.3245 9.52895 17.0191 9.38956 17.92L15.4529 16.668Z" fill="currentColor"/><path d="M5.95136 15.3519C6.53213 14.6341 7.13614 13.7311 7.5543 12.9901L0.51109 14.5167C0.164822 15.2881 0.0533618 15.7192 0 16.4849L5.95136 15.3519Z" fill="currentColor"/><path d="M5.64935 1.52825C6.32448 0.770398 6.73938 0.430158 7.5543 0V13.0364L5.64935 13.4301V1.52825Z" fill="currentColor"/></svg>';
+    $revCurrencyMeta = ['SAR'=>['sym'=>'ر.س','dec'=>0],'EGP'=>['sym'=>'ج.م','dec'=>0],'TND'=>['sym'=>'د.ت','dec'=>3],'USD'=>['sym'=>'$','dec'=>2]];
 @endphp
 
 {{-- ══════════════════════════════════════
@@ -717,11 +717,16 @@
                 </div>
                 <div class="font-arabic">
                     <p class="text-gray-400 text-xs font-bold mb-1">إيرادات الشهر</p>
-                    <p class="font-display text-3xl font-black text-textColor leading-none">{{ number_format($monthlyRevenue) }}</p>
+                    @forelse($monthlyRevenueByCurrency as $cur => $amount)
+                        @php $rm = $revCurrencyMeta[$cur] ?? ['sym'=>$cur,'dec'=>0]; @endphp
+                        <p class="font-display text-2xl font-black text-textColor leading-tight">
+                            {{ number_format((float)$amount, $rm['dec']) }}
+                            <span class="text-sm font-bold text-gray-400">{{ $rm['sym'] }}</span>
+                        </p>
+                    @empty
+                        <p class="font-display text-3xl font-black text-textColor leading-none">0</p>
+                    @endforelse
                 </div>
-                <span class="text-[10px] font-black font-arabic text-green-700 bg-green-50 border border-green-100 px-2 py-0.5 rounded-full self-start flex items-center gap-1">
-                    {!! $sarIcon !!} ريال سعودي
-                </span>
             </div>
         </div>
 

@@ -75,6 +75,11 @@ class User extends Authenticatable
             }
             $user->meetingBookings()->delete();
 
+            // subscriptions.user_id is nullOnDelete (changed for guest checkout) —
+            // delete explicitly so they don't linger as orphaned "guest" records.
+            // coach_ratings and family_invitations cascade from subscription delete.
+            $user->subscriptions()->delete();
+
             // carts.user_id is nullOnDelete — delete carts (cart_items cascade via DB)
             $user->carts()->delete();
         });

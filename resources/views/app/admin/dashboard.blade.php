@@ -304,6 +304,8 @@
                         $plan   = $sub->plan?->name ?? 'غير محدد';
                         $pClass = $planColors[$plan] ?? 'badge-blue';
                         $st     = $statusMap[$sub->status] ?? ['label' => $sub->status, 'class' => 'badge-gray'];
+                        $dCur   = $sub->currency ?? 'SAR';
+                        $dMeta  = ['SAR'=>['sym'=>'ر.س','dec'=>0],'EGP'=>['sym'=>'ج.م','dec'=>0],'TND'=>['sym'=>'د.ت','dec'=>3],'USD'=>['sym'=>'$','dec'=>2]][$dCur] ?? ['sym'=>$dCur,'dec'=>0];
                     @endphp
                     <tr>
                         {{-- Member --}}
@@ -324,7 +326,7 @@
                         </td>
                         {{-- Amount --}}
                         <td style="white-space:nowrap;">
-                            <span class="font-black text-slate-800 text-[13px]">{{ number_format($sub->total, 0) }} <span class="text-[11px] text-slate-400 font-bold">ر.س</span></span>
+                            <span class="font-black text-slate-800 text-[13px]">{{ number_format((float)$sub->total, $dMeta['dec']) }} <span class="text-[11px] text-slate-400 font-bold">{{ $dMeta['sym'] }}</span></span>
                         </td>
                         {{-- Status --}}
                         <td>

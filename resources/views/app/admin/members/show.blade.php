@@ -484,8 +484,10 @@
             <tbody>
                 @foreach($member->subscriptions->sortByDesc('created_at') as $sub)
                 @php
-                    $ss = $subStatusMap[$sub->status] ?? ['label'=>$sub->status,'class'=>'badge-gray'];
-                    $pc = $planColors[$sub->plan?->name ?? ''] ?? 'badge-blue';
+                    $ss   = $subStatusMap[$sub->status] ?? ['label'=>$sub->status,'class'=>'badge-gray'];
+                    $pc   = $planColors[$sub->plan?->name ?? ''] ?? 'badge-blue';
+                    $sCur = $sub->currency ?? 'SAR';
+                    $sMeta = ['SAR'=>['sym'=>'ر.س','dec'=>0],'EGP'=>['sym'=>'ج.م','dec'=>0],'TND'=>['sym'=>'د.ت','dec'=>3],'USD'=>['sym'=>'$','dec'=>2]][$sCur] ?? ['sym'=>$sCur,'dec'=>0];
                 @endphp
                 <tr>
                     <td>
@@ -498,8 +500,8 @@
                         {{ $sub->end_date?->format('d/m/Y') ?? '—' }}
                     </td>
                     <td class="text-[13px] font-black text-slate-800">
-                        {{ number_format($sub->total, 0) }}
-                        <span class="text-[11px] text-slate-400 font-bold">ر.س</span>
+                        {{ number_format((float)$sub->total, $sMeta['dec']) }}
+                        <span class="text-[11px] text-slate-400 font-bold">{{ $sMeta['sym'] }}</span>
                     </td>
                     <td>
                         @if($sub->duration_months)

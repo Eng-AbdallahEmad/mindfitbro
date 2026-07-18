@@ -24,7 +24,7 @@ class BookingController extends Controller
             ->first();
 
         $availableDaysStr = Setting::get('booking_available_days', '0,1,2,3,4');
-        $availableDays    = array_map('intval', array_filter(array_map('trim', explode(',', $availableDaysStr))));
+        $availableDays    = array_map('intval', array_filter(array_map('trim', explode(',', $availableDaysStr)), fn($v) => $v !== ''));
         $daysOff          = array_values(array_diff(range(0, 6), $availableDays));
 
         $timeSlotsStr = Setting::get('booking_time_slots', '09:00,10:00,11:00,13:00,14:00,15:00,16:00,17:00');

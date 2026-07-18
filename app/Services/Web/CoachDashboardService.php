@@ -40,11 +40,15 @@ class CoachDashboardService
             ->take(5)
             ->get();
 
-        // ── الإيرادات ──────────────────────────────────────────
-        $monthlyRevenue = Subscription::where('status', 'active')
+        // ── الإيرادات (مجمّعة لكل عملة) ───────────────────────────
+        $monthlyRevenueByCurrency = Subscription::where('status', 'active')
             ->whereMonth('created_at', now()->month)
             ->whereYear('created_at', now()->year)
-            ->sum('total');
+            ->selectRaw('currency, SUM(total) as total')
+            ->groupBy('currency')
+            ->orderBy('currency')
+            ->pluck('total', 'currency')
+            ->toArray();
 
         // ── المشتركين النشطين ──────────────────────────────────
         $activeClients = Subscription::where('status', 'active')
@@ -65,7 +69,7 @@ class CoachDashboardService
             'firstSessionTime',
             'pendingBookings',
             'pendingBookingsList',
-            'monthlyRevenue',
+            'monthlyRevenueByCurrency',
             'activeClients',
         );
     }

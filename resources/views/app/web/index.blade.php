@@ -740,7 +740,11 @@
             $isEliteSubscriber  = $subscription
                 && $subscription->plan_id === $rewardPlanId
                 && in_array($subscription->status, ['approved', 'active']);
-            $showRewardCard     = $rewardEnabled && $rewardPlanId && $isEliteSubscriber;
+            $isPendingRewardSub = $subscription
+                && $subscription->plan_id === $rewardPlanId
+                && $subscription->status === 'pending_review';
+            $showRewardCard     = $rewardEnabled && $rewardPlanId;
+            $isRewardLocked     = !$isEliteSubscriber;
             $showRewardBadge    = $rewardEnabled && $rewardPlanId;
             $familyDiscount     = $settings->get('family_reward_discount_mode', 'fixed') === 'range'
                 ? ((int) $settings->get('family_reward_discount_min', 10) . '–' . (int) $settings->get('family_reward_discount_max', 30))
@@ -784,13 +788,13 @@
                 @endphp
 
                 <div class="flex items-baseline gap-1.5 mb-1 text-gray-400">
-                    <x-web.currency-symbol :currency="$currency" />
+                    <span class="text-sm font-arabic"
+                        x-text="months === 3 ? '{{ $dur3Label }}' : '{{ $dur6Label }}'">{{ $dur3Label }}</span>
                     <span class="text-5xl font-black font-display text-textColor leading-none"
                         x-text="months === 3 ? {{ $price3m }} : {{ $price6m }}">
                         {{ $price3m }}
                     </span>
-                    <span class="text-sm font-arabic"
-                        x-text="months === 3 ? '{{ $dur3Label }}' : '{{ $dur6Label }}'">{{ $dur3Label }}</span>
+                    <x-web.currency-symbol :currency="$currency" />
                 </div>
 
                 @if($showFallback)
@@ -839,6 +843,15 @@
         @if($showRewardCard)
         <div class="w-full max-w-[980px] px-6 mx-auto">
             <div class="relative rounded-[28px] overflow-hidden font-arabic shadow-[0_24px_64px_rgba(18,0,46,0.15)]" dir="{{ $isRtl ? 'rtl' : 'ltr' }}">
+
+                {{-- Lock badge --}}
+                @if($isRewardLocked)
+                <div class="absolute top-4 {{ $isRtl ? 'left-4' : 'right-4' }} z-20 flex items-center gap-1.5 bg-slate-900/80 text-white text-[11px] font-black px-3 py-1.5 rounded-full backdrop-blur-sm border border-white/10">
+                    <span class="material-symbols-rounded" style="font-size:13px;font-variation-settings:'FILL' 1">lock</span>
+                    مقفل
+                </div>
+                @endif
+
                 <div class="flex flex-col lg:flex-row items-stretch">
 
                     {{-- Content side (right in RTL) --}}
@@ -891,22 +904,46 @@
                             {{ __('messages.programs.reward_discount_label') }}
                         </p>
 
-                        @if($isEliteSubscriber)
+                        @if(!$isRewardLocked)
+                        {{-- ✅ مفتوح: مشترك ومعتمد --}}
                         <a href="{{ route('dashboard') }}#family-reward"
                             class="w-full py-4 rounded-2xl font-black text-sm text-center font-arabic text-darkBg flex items-center justify-center gap-2 z-10 transition-all duration-300 hover:scale-[1.03] whitespace-nowrap"
                             style="background:linear-gradient(135deg,#EAB308 0%,#F59E0B 100%);box-shadow:0 6px 28px rgba(234,179,8,0.45);">
                             <span class="material-symbols-rounded" style="font-size:16px;font-variation-settings:'FILL' 1">card_giftcard</span>
                             {{ __('messages.programs.reward_cta') }}
                         </a>
-                        @elseif($rewardPlan)
-                        <div class="w-full z-10 flex flex-col items-center gap-2">
+
+                        @elseif($isPendingRewardSub)
+                        {{-- ⏳ طلب قيد المراجعة --}}
+                        <div class="w-full z-10 flex flex-col items-center gap-3">
+                            <div class="w-14 h-14 rounded-full flex items-center justify-center" style="background:rgba(234,179,8,0.08);border:1.5px solid rgba(234,179,8,0.25);">
+                                <span class="material-symbols-rounded text-yellow-400" style="font-size:26px;font-variation-settings:'FILL' 1">schedule</span>
+                            </div>
+                            <p class="text-white/60 text-[11px] font-arabic text-center leading-relaxed">
+                                طلبك قيد المراجعة<br>
+                                <span class="text-white/40">سيُفتح هذا القسم بعد<br>موافقة الأدمن</span>
+                            </p>
+                        </div>
+
+                        @else
+                        {{-- 🔒 مقفل: لم يشترك بعد --}}
+                        <div class="w-full z-10 flex flex-col items-center gap-3">
+                            <div class="w-14 h-14 rounded-full flex items-center justify-center" style="background:rgba(255,255,255,0.04);border:1.5px solid rgba(255,255,255,0.10);">
+                                <span class="material-symbols-rounded text-white/30" style="font-size:26px;font-variation-settings:'FILL' 1">lock</span>
+                            </div>
+                            @if($rewardPlan)
+                            <p class="text-white/50 text-[11px] font-arabic text-center leading-relaxed">
+                                اشترك في باقة<br>
+                                <span class="text-accent font-black">{{ $rewardPlan->name }}</span><br>
+                                <span class="text-white/35">لفتح هذه الميزة</span>
+                            </p>
                             <a href="{{ route('purchase.form', $rewardPlan->key) }}"
-                                class="w-full py-4 rounded-2xl font-black text-base text-center font-arabic text-darkBg flex items-center justify-center gap-2 transition-all duration-300 hover:scale-[1.03] whitespace-nowrap"
-                                style="background:linear-gradient(135deg,#EAB308 0%,#F59E0B 100%);box-shadow:0 6px 28px rgba(234,179,8,0.45);">
-                                <span class="material-symbols-rounded" style="font-size:16px;font-variation-settings:'FILL' 1">workspace_premium</span>
-                                {{ __('messages.programs.reward_cta_subscribe', ['plan' => $rewardPlan->name]) }}
+                                class="w-full py-3.5 rounded-2xl font-black text-sm text-center font-arabic text-darkBg flex items-center justify-center gap-1.5 transition-all duration-300 hover:scale-[1.03] whitespace-nowrap"
+                                style="background:linear-gradient(135deg,#EAB308 0%,#F59E0B 100%);box-shadow:0 6px 28px rgba(234,179,8,0.35);">
+                                <span class="material-symbols-rounded" style="font-size:15px;font-variation-settings:'FILL' 1">workspace_premium</span>
+                                اشترك الآن
                             </a>
-                            <p class="text-white/30 text-[11px] font-arabic text-center">{{ __('messages.programs.reward_discount_label') }}</p>
+                            @endif
                         </div>
                         @endif
 

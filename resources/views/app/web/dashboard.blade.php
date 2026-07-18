@@ -192,7 +192,7 @@
         :first-session-time="$firstSessionTime"
         :pending-bookings="$pendingBookings"
         :pending-bookings-list="$pendingBookingsList"
-        :monthly-revenue="$monthlyRevenue"
+        :monthly-revenue-by-currency="$monthlyRevenueByCurrency"
         :active-clients="$activeClients"
     />
 @else
