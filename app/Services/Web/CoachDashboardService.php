@@ -34,7 +34,7 @@ class CoachDashboardService
         $pendingBookings = MeetingBooking::where('status', 'pending')->count();
 
         $pendingBookingsList = MeetingBooking::where('status', 'pending')
-            ->with(['subscription.user', 'subscription.plan'])
+            ->with(['subscription.user', 'subscription.plan', 'subscription.traineeAssessment'])
             ->orderBy('meeting_date')
             ->orderBy('meeting_time')
             ->take(5)

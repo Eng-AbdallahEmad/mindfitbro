@@ -1,6 +1,78 @@
-{{-- Booking prompt (no booking yet — step 1) --}}
-@if(! $hasBooking)
+@php
+    // Steps indicator config — changes based on assessment state
+    $steps = [
+        ['n'=>'1', 'label'=> __('messages.user_dashboard.step_assessment'),    'active'=> !$assessmentSubmitted, 'done'=> $assessmentSubmitted],
+        ['n'=>'2', 'label'=> __('messages.user_dashboard.step_book'),          'active'=> $assessmentSubmitted && !$hasBooking, 'done'=> $hasBooking],
+        ['n'=>'3', 'label'=> __('messages.user_dashboard.step_2_waiting'),     'active'=> $hasBooking && !$meetingDone, 'done'=> $meetingDone],
+        ['n'=>'4', 'label'=> __('messages.user_dashboard.step_activate'),      'active'=> false, 'done'=> false],
+    ];
+@endphp
+
+{{-- ══════════════════════════════════════
+     CARD A: Fill Assessment (step 1)
+══════════════════════════════════════ --}}
+@if(! $assessmentSubmitted)
 <div class="anim anim-1">
+    <div class="card waiting-card-pulse border-2 border-dashed border-primary/25 bg-primary/[0.02]" style="direction:{{ $dir }}">
+        <div class="flex flex-col sm:flex-row items-start sm:items-center gap-5">
+            <div class="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center flex-shrink-0">
+                <span class="material-symbols-rounded text-primary" style="font-size:32px;font-variation-settings:'FILL' 1">assignment_ind</span>
+            </div>
+            <div class="flex-1 font-arabic">
+                <div class="flex flex-wrap items-center gap-2 mb-1.5">
+                    <h3 class="font-black text-textColor text-lg">{{ __('messages.user_dashboard.fill_assessment') }}</h3>
+                    <span class="text-[10px] font-black px-2 py-0.5 rounded-full bg-amber-50 text-amber-600 border border-amber-200 animate-pulse">
+                        {{ __('messages.user_dashboard.required_activation') }}
+                    </span>
+                </div>
+                <p class="text-gray-400 text-sm font-bold leading-relaxed mb-3">
+                    {{ __('messages.user_dashboard.assessment_desc') }}
+                </p>
+                <div class="flex flex-wrap items-center gap-3">
+                    @foreach($steps as $step)
+                        @if(!$loop->first)<span class="text-gray-300">{{ $isRtl ? '←' : '→' }}</span>@endif
+                        <div class="flex items-center gap-1.5 text-[11px] font-bold
+                            {{ $step['done'] ? 'text-green-600' : ($step['active'] ? 'text-primary' : 'text-gray-400') }}">
+                            <span class="w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-black flex-shrink-0
+                                {{ $step['done'] ? 'bg-green-500 text-white' : ($step['active'] ? 'bg-primary text-white' : 'bg-gray-200 text-gray-500') }}">
+                                @if($step['done'])
+                                    <span class="material-symbols-rounded" style="font-size:12px;font-variation-settings:'FILL' 1">check</span>
+                                @else
+                                    {{ $step['n'] }}
+                                @endif
+                            </span>
+                            {{ $step['label'] }}
+                        </div>
+                    @endforeach
+                </div>
+            </div>
+            <a href="{{ route('assessment.show', $subscription->id) }}"
+               class="flex-shrink-0 flex items-center gap-2 bg-primary text-white font-black font-arabic text-sm px-5 py-3 rounded-xl hover:bg-primary/90 transition whitespace-nowrap self-stretch sm:self-auto justify-center">
+                <span class="material-symbols-rounded" style="font-size:18px;color:#D4ED57;font-variation-settings:'FILL' 1">assignment_ind</span>
+                {{ __('messages.user_dashboard.start_assessment_btn') }}
+            </a>
+        </div>
+    </div>
+</div>
+
+{{-- ══════════════════════════════════════
+     CARD B: Assessment done, book now (step 2)
+══════════════════════════════════════ --}}
+@elseif(! $hasBooking)
+<div class="anim anim-1">
+    {{-- Assessment done confirmation --}}
+    <div class="card mb-4 border border-green-200 bg-green-50/50" style="direction:{{ $dir }}">
+        <div class="flex items-center gap-3 font-arabic">
+            <div class="w-10 h-10 rounded-xl bg-green-100 flex items-center justify-center flex-shrink-0">
+                <span class="material-symbols-rounded text-green-600" style="font-size:20px;font-variation-settings:'FILL' 1">task_alt</span>
+            </div>
+            <div>
+                <p class="font-black text-green-700 text-sm">{{ __('messages.user_dashboard.assessment_done') }}</p>
+                <p class="text-green-600/70 text-xs font-bold">{{ __('messages.user_dashboard.assessment_done_sub') }}</p>
+            </div>
+        </div>
+    </div>
+
     <div class="card waiting-card-pulse border-2 border-dashed border-primary/25 bg-primary/[0.02]" style="direction:{{ $dir }}">
         <div class="flex flex-col sm:flex-row items-start sm:items-center gap-5">
             <div class="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center flex-shrink-0">
@@ -17,16 +89,17 @@
                     {{ __('messages.user_dashboard.waiting_desc') }}
                 </p>
                 <div class="flex flex-wrap items-center gap-3">
-                    @foreach([
-                        ['n'=>'1','label'=>__('messages.user_dashboard.step_book'),    'active'=>true, 'done'=>false],
-                        ['n'=>'2','label'=>__('messages.user_dashboard.step_2_waiting'),'active'=>false,'done'=>false],
-                        ['n'=>'3','label'=>__('messages.user_dashboard.step_activate'),'active'=>false,'done'=>false],
-                    ] as $step)
+                    @foreach($steps as $step)
                         @if(!$loop->first)<span class="text-gray-300">{{ $isRtl ? '←' : '→' }}</span>@endif
-                        <div class="flex items-center gap-1.5 text-[11px] font-bold text-gray-400">
+                        <div class="flex items-center gap-1.5 text-[11px] font-bold
+                            {{ $step['done'] ? 'text-green-600' : ($step['active'] ? 'text-primary' : 'text-gray-400') }}">
                             <span class="w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-black flex-shrink-0
-                                {{ $step['active'] ? 'bg-primary text-white' : 'bg-gray-200 text-gray-500' }}">
-                                {{ $step['n'] }}
+                                {{ $step['done'] ? 'bg-green-500 text-white' : ($step['active'] ? 'bg-primary text-white' : 'bg-gray-200 text-gray-500') }}">
+                                @if($step['done'])
+                                    <span class="material-symbols-rounded" style="font-size:12px;font-variation-settings:'FILL' 1">check</span>
+                                @else
+                                    {{ $step['n'] }}
+                                @endif
                             </span>
                             {{ $step['label'] }}
                         </div>
@@ -43,7 +116,9 @@
 </div>
 
 @else
-{{-- Session booked — show confirmation card (step 2) --}}
+{{-- ══════════════════════════════════════
+     CARD C: Session booked — confirmation (step 3)
+══════════════════════════════════════ --}}
 <div class="anim anim-1">
     <div class="card" style="direction:{{ $dir }}; {{ $bsRef }}: 4px solid #22c55e;">
         <div class="flex flex-col sm:flex-row items-start sm:items-center gap-4">

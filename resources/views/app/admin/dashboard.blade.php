@@ -233,7 +233,7 @@
 
     $planColors = [
         'النخبة'  => 'badge-blue',
-        'إيليت'   => 'badge-purple',
+        'إيليت'   => 'badge-blue',
         'الأساسي' => 'badge-gray',
     ];
 

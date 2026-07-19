@@ -14,6 +14,7 @@ class MeetingBooking extends Model
         'subscription_id',
         'meeting_date',
         'meeting_time',
+        'slot_lock',
         'meet_link',
         'status',
         'notes',

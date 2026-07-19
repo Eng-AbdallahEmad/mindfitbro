@@ -275,6 +275,21 @@
                             <span class="text-slate-500 font-semibold">السعر الأصلي</span>
                             <span class="font-black text-slate-700" style="direction:ltr">{{ number_format((float)$subscription->subtotal, $showSubMeta['dec']) }} {{ $showSubMeta['sym'] }}</span>
                         </div>
+                        @if((float)$subscription->season_discount > 0)
+                        <div class="flex justify-between text-sm">
+                            <span class="text-red-600 font-semibold flex items-center gap-1.5 flex-wrap">
+                                <span class="material-symbols-rounded" style="font-size:13px;font-variation-settings:'FILL' 1">local_offer</span>
+                                خصم الموسم
+                                @if($subscription->season_name)
+                                <span class="text-[11px] bg-red-50 text-red-600 font-black px-1.5 py-0.5 rounded-md border border-red-100">{{ $subscription->season_name }}</span>
+                                @endif
+                                @if($subscription->season_discount_percentage)
+                                <span class="text-[11px] text-red-400 font-black">({{ number_format((float)$subscription->season_discount_percentage, 0) }}%)</span>
+                                @endif
+                            </span>
+                            <span class="font-black text-red-600" style="direction:ltr">- {{ number_format((float)$subscription->season_discount, $showSubMeta['dec']) }} {{ $showSubMeta['sym'] }}</span>
+                        </div>
+                        @endif
                         @if($subscription->yearly_discount > 0)
                         <div class="flex justify-between text-sm">
                             <span class="text-emerald-600 font-semibold">خصم الاشتراك السنوي</span>
@@ -283,7 +298,8 @@
                         @endif
                         @if($subscription->coupon_discount > 0)
                         <div class="flex justify-between text-sm">
-                            <span class="text-emerald-600 font-semibold">
+                            <span class="text-emerald-600 font-semibold flex items-center gap-1.5">
+                                <span class="material-symbols-rounded" style="font-size:13px;font-variation-settings:'FILL' 1">confirmation_number</span>
                                 خصم الكوبون
                                 @if($subscription->coupon_code)
                                 <span class="text-xs bg-emerald-100 text-emerald-700 font-black px-1.5 py-0.5 rounded-md">{{ $subscription->coupon_code }}</span>

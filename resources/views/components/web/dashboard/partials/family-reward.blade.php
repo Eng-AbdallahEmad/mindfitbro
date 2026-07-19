@@ -169,9 +169,10 @@
                     {{-- Status badge --}}
                     @php
                         $badgeMap = [
-                            'pending'  => ['bg-amber-50 text-amber-600 border-amber-200', 'schedule',        __('messages.family_reward.status_pending')],
-                            'redeemed' => ['bg-green-50 text-green-600 border-green-200', 'check_circle',    __('messages.family_reward.status_redeemed')],
-                            'expired'  => ['bg-gray-100 text-gray-400 border-gray-200',  'cancel',          __('messages.family_reward.status_expired')],
+                            'pending'  => ['bg-amber-50 text-amber-600 border-amber-200',  'schedule',       __('messages.family_reward.status_pending')],
+                            'used'     => ['bg-blue-50 text-blue-600 border-blue-200',     'pending',        __('messages.family_reward.status_used')],
+                            'redeemed' => ['bg-green-50 text-green-600 border-green-200',  'check_circle',   __('messages.family_reward.status_redeemed')],
+                            'expired'  => ['bg-gray-100 text-gray-400 border-gray-200',    'cancel',         __('messages.family_reward.status_expired')],
                         ];
                         [$badgeCss, $badgeIcon, $badgeLabel] = $badgeMap[$inv->status] ?? $badgeMap['expired'];
                     @endphp

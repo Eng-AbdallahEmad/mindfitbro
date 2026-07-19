@@ -7,6 +7,7 @@ use App\Models\Attendance;
 use App\Models\MemberEvaluation;
 use App\Models\Program;
 use App\Models\Subscription;
+use App\Models\TraineeAssessment;
 use App\Models\User;
 use App\Models\UserProfile;
 use App\Models\WeightLog;
@@ -158,12 +159,19 @@ class SubscriberController extends Controller
             ->orderBy('logged_at')
             ->get();
 
+        // Load the most recent submitted trainee assessment for this subscription
+        $traineeAssessment = TraineeAssessment::where('user_id', $userId)
+            ->whereNotNull('submitted_at')
+            ->when($subscription, fn ($q) => $q->where('subscription_id', $subscription->id))
+            ->latest('submitted_at')
+            ->first();
+
         return view('app.web.subscriber_profile', compact(
             'coach', 'member', 'subscription', 'program',
             'todayIsRest', 'todayAttendance',
             'presentCount', 'lateCount', 'absentCount', 'markedCount', 'attendanceRate',
             'grid90', 'recentAttendance',
-            'evaluations', 'weightLogs'
+            'evaluations', 'weightLogs', 'traineeAssessment'
         ));
     }
 

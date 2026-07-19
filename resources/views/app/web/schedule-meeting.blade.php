@@ -363,6 +363,25 @@
     .slot-btn:hover    { background: var(--primary); color: white; border-color: var(--primary); }
     .slot-btn.selected { background: var(--accent); color: var(--text); border-color: #b8d43a; }
 
+    .slot-btn.booked {
+        background: #fff5f5;
+        border-color: #fecaca;
+        color: #b91c1c;
+        cursor: not-allowed;
+        opacity: .8;
+        line-height: 1.3;
+    }
+
+    .slot-btn.booked:hover {
+        background: #fff5f5;
+        border-color: #fecaca;
+        color: #b91c1c;
+        transform: none;
+    }
+
+    .slot-btn.booked .slot-time { text-decoration: line-through; opacity: .65; }
+    .slot-btn.booked .slot-taken-label { font-size: 10px; display: block; margin-top: 2px; font-weight: 800; }
+
     /* ── confirm section ── */
     .confirm-wrap {
         padding: 20px 20px 24px;
@@ -726,6 +745,9 @@ const TIME_SLOTS = @json($timeSlots);
 const MEET_LINK  = @json($meetLink);
 const CSRF       = '{{ csrf_token() }}';
 
+// Slots already booked by other users — mutated locally when a 422 slot_taken comes back
+let BOOKED_SLOTS = @json($bookedSlots ?? []);
+
 const SCHED_TRANS = {
     months:           @json(__('messages.schedule_meeting.months')),
     days:             @json(__('messages.schedule_meeting.day_names')),
@@ -860,13 +882,26 @@ function renderSlots(date) {
         month: SCHED_TRANS.months[date.getMonth()],
     });
 
+    const dateStr = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+
     grid.innerHTML = '';
 
     TIME_SLOTS.forEach(slot => {
+        const key      = dateStr + ' ' + slot;
+        const isBooked = BOOKED_SLOTS.includes(key);
+
         const btn = document.createElement('button');
-        btn.className = 'slot-btn';
-        btn.textContent = to12H(slot);
-        btn.onclick = () => selectSlot(slot, btn);
+
+        if (isBooked) {
+            btn.className = 'slot-btn booked';
+            btn.disabled  = true;
+            btn.innerHTML = `<span class="slot-time">${to12H(slot)}</span><span class="slot-taken-label">محجوز</span>`;
+        } else {
+            btn.className = 'slot-btn';
+            btn.textContent = to12H(slot);
+            btn.onclick = () => selectSlot(slot, btn);
+        }
+
         grid.appendChild(btn);
     });
 
@@ -937,6 +972,18 @@ async function confirmBooking() {
 
         if (!response.ok) {
             showToast(data.message || SCHED_TRANS.error_booking);
+
+            // Slot was grabbed by someone else while the user was looking — mark it locally
+            if (data.slot_taken && state.selectedDate && state.selectedTime) {
+                const d       = state.selectedDate;
+                const dateStr = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+                const key     = dateStr + ' ' + state.selectedTime;
+                if (!BOOKED_SLOTS.includes(key)) BOOKED_SLOTS.push(key);
+                state.selectedTime = null;
+                document.getElementById('confirmWrap').classList.remove('show');
+                renderSlots(d);
+            }
+
             return;
         }
 

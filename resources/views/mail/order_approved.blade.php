@@ -126,7 +126,7 @@ body { margin:0; padding:0; background:#F0F4FB; font-family:'Cairo','Segoe UI',T
 
         {{-- CTA ── --}}
         @if($isGuest && $accountAutoCreated && $passwordSetUrl)
-        {{-- Guest with new auto-created account: must set password to access dashboard --}}
+        {{-- Sub-case B/A': new account or incomplete existing account — one-step setup --}}
         <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:12px;">
             <tr>
                 <td align="center">
@@ -139,27 +139,26 @@ body { margin:0; padding:0; background:#F0F4FB; font-family:'Cairo','Segoe UI',T
             <tr>
                 <td align="center" style="padding-top:10px;">
                     <p style="font-size:12px;color:#9CA3AF;line-height:1.7;margin:0;font-family:'Cairo','Segoe UI',Tahoma,Arial,sans-serif;">
-                        تم إنشاء حسابك تلقائياً على MindFitBro.<br>
-                        اضغط الزر لتعيين كلمة المرور وإكمال ملفك الشخصي.
+                        اضغط الزر لاختيار كلمة المرور وإكمال بياناتك في خطوة واحدة.
                     </p>
                 </td>
             </tr>
         </table>
         @elseif($isGuest)
-        {{-- Guest whose email already had an existing account: just login --}}
+        {{-- Sub-case A: existing complete account — login only, no profile completion needed --}}
         <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:12px;">
             <tr>
                 <td align="center">
                     <a href="{{ url('/login') }}"
-                       style="display:inline-block;background:#D4ED57;color:#1C1C1C;font-size:15px;font-weight:900;padding:16px 40px;border-radius:14px;text-decoration:none;font-family:'Cairo','Segoe UI',Tahoma,Arial,sans-serif;">
-                        أكمل بياناتك
+                       style="display:inline-block;background:#174DAD;color:#ffffff;font-size:15px;font-weight:900;padding:16px 40px;border-radius:14px;text-decoration:none;font-family:'Cairo','Segoe UI',Tahoma,Arial,sans-serif;">
+                        تسجيل الدخول
                     </a>
                 </td>
             </tr>
             <tr>
                 <td align="center" style="padding-top:10px;">
                     <p style="font-size:12px;color:#9CA3AF;line-height:1.7;margin:0;font-family:'Cairo','Segoe UI',Tahoma,Arial,sans-serif;">
-                        سجّل دخولك للوصول إلى لوحة التحكم وإكمال ملفك الشخصي.
+                        يمكنك الدخول مباشرةً باستخدام بياناتك الحالية.
                     </p>
                 </td>
             </tr>

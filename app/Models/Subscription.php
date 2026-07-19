@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Season;
 
 class Subscription extends Model
 {
@@ -30,6 +31,10 @@ class Subscription extends Model
         'plans_snapshot',
         'duration_months',
         'subtotal',
+        'season_id',
+        'season_name',
+        'season_discount_percentage',
+        'season_discount',
         'coupon_discount',
         'total',
         'coupon_code',
@@ -43,15 +48,17 @@ class Subscription extends Model
     ];
 
     protected $casts = [
-        'start_date'      => 'date',
-        'end_date'        => 'date',
-        'plans_snapshot'  => 'array',
-        'duration_months' => 'integer',
-        'subtotal'        => 'decimal:3',
-        'coupon_discount' => 'decimal:3',
-        'total'           => 'decimal:3',
-        'reviewed_at'          => 'datetime',
-        'journey_started_at'   => 'datetime',
+        'start_date'                 => 'date',
+        'end_date'                   => 'date',
+        'plans_snapshot'             => 'array',
+        'duration_months'            => 'integer',
+        'subtotal'                   => 'decimal:3',
+        'season_discount_percentage' => 'decimal:2',
+        'season_discount'            => 'decimal:3',
+        'coupon_discount'            => 'decimal:3',
+        'total'                      => 'decimal:3',
+        'reviewed_at'                => 'datetime',
+        'journey_started_at'         => 'datetime',
     ];
 
     public function user()
@@ -77,6 +84,16 @@ class Subscription extends Model
     public function familyInvitations()
     {
         return $this->hasMany(FamilyInvitation::class);
+    }
+
+    public function traineeAssessment()
+    {
+        return $this->hasOne(TraineeAssessment::class);
+    }
+
+    public function season()
+    {
+        return $this->belongsTo(Season::class);
     }
 
     protected static function booted(): void

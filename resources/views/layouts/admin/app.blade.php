@@ -198,6 +198,11 @@
             أكواد الخصم
         </a>
 
+        <a href="{{ route('admin.seasons.index') }}" class="nav-item {{ request()->routeIs('admin.seasons*') ? 'active' : '' }}" onclick="closeSidebar()">
+            <span class="material-symbols-rounded nav-icon">local_offer</span>
+            {{ __('messages.admin.nav_seasons') }}
+        </a>
+
         <p class="text-[10px] font-black tracking-widest text-white/20 uppercase px-3 pb-2 pt-5">الإعدادات</p>
 
         <a href="{{ route('admin.settings.index') }}" class="nav-item {{ request()->routeIs('admin.settings*') ? 'active' : '' }}" onclick="closeSidebar()">

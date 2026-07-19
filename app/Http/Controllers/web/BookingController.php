@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\MeetingBooking;
 use App\Models\Setting;
 use App\Models\Subscription;
+use App\Models\TraineeAssessment;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -15,6 +16,17 @@ class BookingController extends Controller
     public function show(Subscription $subscription)
     {
         $this->authorizeSubscription($subscription);
+
+        // Assessment must be submitted before the member can book
+        $assessmentDone = TraineeAssessment::where('subscription_id', $subscription->id)
+            ->where('user_id', Auth::id())
+            ->whereNotNull('submitted_at')
+            ->exists();
+
+        if (! $assessmentDone) {
+            return redirect()->route('assessment.show', $subscription)
+                ->with('info', 'يرجى إكمال استمارة التقييم أولاً قبل حجز موعد الجلسة.');
+        }
 
         $booking = MeetingBooking::query()
             ->where('subscription_id', $subscription->id)
@@ -30,7 +42,12 @@ class BookingController extends Controller
         $timeSlotsStr = Setting::get('booking_time_slots', '09:00,10:00,11:00,13:00,14:00,15:00,16:00,17:00');
         $timeSlots    = array_values(array_filter(array_map('trim', explode(',', $timeSlotsStr))));
 
-        return view('app.web.schedule-meeting', compact('subscription', 'booking', 'daysOff', 'timeSlots'));
+        $bookedSlots = MeetingBooking::whereIn('status', ['pending', 'confirmed'])
+            ->whereNotNull('slot_lock')
+            ->pluck('slot_lock')
+            ->toArray();
+
+        return view('app.web.schedule-meeting', compact('subscription', 'booking', 'daysOff', 'timeSlots', 'bookedSlots'));
     }
 
     public function store(Request $request)
@@ -53,6 +70,18 @@ class BookingController extends Controller
         $subscription = Subscription::findOrFail($request->subscription_id);
 
         $this->authorizeSubscription($subscription);
+
+        // Server-side enforcement: assessment must be submitted before booking
+        $assessmentDone = TraineeAssessment::where('subscription_id', $subscription->id)
+            ->where('user_id', Auth::id())
+            ->whereNotNull('submitted_at')
+            ->exists();
+
+        if (! $assessmentDone) {
+            return response()->json([
+                'message' => 'يرجى إكمال استمارة التقييم أولاً قبل حجز موعد الجلسة.',
+            ], 422);
+        }
 
         $meetingDateTime = Carbon::createFromFormat(
             'Y-m-d H:i',
@@ -90,14 +119,27 @@ class BookingController extends Controller
             ], 422);
         }
 
-        $booking = MeetingBooking::create([
-            'user_id'         => Auth::id(),
-            'subscription_id' => $subscription->id,
-            'meeting_date'    => $request->date,
-            'meeting_time'    => $request->time,
-            'meet_link'       => $request->meet_link,
-            'status'          => 'pending',
-        ]);
+        $slotLock = $request->date . ' ' . $request->time;
+
+        try {
+            $booking = MeetingBooking::create([
+                'user_id'         => Auth::id(),
+                'subscription_id' => $subscription->id,
+                'meeting_date'    => $request->date,
+                'meeting_time'    => $request->time,
+                'slot_lock'       => $slotLock,
+                'meet_link'       => $request->meet_link,
+                'status'          => 'pending',
+            ]);
+        } catch (\Illuminate\Database\QueryException $e) {
+            if ($e->errorInfo[1] === 1062) {
+                return response()->json([
+                    'message'    => 'عذرًا، هذا الموعد تم حجزه للتو — اختر موعدًا آخر.',
+                    'slot_taken' => true,
+                ], 422);
+            }
+            throw $e;
+        }
 
         return response()->json([
             'message' => 'تم حجز الاجتماع بنجاح.',
@@ -138,14 +180,30 @@ class BookingController extends Controller
             ->exists();
 
         if ($sameSlotBooked) {
-            return response()->json(['message' => 'هذا الموعد محجوز بالفعل، اختر موعدًا آخر.'], 422);
+            return response()->json([
+                'message'    => 'عذرًا، هذا الموعد تم حجزه للتو — اختر موعدًا آخر.',
+                'slot_taken' => true,
+            ], 422);
         }
 
-        $booking->update([
-            'meeting_date' => $request->date,
-            'meeting_time' => $request->time,
-            'status'       => 'pending',
-        ]);
+        $slotLock = $request->date . ' ' . $request->time;
+
+        try {
+            $booking->update([
+                'meeting_date' => $request->date,
+                'meeting_time' => $request->time,
+                'slot_lock'    => $slotLock,
+                'status'       => 'pending',
+            ]);
+        } catch (\Illuminate\Database\QueryException $e) {
+            if ($e->errorInfo[1] === 1062) {
+                return response()->json([
+                    'message'    => 'عذرًا، هذا الموعد تم حجزه للتو — اختر موعدًا آخر.',
+                    'slot_taken' => true,
+                ], 422);
+            }
+            throw $e;
+        }
 
         return response()->json([
             'message' => 'تم تعديل الموعد بنجاح.',

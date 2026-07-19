@@ -497,6 +497,250 @@
             @endforelse
         </div>
 
+        {{-- ── Trainee Assessment ── --}}
+        <div class="card" id="assessment" style="padding:0; overflow:hidden; direction:rtl">
+            <div class="flex items-center justify-between px-6 py-4 border-b border-gray-100">
+                <h3 class="font-black text-textColor text-sm font-arabic flex items-center gap-2">
+                    <span class="material-symbols-rounded text-primary" style="font-size:18px;font-variation-settings:'FILL' 1">assignment_ind</span>
+                    استمارة التقييم الموحدة
+                </h3>
+                @if($traineeAssessment)
+                <span class="text-[10px] font-black text-green-700 bg-green-50 border border-green-200 px-3 py-1 rounded-full font-arabic">
+                    تم الإرسال {{ $traineeAssessment->submitted_at->diffForHumans() }}
+                </span>
+                @else
+                <span class="text-[10px] font-black text-amber-600 bg-amber-50 border border-amber-200 px-3 py-1 rounded-full font-arabic animate-pulse">
+                    لم تُملأ بعد
+                </span>
+                @endif
+            </div>
+
+            @if($traineeAssessment)
+            @php
+                $goalLabels = ['weight_loss'=>'خسارة الوزن','muscle_gain'=>'بناء العضلات','endurance'=>'اللياقة والتحمل','flexibility'=>'المرونة','general_fitness'=>'لياقة عامة','other'=>'أخرى'];
+                $expLabels  = ['beginner'=>'مبتدئ','intermediate'=>'متوسط','advanced'=>'متقدم'];
+                $expColors  = ['beginner'=>'text-primary bg-blue-50 border-blue-100','intermediate'=>'text-amber-700 bg-amber-50 border-amber-100','advanced'=>'text-green-700 bg-green-50 border-green-100'];
+                $actLabels  = ['sedentary'=>'مستقر','light'=>'خفيف','moderate'=>'معتدل','active'=>'نشيط','very_active'=>'نشيط جداً'];
+                $locLabels  = ['home'=>'المنزل','gym'=>'الجيم','outdoor'=>'الهواء الطلق','both'=>'متعدد'];
+                $dietLabels = ['normal'=>'عادي','vegetarian'=>'نباتي','vegan'=>'نباتي صارم','keto'=>'كيتو','low_carb'=>'قليل الكارب','other'=>'أخرى'];
+                $ta = $traineeAssessment;
+            @endphp
+
+            {{-- Section 1: Basic Info --}}
+            <div class="px-6 py-4 border-b border-gray-100">
+                <p class="text-[10px] font-black text-gray-400 uppercase tracking-wider mb-3 font-arabic">المعلومات الأساسية</p>
+                <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                    @if($ta->date_of_birth)
+                    <div class="font-arabic">
+                        <p class="text-[10px] font-bold text-gray-400 mb-0.5">العمر</p>
+                        <p class="font-black text-textColor text-sm">{{ $ta->date_of_birth->age }} سنة</p>
+                        <p class="text-[10px] text-gray-400">{{ $ta->date_of_birth->isoFormat('D MMMM Y') }}</p>
+                    </div>
+                    @endif
+                    @if($ta->height)
+                    <div class="font-arabic">
+                        <p class="text-[10px] font-bold text-gray-400 mb-0.5">الطول</p>
+                        <p class="font-black text-textColor text-sm">{{ $ta->height }} سم</p>
+                    </div>
+                    @endif
+                    @if($ta->current_weight)
+                    <div class="font-arabic">
+                        <p class="text-[10px] font-bold text-gray-400 mb-0.5">الوزن الحالي</p>
+                        <p class="font-black text-textColor text-sm">{{ $ta->current_weight }} كجم</p>
+                    </div>
+                    @endif
+                    @if($ta->target_weight)
+                    <div class="font-arabic">
+                        <p class="text-[10px] font-bold text-gray-400 mb-0.5">الوزن المستهدف</p>
+                        <p class="font-black text-textColor text-sm">{{ $ta->target_weight }} كجم</p>
+                        @php $weightGap = round($ta->target_weight - $ta->current_weight, 1); @endphp
+                        <p class="text-[10px] {{ $weightGap < 0 ? 'text-green-600' : 'text-amber-600' }} font-bold">
+                            {{ $weightGap > 0 ? '+' : '' }}{{ $weightGap }} كجم
+                        </p>
+                    </div>
+                    @endif
+                </div>
+            </div>
+
+            {{-- Section 2: Training --}}
+            <div class="px-6 py-4 border-b border-gray-100">
+                <p class="text-[10px] font-black text-gray-400 uppercase tracking-wider mb-3 font-arabic">التدريب</p>
+                <div class="flex flex-wrap gap-2 mb-3">
+                    @if($ta->primary_goal)
+                    <span class="text-[11px] font-black font-arabic px-3 py-1 rounded-full bg-primary/10 text-primary border border-primary/20">
+                        🎯 {{ $goalLabels[$ta->primary_goal] ?? $ta->primary_goal }}
+                    </span>
+                    @endif
+                    @if($ta->experience_level)
+                    <span class="text-[11px] font-black font-arabic px-3 py-1 rounded-full border {{ $expColors[$ta->experience_level] ?? '' }}">
+                        {{ $expLabels[$ta->experience_level] ?? $ta->experience_level }}
+                    </span>
+                    @endif
+                    @if($ta->workout_days_per_week)
+                    <span class="text-[11px] font-bold font-arabic px-3 py-1 rounded-full bg-gray-100 text-gray-600 border border-gray-200">
+                        {{ $ta->workout_days_per_week }} أيام / أسبوع
+                    </span>
+                    @endif
+                    @if($ta->session_duration_minutes)
+                    <span class="text-[11px] font-bold font-arabic px-3 py-1 rounded-full bg-gray-100 text-gray-600 border border-gray-200">
+                        {{ $ta->session_duration_minutes }} دقيقة / جلسة
+                    </span>
+                    @endif
+                    @if($ta->training_details['location'] ?? null)
+                    <span class="text-[11px] font-bold font-arabic px-3 py-1 rounded-full bg-gray-100 text-gray-600 border border-gray-200">
+                        📍 {{ $locLabels[$ta->training_details['location']] ?? $ta->training_details['location'] }}
+                    </span>
+                    @endif
+                </div>
+                @if(($ta->training_details['fitness_score'] ?? null))
+                <div class="flex items-center gap-3 font-arabic">
+                    <p class="text-[10px] font-bold text-gray-400 w-28 flex-shrink-0">تقييم اللياقة الذاتي</p>
+                    <div class="flex-1 bg-gray-100 rounded-full h-2 max-w-[160px]">
+                        <div class="bg-primary h-2 rounded-full" style="width:{{ ($ta->training_details['fitness_score'] / 10) * 100 }}%"></div>
+                    </div>
+                    <span class="font-black text-textColor text-sm">{{ $ta->training_details['fitness_score'] }}/10</span>
+                </div>
+                @endif
+            </div>
+
+            {{-- Section 3: Nutrition --}}
+            @if($ta->nutrition)
+            <div class="px-6 py-4 border-b border-gray-100">
+                <p class="text-[10px] font-black text-gray-400 uppercase tracking-wider mb-3 font-arabic">التغذية</p>
+                <div class="grid grid-cols-2 lg:grid-cols-3 gap-3 mb-3">
+                    @if($ta->nutrition['diet_type'] ?? null)
+                    <div class="font-arabic">
+                        <p class="text-[10px] font-bold text-gray-400 mb-0.5">نظام غذائي</p>
+                        <p class="font-black text-sm text-textColor">{{ $dietLabels[$ta->nutrition['diet_type']] ?? $ta->nutrition['diet_type'] }}</p>
+                    </div>
+                    @endif
+                    @if($ta->nutrition['meals_count'] ?? null)
+                    <div class="font-arabic">
+                        <p class="text-[10px] font-bold text-gray-400 mb-0.5">عدد الوجبات</p>
+                        <p class="font-black text-sm text-textColor">{{ $ta->nutrition['meals_count'] }} وجبات / يوم</p>
+                    </div>
+                    @endif
+                    @if($ta->nutrition['water_intake'] ?? null)
+                    <div class="font-arabic">
+                        <p class="text-[10px] font-bold text-gray-400 mb-0.5">الماء</p>
+                        <p class="font-black text-sm text-textColor">{{ $ta->nutrition['water_intake'] }} لتر / يوم</p>
+                    </div>
+                    @endif
+                </div>
+                @if(($ta->nutrition['has_supplements'] ?? '') === 'yes' && ($ta->nutrition['supplements_details'] ?? null))
+                <div class="font-arabic bg-blue-50 rounded-xl px-3 py-2 mb-2">
+                    <p class="text-[10px] font-bold text-blue-400 mb-0.5">مكملات غذائية</p>
+                    <p class="text-xs text-blue-700 font-bold">{{ $ta->nutrition['supplements_details'] }}</p>
+                </div>
+                @endif
+                @if($ta->nutrition['preferred_foods'] ?? null)
+                <div class="font-arabic bg-green-50 rounded-xl px-3 py-2 mb-2">
+                    <p class="text-[10px] font-bold text-green-500 mb-0.5">أطعمة مفضلة</p>
+                    <p class="text-xs text-green-700 font-bold">{{ $ta->nutrition['preferred_foods'] }}</p>
+                </div>
+                @endif
+                @if($ta->nutrition['disliked_foods'] ?? null)
+                <div class="font-arabic bg-red-50 rounded-xl px-3 py-2">
+                    <p class="text-[10px] font-bold text-red-400 mb-0.5">أطعمة غير مرغوبة</p>
+                    <p class="text-xs text-red-700 font-bold">{{ $ta->nutrition['disliked_foods'] }}</p>
+                </div>
+                @endif
+            </div>
+            @endif
+
+            {{-- Section 4: Health --}}
+            @if($ta->health)
+            <div class="px-6 py-4 border-b border-gray-100">
+                <p class="text-[10px] font-black text-gray-400 uppercase tracking-wider mb-3 font-arabic">السجل الصحي</p>
+                <div class="flex flex-wrap gap-2 mb-3">
+                    @if(($ta->health['has_injuries'] ?? '') === 'yes')
+                    <span class="text-[11px] font-black font-arabic px-3 py-1 rounded-full bg-red-50 text-red-600 border border-red-200">
+                        ⚠️ يوجد إصابات
+                    </span>
+                    @else
+                    <span class="text-[11px] font-black font-arabic px-3 py-1 rounded-full bg-green-50 text-green-700 border border-green-200">
+                        ✓ لا توجد إصابات
+                    </span>
+                    @endif
+                </div>
+                @if($ta->health['injuries_details'] ?? null)
+                <div class="font-arabic bg-red-50 rounded-xl px-3 py-2 mb-2">
+                    <p class="text-[10px] font-bold text-red-400 mb-0.5">تفاصيل الإصابات</p>
+                    <p class="text-xs text-red-700 font-bold">{{ $ta->health['injuries_details'] }}</p>
+                </div>
+                @endif
+                @if($ta->health['health_conditions'] ?? null)
+                <div class="font-arabic bg-amber-50 rounded-xl px-3 py-2 mb-2">
+                    <p class="text-[10px] font-bold text-amber-500 mb-0.5">أمراض مزمنة</p>
+                    <p class="text-xs text-amber-700 font-bold">{{ $ta->health['health_conditions'] }}</p>
+                </div>
+                @endif
+                @if($ta->health['allergies'] ?? null)
+                <div class="font-arabic bg-orange-50 rounded-xl px-3 py-2 mb-2">
+                    <p class="text-[10px] font-bold text-orange-400 mb-0.5">حساسية</p>
+                    <p class="text-xs text-orange-700 font-bold">{{ $ta->health['allergies'] }}</p>
+                </div>
+                @endif
+                @if($ta->health['medications'] ?? null)
+                <div class="font-arabic bg-purple-50 rounded-xl px-3 py-2">
+                    <p class="text-[10px] font-bold text-purple-400 mb-0.5">أدوية</p>
+                    <p class="text-xs text-purple-700 font-bold">{{ $ta->health['medications'] }}</p>
+                </div>
+                @endif
+            </div>
+            @endif
+
+            {{-- Section 5: Lifestyle --}}
+            @if($ta->lifestyle)
+            <div class="px-6 py-4">
+                <p class="text-[10px] font-black text-gray-400 uppercase tracking-wider mb-3 font-arabic">نمط الحياة</p>
+                <div class="grid grid-cols-2 lg:grid-cols-4 gap-3">
+                    @if($ta->lifestyle['daily_activity'] ?? null)
+                    <div class="font-arabic">
+                        <p class="text-[10px] font-bold text-gray-400 mb-0.5">النشاط اليومي</p>
+                        <p class="font-black text-sm text-textColor">{{ $actLabels[$ta->lifestyle['daily_activity']] ?? $ta->lifestyle['daily_activity'] }}</p>
+                    </div>
+                    @endif
+                    @if($ta->lifestyle['sleep_hours'] ?? null)
+                    <div class="font-arabic">
+                        <p class="text-[10px] font-bold text-gray-400 mb-0.5">ساعات النوم</p>
+                        <p class="font-black text-sm text-textColor">{{ $ta->lifestyle['sleep_hours'] }} ساعات</p>
+                    </div>
+                    @endif
+                    @if($ta->lifestyle['commitment_score'] ?? null)
+                    <div class="font-arabic">
+                        <p class="text-[10px] font-bold text-gray-400 mb-0.5">الالتزام</p>
+                        <p class="font-black text-sm text-textColor">{{ $ta->lifestyle['commitment_score'] }}/10</p>
+                    </div>
+                    @endif
+                    @if($ta->lifestyle['smoking'] ?? null)
+                    <div class="font-arabic">
+                        <p class="text-[10px] font-bold text-gray-400 mb-0.5">التدخين</p>
+                        <p class="font-black text-sm {{ ($ta->lifestyle['smoking'] === 'yes') ? 'text-red-500' : 'text-green-600' }}">
+                            {{ $ta->lifestyle['smoking'] === 'yes' ? 'مدخن' : 'غير مدخن' }}
+                        </p>
+                    </div>
+                    @endif
+                </div>
+                @if($ta->lifestyle['challenges'] ?? null)
+                <div class="font-arabic bg-gray-50 rounded-xl px-3 py-2 mt-3">
+                    <p class="text-[10px] font-bold text-gray-400 mb-0.5">التحديات</p>
+                    <p class="text-xs text-gray-600 font-bold">{{ $ta->lifestyle['challenges'] }}</p>
+                </div>
+                @endif
+            </div>
+            @endif
+
+            @else
+            {{-- Assessment not submitted yet --}}
+            <div class="flex flex-col items-center justify-center py-10 gap-2 font-arabic">
+                <span class="material-symbols-rounded text-amber-300" style="font-size:36px;font-variation-settings:'FILL' 1">pending_actions</span>
+                <p class="text-gray-400 font-bold text-sm">لم يُرسل العميل الاستمارة بعد</p>
+                <p class="text-gray-300 text-xs font-bold">ستظهر هنا فور إرسالها</p>
+            </div>
+            @endif
+        </div>
+
         {{-- ── Evaluations ── --}}
         <div class="card" style="padding:0; overflow:hidden; direction:rtl">
             <div class="flex items-center justify-between px-6 py-4 border-b border-gray-100">

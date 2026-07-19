@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Mail\OrderApprovedMail;
 use App\Mail\OrderRejectedMail;
+use App\Models\Coupon;
+use App\Models\FamilyInvitation;
 use App\Models\Plan;
 use App\Models\Subscription;
 use App\Models\User;
@@ -13,6 +15,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Facades\Storage;
@@ -105,6 +108,7 @@ class SubscriptionsController extends Controller
         ]);
 
         $subscription->update($request->only('status', 'duration_months', 'start_date', 'end_date'));
+        Cache::forget('popular_plan_id');
 
         return back()->with('success', 'تم تحديث الاشتراك بنجاح');
     }
@@ -127,6 +131,18 @@ class SubscriptionsController extends Controller
                 'reviewed_at' => now(),
             ]);
 
+            // Approval wins over expiry — mark the linked family invitation redeemed
+            // from any status (pending, used, or even expired) unless already redeemed
+            if ($subscription->coupon_code) {
+                $famCoupon = Coupon::where('code', $subscription->coupon_code)->first();
+                if ($famCoupon) {
+                    FamilyInvitation::where('coupon_id', $famCoupon->id)
+                        ->where('status', '!=', 'redeemed')
+                        ->first()
+                        ?->markRedeemed();
+                }
+            }
+
             if (is_null($subscription->user_id) && $subscription->guest_email) {
                 $isGuest    = true;
                 $guestEmail = $subscription->guest_email;
@@ -134,7 +150,8 @@ class SubscriptionsController extends Controller
 
                 $existingUser = User::where('email', $guestEmail)->first();
 
-                if ($existingUser) {
+                if ($existingUser && !is_null($existingUser->profile_completed_at)) {
+                    // ── Sub-case A: إيميل موجود وحساب مكتمل — ربط الاشتراك فقط ──
                     $subscription->update([
                         'user_id'     => $existingUser->id,
                         'guest_name'  => null,
@@ -143,37 +160,53 @@ class SubscriptionsController extends Controller
                     ]);
                     $customerName  = $existingUser->name;
                     $customerEmail = $existingUser->email;
+                    // $accountAutoCreated = false → الإيميل سيُظهر زر تسجيل الدخول فقط
+
                 } else {
-                    $base = strtolower(preg_replace('/[^a-zA-Z0-9_]/', '', explode('@', $guestEmail)[0])) ?: 'user';
-                    do {
-                        $username = $base . rand(1000, 9999);
-                    } while (User::where('username', $username)->exists());
+                    // ── Sub-case B: إيميل جديد ──────────────────────────────────
+                    // ── Sub-case A': إيميل موجود لكن profile_completed_at = null ─
+                    // في كلتا الحالتين: نُعدّ setup-account link
 
-                    $newUser = User::create([
-                        'name'              => $guestName,
-                        'username'          => $username,
-                        'email'             => $guestEmail,
-                        'password'          => Hash::make(Str::random(32)),
-                        'role'              => 'user',
-                        'status'            => 'active',
-                        'email_verified_at' => now(),
-                        'terms_accepted_at' => now(),
-                        // gender, phone: null — filled in complete-profile step
-                        // profile_completed_at: null — triggers profile completion redirect
-                    ]);
+                    if ($existingUser) {
+                        // حساب موجود لكن غير مكتمل — يُربط الاشتراك الجديد به
+                        $targetUser = $existingUser;
+                        $subscription->update([
+                            'user_id'     => $targetUser->id,
+                            'guest_name'  => null,
+                            'guest_email' => null,
+                            // guest_token: محفوظ — يُستخدم كمفتاح صفحة الإعداد
+                        ]);
+                    } else {
+                        // إيميل جديد — إنشاء حساب جديد بكلمة مرور عشوائية مؤقتة
+                        $base = strtolower(preg_replace('/[^a-zA-Z0-9_]/', '', explode('@', $guestEmail)[0])) ?: 'user';
+                        do {
+                            $username = $base . rand(1000, 9999);
+                        } while (User::where('username', $username)->exists());
 
-                    $subscription->update([
-                        'user_id'     => $newUser->id,
-                        'guest_name'  => null,
-                        'guest_email' => null,
-                        'guest_token' => null,
-                    ]);
+                        $targetUser = User::create([
+                            'name'              => $guestName,
+                            'username'          => $username,
+                            'email'             => $guestEmail,
+                            'password'          => Hash::make(Str::random(32)),
+                            'role'              => 'user',
+                            'status'            => 'active',
+                            'email_verified_at' => now(),
+                            'terms_accepted_at' => now(),
+                            // profile_completed_at: null — يكتمل في setup-account
+                        ]);
 
-                    $token          = Password::createToken($newUser);
-                    $passwordSetUrl = route('password.reset', ['token' => $token, 'email' => $newUser->email]);
+                        $subscription->update([
+                            'user_id'     => $targetUser->id,
+                            'guest_name'  => null,
+                            'guest_email' => null,
+                            // guest_token: محفوظ — يُستخدم كمفتاح صفحة الإعداد
+                        ]);
+                    }
+
+                    $passwordSetUrl     = route('setup-account.show', $subscription->guest_token);
                     $accountAutoCreated = true;
-                    $customerName  = $guestName;
-                    $customerEmail = $guestEmail;
+                    $customerName       = $targetUser->name ?: $guestName;
+                    $customerEmail      = $guestEmail;
                 }
             } else {
                 $subscription->load('user');
@@ -181,6 +214,8 @@ class SubscriptionsController extends Controller
                 $customerEmail = $subscription->user?->email ?: null;
             }
         });
+
+        Cache::forget('popular_plan_id');
 
         if ($customerEmail) {
             try {
@@ -208,12 +243,26 @@ class SubscriptionsController extends Controller
             'rejection_reason.min'      => 'اكتب سبباً واضحاً (5 أحرف على الأقل)',
         ]);
 
-        $subscription->update([
-            'status'           => Subscription::STATUS_REJECTED,
-            'rejection_reason' => $request->rejection_reason,
-            'reviewed_by'      => Auth::guard('admin')->id(),
-            'reviewed_at'      => now(),
-        ]);
+        DB::transaction(function () use ($subscription, $request) {
+            $subscription->update([
+                'status'           => Subscription::STATUS_REJECTED,
+                'rejection_reason' => $request->rejection_reason,
+                'reviewed_by'      => Auth::guard('admin')->id(),
+                'reviewed_at'      => now(),
+            ]);
+
+            // Revert the family invitation from 'used' → 'pending' only for THIS
+            // subscription's coupon — keeps the code alive for a future retry
+            if ($subscription->coupon_code) {
+                $famCoupon = Coupon::where('code', $subscription->coupon_code)->first();
+                if ($famCoupon) {
+                    FamilyInvitation::where('coupon_id', $famCoupon->id)
+                        ->where('status', 'used')
+                        ->first()
+                        ?->update(['status' => 'pending']);
+                }
+            }
+        });
 
         $isGuest      = is_null($subscription->user_id);
         $customerName = $isGuest ? ($subscription->guest_name  ?: 'العميل') : ($subscription->user?->name  ?: 'العميل');

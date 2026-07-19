@@ -6,7 +6,10 @@ use App\Http\Controllers\Controller;
 use App\Models\Feature;
 use App\Models\Plan;
 use App\Models\PlanPrice;
+use App\Models\Subscription;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 
 class PlansController extends Controller
 {
@@ -35,7 +38,19 @@ class PlansController extends Controller
             ]),
         ]);
 
-        return view('app.admin.plans.index', compact('plans', 'features', 'plansJson'));
+        $minCount      = (int) config('plans.popular_min_subscriptions', 5);
+        $topSub        = Subscription::whereIn('status', ['approved', 'active', 'expired'])
+            ->select('plan_id', DB::raw('COUNT(*) as cnt'))
+            ->groupBy('plan_id')
+            ->orderByDesc('cnt')
+            ->orderBy('plan_id')
+            ->first();
+        $popularIsAuto   = $topSub && $topSub->cnt >= $minCount;
+        $popularPlanName = $popularIsAuto
+            ? ($plans->firstWhere('id', $topSub->plan_id)?->name)
+            : ($plans->firstWhere('popular', true)?->name);
+
+        return view('app.admin.plans.index', compact('plans', 'features', 'plansJson', 'minCount', 'popularIsAuto', 'popularPlanName'));
     }
 
     public function store(Request $request)
@@ -130,6 +145,7 @@ class PlansController extends Controller
         $plan->features()->sync($sync);
 
         $this->syncPlanPrices($plan, $request->input('prices', []));
+        Cache::forget('popular_plan_id');
 
         return redirect()->route('admin.plans.index')->with('success', 'تم تحديث الباقة بنجاح');
     }

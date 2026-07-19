@@ -227,13 +227,16 @@
     $currency = session('currency', 'SAR');
     $symbol   = \App\Services\Web\CurrencyService::META[$currency]['symbol'] ?? 'ر.س';
     $dec      = \App\Services\Web\CurrencyService::META[$currency]['decimals'] ?? 0;
+    $locale   = \App\Services\Web\CurrencyService::META[$currency]['locale'] ?? 'ar-SA';
     $isAuth   = Auth::check() ? 'true' : 'false';
+    $sPct     = $activeSeason ? (float) $activeSeason->discount_percentage : 0;
+    $pctStr   = $sPct > 0 ? rtrim(rtrim(number_format($sPct, 2), '0'), '.') : '';
 @endphp
 
 <div
     class="min-h-screen bg-[#F0F4FB] font-arabic"
     dir="{{ $isRtl ? 'rtl' : 'ltr' }}"
-    x-data="purchaseForm({{ $durationMonths }}, {{ $price3m }}, {{ $price6m }})"
+    x-data="purchaseForm({{ $durationMonths }}, {{ $price3m }}, {{ $price6m }}, {{ $sPrice3m }}, {{ $sPrice6m }})"
 >
     {{-- ── Hero Banner ── --}}
     <div class="purchase-hero flex flex-col items-center justify-center text-center px-6 py-12 relative">
@@ -271,13 +274,27 @@
                     </button>
                 </div>
 
+                @if($activeSeason)
+                <div class="mb-3">
+                    <span class="inline-flex items-center gap-1.5 bg-red-50 text-red-600 border border-red-200 rounded-full px-3 py-1.5 text-xs font-black">
+                        <span class="material-symbols-rounded" style="font-size:13px;font-variation-settings:'FILL' 1">local_offer</span>
+                        {{ $activeSeason->localName() }} — {{ $pctStr }}%
+                    </span>
+                </div>
+                @endif
                 <div class="flex items-end gap-3">
                     <div>
                         <div class="price-display" style="display:flex;align-items:baseline;gap:6px;">
                             <span x-text="finalPriceFormatted"></span>
                             <span class="text-lg text-gray-400 font-bold">{{ $symbol }}</span>
-                            <span class="price-strike" x-show="currentDiscount > 0" x-text="rawPriceFormatted + ' {{ $symbol }}'"></span>
+                            <span class="price-strike" x-show="showStrikethrough" x-text="rawPriceFormatted + ' {{ $symbol }}'"></span>
                         </div>
+                        @if($activeSeason)
+                        <div class="discount-row" style="color:#DC2626;font-size:12px;padding:4px 0 0;margin-top:4px;" x-show="hasSeason && currentSeasonDiscount > 0">
+                            <span>{{ $activeSeason->localName() }} — {{ __('messages.purchase.season_discount_label') }} ({{ $pctStr }}%)</span>
+                            <span x-text="'− ' + formatAmount(currentSeasonDiscount)"></span>
+                        </div>
+                        @endif
                         <div class="price-sub" x-text="months === 3 ? '{{ __('messages.programs.duration_3months') }}' : '{{ __('messages.programs.duration_6months') }}'"></div>
                     </div>
                 </div>
@@ -295,6 +312,14 @@
                 @csrf
                 <input type="hidden" name="duration_months" :value="months">
                 <input type="hidden" name="coupon_code" :value="couponApplied">
+                <input type="hidden" name="expected_season_id" value="{{ $activeSeason?->id ?? '' }}">
+
+                @if(session('info'))
+                <div class="flex items-center gap-3 bg-blue-50 border border-blue-200 text-blue-800 rounded-xl px-4 py-3 text-sm font-bold">
+                    <span class="material-symbols-rounded flex-shrink-0" style="font-size:18px;font-variation-settings:'FILL' 1">info</span>
+                    <span>{{ session('info') }}</span>
+                </div>
+                @endif
 
                 {{-- Customer Info ── --}}
                 <div>
@@ -619,11 +644,14 @@
 
 @section('script')
 <script>
-function purchaseForm(initialMonths, price3m, price6m) {
+function purchaseForm(initialMonths, price3m, price6m, sPrice3m, sPrice6m) {
     return {
         months: initialMonths,
         _price3m: price3m,
         _price6m: price6m,
+        _sPrice3m: sPrice3m,
+        _sPrice6m: sPrice6m,
+        hasSeason: sPrice3m < price3m || sPrice6m < price6m,
 
         // File upload
         isDragging: false,
@@ -658,23 +686,35 @@ function purchaseForm(initialMonths, price3m, price6m) {
         get rawPrice() {
             return this.months === 3 ? this._price3m : this._price6m;
         },
+        get basePrice() {
+            return this.months === 3 ? this._sPrice3m : this._sPrice6m;
+        },
+        get currentSeasonDiscount() {
+            return Math.max(0, this.rawPrice - this.basePrice);
+        },
         get currentDiscount() {
             return this.months === 3 ? this.discount3m : this.discount6m;
         },
         get finalPrice() {
-            return Math.max(0, this.rawPrice - this.currentDiscount);
+            return Math.round(Math.max(0, this.basePrice - this.currentDiscount));
+        },
+        get showStrikethrough() {
+            return this.hasSeason || this.currentDiscount > 0;
         },
         get finalPriceFormatted() {
-            return this.finalPrice.toLocaleString('{{ app()->getLocale() === 'ar' ? 'ar-SA' : 'en-US' }}', {
-                minimumFractionDigits: {{ $dec }},
-                maximumFractionDigits: {{ $dec }}
-            });
+            return this._smartFmt(this.finalPrice);
         },
         get rawPriceFormatted() {
-            return this.rawPrice.toLocaleString('{{ app()->getLocale() === 'ar' ? 'ar-SA' : 'en-US' }}', {
-                minimumFractionDigits: {{ $dec }},
-                maximumFractionDigits: {{ $dec }}
+            return Math.round(this.rawPrice).toLocaleString('{{ $locale }}', {
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 0
             });
+        },
+        formatAmount(n) {
+            return this._smartFmt(n) + ' {{ $symbol }}';
+        },
+        _smartFmt(n) {
+            return Math.round(n).toLocaleString('{{ $locale }}', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
         },
 
         // ── Email duplicate check ────────────────────────────────
@@ -745,14 +785,28 @@ function purchaseForm(initialMonths, price3m, price6m) {
                         'X-CSRF-TOKEN': '{{ csrf_token() }}',
                         'Accept': 'application/json',
                     },
-                    body: JSON.stringify({ code, price3m: this._price3m, price6m: this._price6m }),
+                    body: JSON.stringify({
+                        code,
+                        plan_id: {{ $plan->id }},
+                        duration_months: this.months,
+                    }),
                 });
                 const data = await resp.json();
                 if (data.valid) {
                     this.couponApplied = code.toUpperCase();
                     this.discount3m    = data.discount3m;
                     this.discount6m    = data.discount6m;
-                    this.couponError   = '';
+                    // Sync season prices from server (handles time-edge: season expired/started mid-session)
+                    if (data.season) {
+                        this._sPrice3m = data.season.sPrice3m;
+                        this._sPrice6m = data.season.sPrice6m;
+                        this.hasSeason = true;
+                    } else {
+                        this._sPrice3m = this._price3m;
+                        this._sPrice6m = this._price6m;
+                        this.hasSeason = false;
+                    }
+                    this.couponError = '';
                 } else {
                     this.couponError = data.message || 'الكوبون غير صالح أو منتهي الصلاحية';
                     this.discount3m  = 0;

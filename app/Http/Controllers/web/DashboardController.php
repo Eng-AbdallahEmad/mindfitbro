@@ -7,6 +7,7 @@ use App\Models\Attendance;
 use App\Models\MeetingBooking;
 use App\Models\MemberEvaluation;
 use App\Models\Program;
+use App\Models\TraineeAssessment;
 use App\Models\UserProfile;
 use App\Models\WeightLog;
 use App\Models\ProgramDay;
@@ -94,6 +95,15 @@ class DashboardController extends Controller
             $meetingDone = \Carbon\Carbon::parse($booking->meeting_date)->isPast();
         }
         $hasBooking = $booking !== null;
+
+        // ── 2b. Assessment gate (meeting_phase only) ──────────────────────────
+        $assessmentSubmitted = false;
+        if ($dashboardState === 'meeting_phase' && $subscription) {
+            $assessmentSubmitted = TraineeAssessment::where('subscription_id', $subscription->id)
+                ->where('user_id', Auth::id())
+                ->whereNotNull('submitted_at')
+                ->exists();
+        }
 
         // ── 3. Subscription timing ─────────────────────────────────────────────
         $daysLeft       = 0;
@@ -212,7 +222,7 @@ class DashboardController extends Controller
 
         return view('app.web.dashboard', compact(
             'dashboardState', 'subscription', 'plan', 'booking', 'hasBooking',
-            'bookingStep', 'meetingDone', 'rejectedRecent',
+            'bookingStep', 'meetingDone', 'rejectedRecent', 'assessmentSubmitted',
             'daysLeft', 'totalDays', 'subPct', 'daysUntilStart', 'startDateIso',
             'startWeight', 'currentWeight', 'goalWeight',
             'wRange', 'wDone', 'wPct', 'wRemaining', 'wLosing',
@@ -261,6 +271,7 @@ class DashboardController extends Controller
         $request->validate([
             'start_date'   => ['required', 'date'],
             'end_date'     => ['required', 'date', 'after:start_date'],
+            'birth_date'   => ['nullable', 'date'],
             'height'       => ['required', 'numeric', 'min:100', 'max:250'],
             'start_weight' => ['required', 'numeric', 'min:30', 'max:300'],
             'goal_weight'  => ['required', 'numeric', 'min:30', 'max:300'],
@@ -336,15 +347,16 @@ class DashboardController extends Controller
             }
 
             // ── 6. ملف تعريف العميل ───────────────────────────────
-            UserProfile::updateOrCreate(
-                ['user_id' => $user->id],
-                [
-                    'height'         => $request->height,
-                    'start_weight'   => $request->start_weight,
-                    'current_weight' => $request->start_weight,
-                    'goal_weight'    => $request->goal_weight,
-                ]
-            );
+            $profileData = [
+                'height'         => $request->height,
+                'start_weight'   => $request->start_weight,
+                'current_weight' => $request->start_weight,
+                'goal_weight'    => $request->goal_weight,
+            ];
+            if ($request->filled('birth_date')) {
+                $profileData['date_of_birth'] = $request->birth_date;
+            }
+            UserProfile::updateOrCreate(['user_id' => $user->id], $profileData);
 
             // ── 7. سجل الوزن الأول ───────────────────────────────
             WeightLog::firstOrCreate(
@@ -367,7 +379,7 @@ class DashboardController extends Controller
 
     public function rejectBooking(MeetingBooking $booking): RedirectResponse
     {
-        $booking->update(['status' => 'cancelled']);
+        $booking->update(['status' => 'cancelled', 'slot_lock' => null]);
 
         return back()->with('error', 'تم رفض الحجز');
     }
@@ -496,7 +508,7 @@ class DashboardController extends Controller
             'cancelled' => MeetingBooking::where('status', 'cancelled')->count(),
         ];
 
-        $query = MeetingBooking::with(['subscription.user', 'subscription.plan'])
+        $query = MeetingBooking::with(['subscription.user', 'subscription.plan', 'subscription.traineeAssessment'])
             ->orderByDesc('meeting_date')
             ->orderByDesc('meeting_time');
 

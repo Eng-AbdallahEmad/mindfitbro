@@ -135,6 +135,11 @@ class User extends Authenticatable
         return $this->hasMany(CoachRating::class, 'coach_id');
     }
 
+    public function traineeAssessments()
+    {
+        return $this->hasMany(TraineeAssessment::class);
+    }
+
     // Average rating received as a coach (0.0–5.0, null if no ratings)
     public function getAvgRatingAttribute(): ?float
     {

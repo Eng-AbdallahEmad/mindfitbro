@@ -26,6 +26,9 @@
         autoCalc: true,
         planDuration: 30,
         saving: false,
+        hasAssessment: false,
+        assessmentData: null,
+        cbFilled: { birthDate: false, height: false, startWeight: false, goalWeight: false },
 
         days: [
             { name: 'الأحد',    short: 'أحد',    order: 1, isRest: false },
@@ -39,16 +42,17 @@
 
         init() {
             window.addEventListener('open-confirm-booking', (e) => {
-                const d         = e.detail;
-                this.booking    = d;
-                this.clientName = d.clientName ?? '';
-                this.formAction = d.formAction ?? '';
+                const d           = e.detail;
+                this.booking      = d;
+                this.clientName   = d.clientName   ?? '';
+                this.formAction   = d.formAction   ?? '';
                 this.planDuration = d.planDuration || 30;
-                this.autoCalc   = true;
-                this.saving     = false;
-                this.open       = true;
+                this.autoCalc     = true;
+                this.saving       = false;
+                this.hasAssessment  = d.hasAssessment ?? false;
+                this.assessmentData = d.assessment    ?? null;
+                this.open         = true;
 
-                // Default rest days
                 this.days.forEach(day => {
                     day.isRest = (day.order === 4 || day.order === 7);
                 });
@@ -59,12 +63,24 @@
                         String(today.getMonth() + 1).padStart(2, '0') + '-' +
                         String(today.getDate()).padStart(2, '0');
 
-                    document.getElementById('cb_start_date').value     = d.startDate ?? formatted;
-                    document.getElementById('cb_height').value         = d.height ?? '';
-                    document.getElementById('cb_birth_date').value     = d.birthDate ?? '';
-                    document.getElementById('cb_start_weight').value   = d.startWeight ?? '';
-                    document.getElementById('cb_current_weight').value = d.currentWeight ?? '';
-                    document.getElementById('cb_goal_weight').value    = d.goalWeight ?? '';
+                    document.getElementById('cb_start_date').value = formatted;
+
+                    // Pre-fill from assessment — only when assessment exists
+                    const a = this.hasAssessment ? (d.assessment ?? {}) : {};
+                    const birthDate   = a.dateOfBirth   ?? '';
+                    const height      = a.height        != null ? a.height      : '';
+                    const startWeight = a.startWeight   != null ? a.startWeight : '';
+                    const goalWeight  = a.goalWeight    != null ? a.goalWeight  : '';
+
+                    document.getElementById('cb_birth_date').value  = birthDate;
+                    document.getElementById('cb_height').value       = height;
+                    document.getElementById('cb_start_weight').value = startWeight;
+                    document.getElementById('cb_goal_weight').value  = goalWeight;
+
+                    this.cbFilled.birthDate   = !!birthDate;
+                    this.cbFilled.height      = height      !== '';
+                    this.cbFilled.startWeight = startWeight !== '';
+                    this.cbFilled.goalWeight  = goalWeight  !== '';
 
                     if (this.autoCalc) {
                         this.calcEnd(document.getElementById('cb_start_date').value);
@@ -235,59 +251,138 @@
 
                 {{-- ── قسم 3: بيانات العميل ── --}}
                 <div class="flex flex-col gap-3 border-t border-gray-100 pt-5">
-                    <div class="flex items-center gap-2">
-                        <div class="w-6 h-6 rounded-lg bg-blue-100 flex items-center justify-center">
-                            <span class="material-symbols-rounded text-blue-500" style="font-size:14px;font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 20">person</span>
+
+                    {{-- Section header --}}
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-2">
+                            <div class="w-6 h-6 rounded-lg bg-blue-100 flex items-center justify-center">
+                                <span class="material-symbols-rounded text-blue-500" style="font-size:14px;font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 20">person</span>
+                            </div>
+                            <p class="text-xs font-black text-textColor font-arabic">بيانات العميل</p>
                         </div>
-                        <p class="text-xs font-black text-textColor font-arabic">بيانات العميل</p>
+                        <span x-show="hasAssessment" x-cloak
+                            class="inline-flex items-center gap-1 text-[9px] font-black text-blue-600 bg-blue-50 border border-blue-200 px-2 py-0.5 rounded-full font-arabic">
+                            <span class="material-symbols-rounded" style="font-size:10px;font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 20">assignment_turned_in</span>
+                            من استمارة التقييم
+                        </span>
                     </div>
 
+                    {{-- Warning: no assessment --}}
+                    <div x-show="!hasAssessment"
+                        class="flex items-center gap-2.5 bg-amber-50 border border-amber-200 rounded-xl px-4 py-3">
+                        <span class="material-symbols-rounded text-amber-500 flex-shrink-0" style="font-size:18px;font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 20">warning</span>
+                        <p class="text-xs font-bold text-amber-700 font-arabic">لا توجد استمارة تقييم لهذا المشترك — يرجى إدخال البيانات يدوياً</p>
+                    </div>
+
+                    {{-- birth_date --}}
                     <div class="flex flex-col gap-1 font-arabic">
-                        <label class="text-[11px] font-bold text-gray-400">تاريخ الميلاد</label>
+                        <label class="text-[11px] font-bold text-gray-400 flex items-center gap-1">
+                            تاريخ الميلاد
+                            <span x-show="cbFilled.birthDate" x-cloak class="material-symbols-rounded text-green-500" style="font-size:11px;font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 20">check_circle</span>
+                            <span x-show="hasAssessment && !cbFilled.birthDate" x-cloak class="material-symbols-rounded text-amber-400" style="font-size:11px;font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 20">warning</span>
+                        </label>
                         <input id="cb_birth_date" type="date" name="birth_date"
-                            class="bg-gray-50/80 border border-gray-200 focus:border-primary focus:bg-white rounded-xl px-3.5 py-2.5 text-sm outline-none transition-all w-full">
+                            :class="cbFilled.birthDate ? 'bg-green-50/60 border-green-200' : 'bg-gray-50/80 border-gray-200'"
+                            class="focus:border-primary focus:bg-white rounded-xl px-3.5 py-2.5 text-sm outline-none transition-all w-full border">
                     </div>
 
+                    {{-- height + start_weight --}}
                     <div class="grid grid-cols-2 gap-3">
                         <div class="flex flex-col gap-1 font-arabic">
-                            <label class="text-[11px] font-bold text-gray-400">الطول (سم)</label>
+                            <label class="text-[11px] font-bold text-gray-400 flex items-center gap-1">
+                                الطول (سم)
+                                <span x-show="cbFilled.height" x-cloak class="material-symbols-rounded text-green-500" style="font-size:11px;font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 20">check_circle</span>
+                                <span x-show="hasAssessment && !cbFilled.height" x-cloak class="material-symbols-rounded text-amber-400" style="font-size:11px;font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 20">warning</span>
+                            </label>
                             <div class="relative">
                                 <input id="cb_height" type="number" name="height" min="100" max="250" placeholder="170" required
-                                    class="bg-gray-50/80 border border-gray-200 focus:border-primary focus:bg-white rounded-xl px-3.5 py-2.5 text-sm outline-none transition-all w-full pl-10">
+                                    :class="cbFilled.height ? 'bg-green-50/60 border-green-200' : 'bg-gray-50/80 border-gray-200'"
+                                    class="focus:border-primary focus:bg-white rounded-xl px-3.5 py-2.5 text-sm outline-none transition-all w-full pl-10 border">
                                 <span class="absolute left-3 top-1/2 -translate-y-1/2 text-[10px] font-bold text-gray-300">سم</span>
                             </div>
                         </div>
                         <div class="flex flex-col gap-1 font-arabic">
-                            <label class="text-[11px] font-bold text-gray-400">وزن البداية (كجم)</label>
+                            <label class="text-[11px] font-bold text-gray-400 flex items-center gap-1">
+                                وزن البداية (كجم)
+                                <span x-show="cbFilled.startWeight" x-cloak class="material-symbols-rounded text-green-500" style="font-size:11px;font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 20">check_circle</span>
+                                <span x-show="hasAssessment && !cbFilled.startWeight" x-cloak class="material-symbols-rounded text-amber-400" style="font-size:11px;font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 20">warning</span>
+                            </label>
                             <div class="relative">
                                 <input id="cb_start_weight" type="number" name="start_weight" min="30" max="300" step="0.1" placeholder="80" required
-                                    class="bg-gray-50/80 border border-gray-200 focus:border-primary focus:bg-white rounded-xl px-3.5 py-2.5 text-sm outline-none transition-all w-full pl-10">
+                                    :class="cbFilled.startWeight ? 'bg-green-50/60 border-green-200' : 'bg-gray-50/80 border-gray-200'"
+                                    class="focus:border-primary focus:bg-white rounded-xl px-3.5 py-2.5 text-sm outline-none transition-all w-full pl-10 border">
                                 <span class="absolute left-3 top-1/2 -translate-y-1/2 text-[10px] font-bold text-gray-300">كجم</span>
                             </div>
                         </div>
                     </div>
 
-                    <div class="grid grid-cols-2 gap-3">
-                        <div class="flex flex-col gap-1 font-arabic">
-                            <label class="text-[11px] font-bold text-gray-400">الوزن الحالي (كجم)</label>
-                            <div class="relative">
-                                <input id="cb_current_weight" type="number" name="current_weight" min="30" max="300" step="0.1" placeholder="80"
-                                    class="bg-gray-50/80 border border-gray-200 focus:border-primary focus:bg-white rounded-xl px-3.5 py-2.5 text-sm outline-none transition-all w-full pl-10">
-                                <span class="absolute left-3 top-1/2 -translate-y-1/2 text-[10px] font-bold text-gray-300">كجم</span>
-                            </div>
-                        </div>
-                        <div class="flex flex-col gap-1 font-arabic">
-                            <label class="text-[11px] font-bold text-gray-400">الوزن المستهدف (كجم)</label>
-                            <div class="relative">
-                                <input id="cb_goal_weight" type="number" name="goal_weight" min="30" max="300" step="0.1" placeholder="70" required
-                                    class="bg-gray-50/80 border border-gray-200 focus:border-primary focus:bg-white rounded-xl px-3.5 py-2.5 text-sm outline-none transition-all w-full pl-10">
-                                <span class="absolute left-3 top-1/2 -translate-y-1/2 text-[10px] font-bold text-gray-300">كجم</span>
-                            </div>
+                    {{-- goal_weight --}}
+                    <div class="flex flex-col gap-1 font-arabic">
+                        <label class="text-[11px] font-bold text-gray-400 flex items-center gap-1">
+                            الوزن المستهدف (كجم)
+                            <span x-show="cbFilled.goalWeight" x-cloak class="material-symbols-rounded text-green-500" style="font-size:11px;font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 20">check_circle</span>
+                            <span x-show="hasAssessment && !cbFilled.goalWeight" x-cloak class="material-symbols-rounded text-amber-400" style="font-size:11px;font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 20">warning</span>
+                        </label>
+                        <div class="relative">
+                            <input id="cb_goal_weight" type="number" name="goal_weight" min="30" max="300" step="0.1" placeholder="70" required
+                                :class="cbFilled.goalWeight ? 'bg-green-50/60 border-green-200' : 'bg-gray-50/80 border-gray-200'"
+                                class="focus:border-primary focus:bg-white rounded-xl px-3.5 py-2.5 text-sm outline-none transition-all w-full pl-10 border">
+                            <span class="absolute left-3 top-1/2 -translate-y-1/2 text-[10px] font-bold text-gray-300">كجم</span>
                         </div>
                     </div>
                 </div>
 
-                {{-- ── قسم 4: ماذا سيحدث؟ ── --}}
+                {{-- ── قسم 4: ملخص الاستمارة (read-only) ── --}}
+                <div x-show="hasAssessment" x-cloak class="flex flex-col gap-3 border-t border-gray-100 pt-5">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-2">
+                            <div class="w-6 h-6 rounded-lg bg-purple-100 flex items-center justify-center">
+                                <span class="material-symbols-rounded text-purple-500" style="font-size:14px;font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 20">assignment</span>
+                            </div>
+                            <p class="text-xs font-black text-textColor font-arabic">ملخص استمارة التقييم</p>
+                        </div>
+                        <a :href="assessmentData ? assessmentData.assessmentUrl : '#'" target="_blank" rel="noopener"
+                            class="text-[10px] font-black text-primary font-arabic flex items-center gap-0.5 hover:underline">
+                            عرض كاملة
+                            <span class="material-symbols-rounded" style="font-size:12px;font-variation-settings:'FILL' 0,'wght' 400,'GRAD' 0,'opsz' 20">open_in_new</span>
+                        </a>
+                    </div>
+
+                    <div class="bg-gray-50/80 rounded-2xl p-4 flex flex-col gap-3">
+                        <div class="grid grid-cols-3 gap-3">
+                            <div class="flex flex-col gap-0.5">
+                                <span class="text-[9px] font-bold text-gray-400 font-arabic">الهدف الرئيسي</span>
+                                <span class="text-[11px] font-black text-textColor font-arabic leading-tight"
+                                    x-text="assessmentData?.primaryGoal || '—'"></span>
+                            </div>
+                            <div class="flex flex-col gap-0.5">
+                                <span class="text-[9px] font-bold text-gray-400 font-arabic">مستوى الخبرة</span>
+                                <span class="text-[11px] font-black text-textColor font-arabic leading-tight"
+                                    x-text="assessmentData?.experienceLevel || '—'"></span>
+                            </div>
+                            <div class="flex flex-col gap-0.5">
+                                <span class="text-[9px] font-bold text-gray-400 font-arabic">أيام التمرين</span>
+                                <span class="text-[11px] font-black text-textColor font-arabic leading-tight"
+                                    x-text="(assessmentData?.workoutDays || '—') + (assessmentData?.workoutDays ? ' أيام/أسبوع' : '')"></span>
+                            </div>
+                        </div>
+
+                        {{-- Injuries warning — only shown if has_injuries = true --}}
+                        <template x-if="assessmentData && assessmentData.hasInjuries">
+                            <div class="flex items-start gap-2 bg-red-50 border border-red-200 rounded-xl px-3 py-2.5">
+                                <span class="material-symbols-rounded text-red-500 flex-shrink-0 mt-0.5"
+                                    style="font-size:16px;font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 20">warning</span>
+                                <div class="flex flex-col gap-0.5">
+                                    <span class="text-[10px] font-black text-red-700 font-arabic">يوجد إصابات</span>
+                                    <span class="text-[10px] font-bold text-red-600 font-arabic"
+                                        x-text="assessmentData.injuriesDetails || 'بدون تفاصيل'"></span>
+                                </div>
+                            </div>
+                        </template>
+                    </div>
+                </div>
+
+                {{-- ── قسم 5: ماذا سيحدث؟ ── --}}
                 <div class="bg-gradient-to-br from-primary/[0.04] to-blue-50/50 rounded-2xl p-4 border border-primary/10">
                     <div class="flex items-center gap-2 mb-3">
                         <span class="material-symbols-rounded text-primary" style="font-size:16px;font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 20">info</span>
@@ -763,15 +858,45 @@
                         </div>
                         <div class="flex gap-2 flex-shrink-0">
                             {{-- زر التأكيد — يفتح الـ modal بالـ event الصحيح --}}
+                            @php
+                                $cbTa        = $booking->subscription->traineeAssessment;
+                                $cbHealth    = $cbTa ? ($cbTa->health ?? []) : [];
+                                $cbGoalLabels = [
+                                    'weight_loss'    => 'خسارة الوزن',
+                                    'muscle_gain'    => 'بناء العضلات',
+                                    'endurance'      => 'اللياقة والتحمل',
+                                    'flexibility'    => 'المرونة',
+                                    'general_fitness'=> 'لياقة عامة',
+                                    'other'          => 'أخرى',
+                                ];
+                                $cbExpLabels = [
+                                    'beginner'    => 'مبتدئ',
+                                    'intermediate'=> 'متوسط',
+                                    'advanced'    => 'متقدم',
+                                ];
+                                $cbDetail = [
+                                    'bookingId'     => $booking->id,
+                                    'clientName'    => $booking->subscription->user->name ?? '',
+                                    'formAction'    => route('coach.bookings.confirm', $booking->id),
+                                    'planDuration'  => ($booking->subscription->duration_months ?? 3) * 30,
+                                    'hasAssessment' => (bool) $cbTa,
+                                    'assessment'    => $cbTa ? [
+                                        'dateOfBirth'     => $cbTa->date_of_birth?->format('Y-m-d'),
+                                        'height'          => $cbTa->height         ? (float) $cbTa->height         : null,
+                                        'startWeight'     => $cbTa->current_weight ? (float) $cbTa->current_weight : null,
+                                        'goalWeight'      => $cbTa->target_weight  ? (float) $cbTa->target_weight  : null,
+                                        'primaryGoal'     => $cbGoalLabels[$cbTa->primary_goal]   ?? $cbTa->primary_goal,
+                                        'experienceLevel' => $cbExpLabels[$cbTa->experience_level] ?? $cbTa->experience_level,
+                                        'workoutDays'     => $cbTa->workout_days_per_week,
+                                        'hasInjuries'     => ($cbHealth['has_injuries'] ?? 'no') === 'yes',
+                                        'injuriesDetails' => $cbHealth['injuries_details'] ?? '',
+                                        'assessmentUrl'   => route('coach.subscribers.show', $booking->subscription->user_id) . '#assessment',
+                                    ] : null,
+                                ];
+                            @endphp
+                            <script>window.__cbData = window.__cbData || {}; window.__cbData[{{ $booking->id }}] = @json($cbDetail);</script>
                             <button type="button"
-                                @click="window.dispatchEvent(new CustomEvent('open-confirm-booking', {
-                                    detail: {
-                                        bookingId:    {{ $booking->id }},
-                                        clientName:   '{{ addslashes($booking->subscription->user->name ?? '') }}',
-                                        formAction:   '{{ route('coach.bookings.confirm', $booking->id) }}',
-                                        planDuration: {{ ($booking->subscription->duration_months ?? 3) * 30 }}
-                                    }
-                                }))"
+                                @click="window.dispatchEvent(new CustomEvent('open-confirm-booking', { detail: (window.__cbData||{})[{{ $booking->id }}] }))"
                                 class="flex items-center gap-1 text-[11px] font-black font-arabic text-green-700 bg-green-50 border border-green-200 px-3 py-1.5 rounded-lg hover:bg-green-100 transition">
                                 <span class="material-symbols-rounded" style="font-size:14px;font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 20">check_circle</span>
                                 تأكيد

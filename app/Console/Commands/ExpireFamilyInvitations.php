@@ -13,8 +13,12 @@ class ExpireFamilyInvitations extends Command
 
     public function handle(): int
     {
-        $expired = FamilyInvitation::where('status', 'pending')
-            ->whereHas('coupon', fn ($q) => $q->where('expires_at', '<', now()))
+        $expired = FamilyInvitation::whereIn('status', ['pending', 'used'])
+            ->whereHas('coupon', function ($q) {
+                $q->where('expires_at', '<', now())
+                  // Don't expire while the code is still being reviewed — wait for approve/reject
+                  ->whereDoesntHave('subscriptions', fn ($sq) => $sq->where('status', 'pending_review'));
+            })
             ->with('coupon')
             ->get();
 

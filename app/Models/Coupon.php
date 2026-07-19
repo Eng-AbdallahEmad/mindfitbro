@@ -35,7 +35,10 @@ class Coupon extends Model
         if (!$coupon) return null;
 
         if ($coupon->max_uses !== null) {
-            $used = Subscription::whereRaw('UPPER(coupon_code) = ?', [strtoupper($code)])->count();
+            // Rejected / cancelled subscriptions don't count — the code is still available to retry
+            $used = Subscription::whereRaw('UPPER(coupon_code) = ?', [strtoupper($code)])
+                ->whereNotIn('status', ['rejected', 'cancelled'])
+                ->count();
             if ($used >= $coupon->max_uses) return null;
         }
 

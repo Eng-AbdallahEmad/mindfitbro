@@ -37,14 +37,19 @@ class FamilyInvitation extends Model
         return $this->belongsTo(Coupon::class);
     }
 
-    public function markExpired(): void
+    public function markUsed(): void
     {
-        $this->update(['status' => 'expired']);
+        $this->update(['status' => 'used']);
     }
 
     public function markRedeemed(): void
     {
         $this->update(['status' => 'redeemed', 'redeemed_at' => now()]);
+    }
+
+    public function markExpired(): void
+    {
+        $this->update(['status' => 'expired']);
     }
 
     public function isPending(): bool

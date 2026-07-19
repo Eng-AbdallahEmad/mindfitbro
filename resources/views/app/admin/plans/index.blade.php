@@ -156,6 +156,19 @@
         </button>
     </div>
 
+    {{-- Popular badge status info --}}
+    <div class="flex items-start gap-2.5 bg-blue-50 border border-blue-100 rounded-xl px-4 py-3 mb-5 text-sm font-bold" dir="rtl">
+        <span class="material-symbols-rounded text-blue-400 flex-shrink-0 mt-0.5" style="font-size:17px">auto_awesome</span>
+        <div>
+            <span class="text-slate-600">شارة "الأكثر طلبًا" تظهر حاليًا على: </span>
+            <span class="text-blue-700">{{ $popularPlanName ?? '—' }}</span>
+            <span class="text-slate-400 font-semibold text-xs mr-1">({{ $popularIsAuto ? 'تلقائي — بناءً على المبيعات' : 'يدوي — من إعداد الأدمن' }})</span>
+            @if(!$popularIsAuto)
+            <span class="text-amber-600 text-xs font-semibold mr-1">· المبيعات أقل من {{ $minCount }} اشتراكات، يُستخدم الاختيار اليدوي</span>
+            @endif
+        </div>
+    </div>
+
     {{-- Plans Grid --}}
     @if($plans->isEmpty())
     <div class="text-center py-16 bg-white rounded-2xl border border-slate-100">
@@ -494,6 +507,9 @@
                     <span class="text-sm font-bold text-slate-600">نشطة</span>
                 </label>
             </div>
+            <p class="text-[11px] text-slate-400 font-semibold mt-1" dir="rtl">
+                يُستخدم هذا الاختيار فقط احتياطيًا عندما تكون المبيعات أقل من {{ $minCount }} اشتراكات — بعدها تُحدَّد الشارة تلقائيًا حسب الأكثر مبيعًا.
+            </p>
 
             <div class="flex gap-3 pt-2">
                 <button type="button" onclick="closeModal('createModal')"
@@ -635,6 +651,9 @@
                     <span class="text-sm font-bold text-slate-600">نشطة</span>
                 </label>
             </div>
+            <p class="text-[11px] text-slate-400 font-semibold mt-1" dir="rtl">
+                يُستخدم هذا الاختيار فقط احتياطيًا عندما تكون المبيعات أقل من {{ $minCount }} اشتراكات — بعدها تُحدَّد الشارة تلقائيًا حسب الأكثر مبيعًا.
+            </p>
 
             <div class="flex gap-3 pt-2">
                 <button type="button" onclick="closeModal('editModal')"

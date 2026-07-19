@@ -737,12 +737,12 @@
         @php
             $rewardEnabled      = $settings->get('family_reward_enabled', '0') === '1';
             $rewardPlanId       = (int) ($settings->get('family_reward_plan_id') ?: 0);
-            $isEliteSubscriber  = $subscription
-                && $subscription->plan_id === $rewardPlanId
-                && in_array($subscription->status, ['approved', 'active']);
-            $isPendingRewardSub = $subscription
-                && $subscription->plan_id === $rewardPlanId
-                && $subscription->status === 'pending_review';
+            $isEliteSubscriber  = $rewardSubscription
+                && $rewardSubscription->plan_id === $rewardPlanId
+                && in_array($rewardSubscription->status, ['approved', 'active']);
+            $isPendingRewardSub = $rewardSubscription
+                && $rewardSubscription->plan_id === $rewardPlanId
+                && $rewardSubscription->status === 'pending_review';
             $showRewardCard     = $rewardEnabled && $rewardPlanId;
             $isRewardLocked     = !$isEliteSubscriber;
             $showRewardBadge    = $rewardEnabled && $rewardPlanId;
@@ -756,11 +756,11 @@
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-[980px] w-full px-6">
             @foreach($plans as $plan)
             <div class="relative rounded-[24px] p-8 border font-arabic {{ $alignStart }} transition-all duration-300 hover:-translate-y-2
-                {{ $plan['popular']
+                {{ $plan->id === $popularPlanId
                     ? 'border-[2.5px] border-primary bg-[#F0F5FF] shadow-[0_20px_48px_rgba(23,77,173,0.15)]'
                     : 'border-gray-200 bg-white hover:shadow-xl' }}">
 
-                @if($plan['popular'])
+                @if($plan->id === $popularPlanId)
                 <div class="absolute -top-4 left-1/2 -translate-x-1/2 bg-primary text-white text-xs font-black px-5 py-1.5 rounded-full whitespace-nowrap font-arabic flex items-center gap-1">
                     <span class="material-symbols-rounded text-accent" style="font-size:14px">workspace_premium</span>
                     {{ __('messages.programs.popular') }}
@@ -785,17 +785,47 @@
                     $price3m      = (float)($plan->priceFor($currency, 3)?->price ?? $plan->priceFor('SAR', 3)?->price ?? $plan->price);
                     $price6m      = (float)($plan->priceFor($currency, 6)?->price ?? $plan->priceFor('SAR', 6)?->price ?? $plan->price);
                     $showFallback = !$plan->priceFor($currency, 3) && $currency !== 'SAR';
+                    $sPct         = $activeSeason ? (float) $activeSeason->discount_percentage : 0;
+                    $sPrice3m     = $activeSeason ? (float) round($price3m * (1 - $sPct / 100)) : $price3m;
+                    $sPrice6m     = $activeSeason ? (float) round($price6m * (1 - $sPct / 100)) : $price6m;
+                    // Smart format: whole number → 0 dec, fractional → 2 dec
+                    $fmtP   = fn(float $p): string => (($r = round($p, 2)) == floor($r))
+                                  ? number_format((int)$r, 0) : number_format($r, 2);
+                    $sFmt3m = $fmtP($sPrice3m);
+                    $sFmt6m = $fmtP($sPrice6m);
+                    $cDec   = \App\Services\Web\CurrencyService::META[$currency]['decimals'] ?? 0;
+                    $symTxt = \App\Services\Web\CurrencyService::META[$currency]['symbol'] ?? $currency;
+                    $fmt3m  = number_format($price3m, $cDec);
+                    $fmt6m  = number_format($price6m, $cDec);
+                    $pctStr = $sPct > 0 ? rtrim(rtrim(number_format($sPct, 2), '0'), '.') : '';
                 @endphp
 
-                <div class="flex items-baseline gap-1.5 mb-1 text-gray-400">
-                    <span class="text-sm font-arabic"
-                        x-text="months === 3 ? '{{ $dur3Label }}' : '{{ $dur6Label }}'">{{ $dur3Label }}</span>
+                @if($activeSeason)
+                <div class="inline-flex items-center gap-1.5 bg-red-500 text-white text-[10px] font-black px-2.5 py-1 rounded-full mb-3 font-arabic">
+                    <span class="material-symbols-rounded" style="font-size:11px;font-variation-settings:'FILL' 1">local_offer</span>
+                    {{ app()->getLocale() === 'ar' ? $activeSeason->name_ar : $activeSeason->name_en }} · {{ app()->getLocale() === 'ar' ? 'خصم' : '' }} {{ $pctStr }}%{{ app()->getLocale() !== 'ar' ? ' off' : '' }}
+                </div>
+                @endif
+
+                @if($activeSeason)
+                {{-- Strikethrough: original price above, aligned with main price --}}
+                <div class="flex items-baseline gap-0.5 leading-none mb-1">
+                    <span class="font-display font-bold text-gray-400/60 line-through" style="font-size:20px"
+                        x-text="months === 3 ? '{{ $fmt3m }}' : '{{ $fmt6m }}'">{{ $fmt3m }}</span>
+                    <span class="font-bold text-gray-400/60 line-through" style="font-size:13px">{{ $symTxt }}</span>
+                </div>
+                @endif
+
+                {{-- Main price row: price + symbol tight together --}}
+                <div class="flex items-baseline gap-0.5 leading-none mb-1">
                     <span class="text-5xl font-black font-display text-textColor leading-none"
-                        x-text="months === 3 ? {{ $price3m }} : {{ $price6m }}">
-                        {{ $price3m }}
-                    </span>
+                        x-text="months === 3 ? '{{ $sFmt3m }}' : '{{ $sFmt6m }}'">{{ $sFmt3m }}</span>
                     <x-web.currency-symbol :currency="$currency" />
                 </div>
+
+                {{-- Duration label below price --}}
+                <p class="text-sm text-gray-400 font-arabic mb-1"
+                    x-text="months === 3 ? '{{ $dur3Label }}' : '{{ $dur6Label }}'">{{ $dur3Label }}</p>
 
                 @if($showFallback)
                 <p class="text-[11px] text-amber-600 font-bold font-arabic mb-1">السعر بالريال السعودي</p>
@@ -844,11 +874,16 @@
         <div class="w-full max-w-[980px] px-6 mx-auto">
             <div class="relative rounded-[28px] overflow-hidden font-arabic shadow-[0_24px_64px_rgba(18,0,46,0.15)]" dir="{{ $isRtl ? 'rtl' : 'ltr' }}">
 
-                {{-- Lock badge --}}
+                {{-- Lock / unlocked badge --}}
                 @if($isRewardLocked)
                 <div class="absolute top-4 {{ $isRtl ? 'left-4' : 'right-4' }} z-20 flex items-center gap-1.5 bg-slate-900/80 text-white text-[11px] font-black px-3 py-1.5 rounded-full backdrop-blur-sm border border-white/10">
                     <span class="material-symbols-rounded" style="font-size:13px;font-variation-settings:'FILL' 1">lock</span>
                     مقفل
+                </div>
+                @else
+                <div class="absolute top-4 {{ $isRtl ? 'left-4' : 'right-4' }} z-20 flex items-center gap-1.5 bg-accent/20 text-accent text-[11px] font-black px-3 py-1.5 rounded-full backdrop-blur-sm border border-accent/30">
+                    <span class="material-symbols-rounded" style="font-size:13px;font-variation-settings:'FILL' 1">card_giftcard</span>
+                    {{ __('messages.programs.reward_unlocked_badge') }}
                 </div>
                 @endif
 
@@ -906,12 +941,24 @@
 
                         @if(!$isRewardLocked)
                         {{-- ✅ مفتوح: مشترك ومعتمد --}}
-                        <a href="{{ route('dashboard') }}#family-reward"
-                            class="w-full py-4 rounded-2xl font-black text-sm text-center font-arabic text-darkBg flex items-center justify-center gap-2 z-10 transition-all duration-300 hover:scale-[1.03] whitespace-nowrap"
-                            style="background:linear-gradient(135deg,#EAB308 0%,#F59E0B 100%);box-shadow:0 6px 28px rgba(234,179,8,0.45);">
-                            <span class="material-symbols-rounded" style="font-size:16px;font-variation-settings:'FILL' 1">card_giftcard</span>
-                            {{ __('messages.programs.reward_cta') }}
-                        </a>
+                        @php $rewardRemaining = max(0, $rewardMaxInvites - $rewardUsedInvites); @endphp
+                        <div class="w-full z-10 flex flex-col items-center gap-4">
+                            {{-- Remaining invites counter --}}
+                            <div class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 flex items-center justify-center gap-3">
+                                <span class="font-black text-accent" style="font-size:34px;line-height:1">{{ $rewardRemaining }}</span>
+                                <div class="font-arabic {{ $isRtl ? 'text-right' : 'text-left' }}">
+                                    <p class="text-white/65 text-xs font-black leading-snug">{{ __('messages.programs.reward_invites_available') }}</p>
+                                    <p class="text-white/35 text-[10px] font-bold leading-snug">{{ __('messages.programs.reward_invites_of', ['max' => $rewardMaxInvites]) }}</p>
+                                </div>
+                            </div>
+                            {{-- CTA --}}
+                            <a href="{{ route('dashboard') }}#family-reward"
+                                class="w-full py-3.5 rounded-2xl font-black text-sm text-center font-arabic text-darkBg flex items-center justify-center gap-2 transition-all duration-300 hover:scale-[1.03]"
+                                style="background:linear-gradient(135deg,#EAB308 0%,#F59E0B 100%);box-shadow:0 6px 28px rgba(234,179,8,0.45);">
+                                <span class="material-symbols-rounded" style="font-size:15px;font-variation-settings:'FILL' 1">send</span>
+                                {{ __('messages.programs.reward_cta') }}
+                            </a>
+                        </div>
 
                         @elseif($isPendingRewardSub)
                         {{-- ⏳ طلب قيد المراجعة --}}
@@ -934,7 +981,7 @@
                             @if($rewardPlan)
                             <p class="text-white/50 text-[11px] font-arabic text-center leading-relaxed">
                                 اشترك في باقة<br>
-                                <span class="text-accent font-black">{{ $rewardPlan->name }}</span><br>
+                                <span class="text-accent font-black">{{ __('messages.plans_data.' . $rewardPlan->key . '.name') }}</span><br>
                                 <span class="text-white/35">لفتح هذه الميزة</span>
                             </p>
                             <a href="{{ route('purchase.form', $rewardPlan->key) }}"

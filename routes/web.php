@@ -9,12 +9,14 @@ use App\Http\Controllers\Admin\BeforeAftersController as AdminBeforeAftersContro
 use App\Http\Controllers\Admin\TestimonialsController as AdminTestimonialsController;
 use App\Http\Controllers\Admin\VideosController as AdminVideosController;
 use App\Http\Controllers\Admin\CouponsController as AdminCouponsController;
+use App\Http\Controllers\Admin\SeasonsController as AdminSeasonsController;
 use App\Http\Controllers\Admin\FamilyInvitationsController as AdminFamilyInvitationsController;
 use App\Http\Controllers\Admin\PartnersController as AdminPartnersController;
 use App\Http\Controllers\Admin\SubscriptionsController as AdminSubscriptionsController;
 use App\Http\Controllers\Auth\AdminAuthController;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\LocaleController;
+use App\Http\Controllers\Web\AssessmentController;
 use App\Http\Controllers\Web\BookingController;
 use App\Http\Controllers\Web\GuestAccountController;
 use App\Http\Controllers\Web\DashboardController;
@@ -25,6 +27,7 @@ use App\Http\Controllers\Web\ProfileController;
 use App\Http\Controllers\Web\JourneyController;
 use App\Http\Controllers\Web\FamilyInvitationController;
 use App\Http\Controllers\Web\PurchaseController;
+use App\Http\Controllers\Web\SetupAccountController;
 use App\Http\Controllers\Web\SubscriberController;
 use App\Http\Controllers\Web\TermsOfServiceController;
 use Illuminate\Support\Facades\Route;
@@ -82,9 +85,15 @@ Route::prefix('purchase')->name('purchase.')->group(function () {
     Route::post('/{plan:key}',       [PurchaseController::class, 'submit'])->name('submit');
 });
 
-// ── Complete Account (guest email link) ─────────────────────────
+// ── Complete Account (guest email link — old pre-approval flow) ──
 Route::get('/complete-account/{token}', [GuestAccountController::class, 'completeAccount'])->name('complete-account.show');
 Route::post('/complete-account/{token}', [GuestAccountController::class, 'storeCompleteAccount'])->name('complete-account.store');
+
+// ── Setup Account (post-approval — new account or incomplete account) ─
+Route::middleware('throttle:10,1')->group(function () {
+    Route::get('/setup-account/{token}',  [SetupAccountController::class, 'show'])->name('setup-account.show');
+    Route::post('/setup-account/{token}', [SetupAccountController::class, 'store'])->name('setup-account.store');
+});
 
 Route::middleware('auth.custom')->group(function () {
     // Complete profile — not gated by profile.complete (would cause infinite redirect)
@@ -133,6 +142,9 @@ Route::middleware('auth.custom')->group(function () {
                 Route::post('/evaluation', [SubscriberController::class, 'storeEvaluation'])->name('evaluation');
                 Route::get('/{userId}',    [SubscriberController::class, 'show'])->name('show')->whereNumber('userId');
             });
+
+            Route::get('/assessment/{subscription}',  [AssessmentController::class, 'show'])->name('assessment.show');
+            Route::post('/assessment/{subscription}', [AssessmentController::class, 'store'])->name('assessment.store');
 
             Route::get('/schedule-meeting/{subscription}', [BookingController::class, 'show'])->name('booking.show');
             Route::post('/booking/store', [BookingController::class, 'store'])->name('booking.store');
@@ -191,6 +203,13 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::put('coupons/{coupon}', [AdminCouponsController::class, 'update'])->name('coupons.update');
         Route::patch('coupons/{coupon}/toggle', [AdminCouponsController::class, 'toggle'])->name('coupons.toggle');
         Route::delete('coupons/{coupon}', [AdminCouponsController::class, 'destroy'])->name('coupons.destroy');
+
+        // Seasons
+        Route::get('seasons', [AdminSeasonsController::class, 'index'])->name('seasons.index');
+        Route::post('seasons', [AdminSeasonsController::class, 'store'])->name('seasons.store');
+        Route::put('seasons/{season}', [AdminSeasonsController::class, 'update'])->name('seasons.update');
+        Route::patch('seasons/{season}/toggle', [AdminSeasonsController::class, 'toggle'])->name('seasons.toggle');
+        Route::delete('seasons/{season}', [AdminSeasonsController::class, 'destroy'])->name('seasons.destroy');
 
         // Settings
         Route::get('settings', [AdminSettingsController::class, 'index'])->name('settings.index');

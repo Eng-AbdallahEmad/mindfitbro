@@ -6,10 +6,12 @@ use App\Http\Controllers\Controller;
 use App\Mail\OrderPendingReviewMail;
 use App\Mail\OrderReceivedMail;
 use App\Models\Coupon;
+use App\Models\FamilyInvitation;
 use App\Models\Plan;
 use App\Models\Subscription;
 use App\Models\User;
 use App\Services\Web\CurrencyService;
+use App\Services\Web\SeasonService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -20,7 +22,10 @@ use Illuminate\Support\Str;
 
 class PurchaseController extends Controller
 {
-    public function __construct(private CurrencyService $currency) {}
+    public function __construct(
+        private CurrencyService $currency,
+        private SeasonService   $seasonService,
+    ) {}
 
     // ── Step 1: Show purchase form ───────────────────────────────
     public function showForm(Plan $plan, Request $request)
@@ -58,14 +63,19 @@ class PurchaseController extends Controller
             ? (int) $request->input('duration')
             : 3;
 
-        $price3m = $plan->priceFor($currency, 3)?->price ?? $plan->priceFor('SAR', 3)?->price ?? $plan->price;
-        $price6m = $plan->priceFor($currency, 6)?->price ?? $plan->priceFor('SAR', 6)?->price ?? $plan->price;
+        $price3m = (float) ($plan->priceFor($currency, 3)?->price ?? $plan->priceFor('SAR', 3)?->price ?? $plan->price);
+        $price6m = (float) ($plan->priceFor($currency, 6)?->price ?? $plan->priceFor('SAR', 6)?->price ?? $plan->price);
+
+        $activeSeason  = $this->seasonService->getActive();
+        $sPrice3m      = $activeSeason ? $this->seasonService->applyToPrice($price3m, $activeSeason) : $price3m;
+        $sPrice6m      = $activeSeason ? $this->seasonService->applyToPrice($price6m, $activeSeason) : $price6m;
 
         $paymentInstructions = $this->currency->paymentInstructions();
 
         return view('app.web.purchase.form', compact(
             'plan', 'currency', 'durationMonths',
-            'price3m', 'price6m', 'paymentInstructions'
+            'price3m', 'price6m', 'sPrice3m', 'sPrice6m',
+            'activeSeason', 'paymentInstructions'
         ));
     }
 
@@ -73,10 +83,21 @@ class PurchaseController extends Controller
     public function checkCoupon(Request $request): JsonResponse
     {
         $request->validate([
-            'code'    => 'required|string|max:50',
-            'price3m' => 'required|numeric|min:0',
-            'price6m' => 'required|numeric|min:0',
+            'code'            => 'required|string|max:50',
+            'plan_id'         => 'required|integer|exists:plans,id',
+            'duration_months' => 'required|integer|in:3,6',
         ]);
+
+        $plan     = Plan::findOrFail($request->plan_id);
+        $currency = $this->currency->current();
+
+        $price3m = (float) ($plan->priceFor($currency, 3)?->price ?? $plan->priceFor('SAR', 3)?->price ?? $plan->price);
+        $price6m = (float) ($plan->priceFor($currency, 6)?->price ?? $plan->priceFor('SAR', 6)?->price ?? $plan->price);
+
+        // Apply season discount server-side
+        $activeSeason  = $this->seasonService->getActive();
+        $sPrice3m      = $activeSeason ? $this->seasonService->applyToPrice($price3m, $activeSeason) : $price3m;
+        $sPrice6m      = $activeSeason ? $this->seasonService->applyToPrice($price6m, $activeSeason) : $price6m;
 
         $coupon = Coupon::findActive(trim($request->code));
 
@@ -87,12 +108,19 @@ class PurchaseController extends Controller
             ]);
         }
 
+        // Coupon discount is calculated on the post-season price
         return response()->json([
-            'valid'      => true,
-            'type'       => $coupon->type,
-            'value'      => (float) $coupon->value,
-            'discount3m' => $coupon->calculateDiscount((float) $request->price3m),
-            'discount6m' => $coupon->calculateDiscount((float) $request->price6m),
+            'valid'        => true,
+            'type'         => $coupon->type,
+            'value'        => (float) $coupon->value,
+            'discount3m'   => $coupon->calculateDiscount($sPrice3m),
+            'discount6m'   => $coupon->calculateDiscount($sPrice6m),
+            'season'       => $activeSeason ? [
+                'name'       => app()->getLocale() === 'ar' ? $activeSeason->name_ar : $activeSeason->name_en,
+                'pct'        => (float) $activeSeason->discount_percentage,
+                'sPrice3m'   => $sPrice3m,
+                'sPrice6m'   => $sPrice6m,
+            ] : null,
         ]);
     }
 
@@ -163,17 +191,32 @@ class PurchaseController extends Controller
                         ?? $plan->priceFor('SAR', $durationMonths);
         $subtotal       = $planPrice ? (float) $planPrice->price : (float) $plan->price;
 
-        // Apply coupon if provided
+        // Season discount — detect if season expired between form load and submit
+        $activeSeason     = $this->seasonService->getActive();
+        $expectedSeasonId = (int) $request->input('expected_season_id', 0);
+        if ($expectedSeasonId > 0 && ($activeSeason === null || $activeSeason->id !== $expectedSeasonId)) {
+            return redirect()->route('purchase.form', $plan)
+                ->with('info', __('messages.purchase.season_expired_notice'))
+                ->withInput();
+        }
+        $priceAfterSeason = $activeSeason
+            ? (float) $this->seasonService->applyToPrice($subtotal, $activeSeason)
+            : $subtotal;
+        $seasonDiscount = $subtotal - $priceAfterSeason;
+
+        // Apply coupon on the integer post-season price
         $couponDiscount = 0.0;
         $couponCode     = null;
+        $coupon         = null;
         if ($request->filled('coupon_code')) {
             $coupon = Coupon::findActive(trim($request->coupon_code));
             if ($coupon) {
-                $couponDiscount = $coupon->calculateDiscount($subtotal);
+                $couponDiscount = $coupon->calculateDiscount($priceAfterSeason);
                 $couponCode     = strtoupper(trim($request->coupon_code));
             }
         }
-        $total = max(0.0, $subtotal - $couponDiscount);
+        // Round total to nearest integer — clean bank transfer amount
+        $total = (float) round(max(0.0, $priceAfterSeason - $couponDiscount));
 
         // Store receipt in private disk (never publicly accessible)
         $receiptPath = $request->file('receipt')->storeAs(
@@ -184,32 +227,52 @@ class PurchaseController extends Controller
 
         $subscription = DB::transaction(function () use (
             $request, $plan, $currency, $durationMonths,
-            $subtotal, $couponDiscount, $couponCode, $total, $receiptPath
+            $subtotal, $activeSeason, $seasonDiscount,
+            $couponDiscount, $couponCode, $total, $receiptPath, $coupon
         ) {
-            return Subscription::create([
-                'user_id'            => Auth::id(),
-                'guest_name'         => Auth::check() ? null : $request->full_name,
-                'guest_email'        => Auth::check() ? null : $request->email,
-                'guest_token'        => Auth::check() ? null : Str::random(64),
-                'plan_id'            => $plan->id,
-                'status'             => Subscription::STATUS_PENDING_REVIEW,
-                'duration_months'    => $durationMonths,
-                'currency'           => $currency,
-                'subtotal'           => $subtotal,
-                'coupon_code'        => $couponCode,
-                'coupon_discount'    => $couponDiscount,
-                'total'              => $total,
-                'payment_method_key' => config('payment.currency_to_method.' . $currency, 'sa_world'),
-                'receipt_path'       => $receiptPath,
-                'plans_snapshot'     => [[
-                    'plan_id'        => $plan->id,
-                    'plan_name'      => $plan->name,
-                    'quantity'       => 1,
-                    'final_price'    => $total,
-                    'currency'       => $currency,
-                    'duration_months'=> $durationMonths,
+            $sub = Subscription::create([
+                'user_id'                    => Auth::id(),
+                'guest_name'                 => Auth::check() ? null : $request->full_name,
+                'guest_email'                => Auth::check() ? null : $request->email,
+                'guest_token'                => Auth::check() ? null : Str::random(64),
+                'plan_id'                    => $plan->id,
+                'status'                     => Subscription::STATUS_PENDING_REVIEW,
+                'duration_months'            => $durationMonths,
+                'currency'                   => $currency,
+                'subtotal'                   => $subtotal,
+                'season_id'                  => $activeSeason?->id,
+                'season_name'                => $activeSeason?->name_ar,
+                'season_discount_percentage' => $activeSeason?->discount_percentage,
+                'season_discount'            => $seasonDiscount,
+                'coupon_code'                => $couponCode,
+                'coupon_discount'            => $couponDiscount,
+                'total'                      => $total,
+                'payment_method_key'         => config('payment.currency_to_method.' . $currency, 'sa_world'),
+                'receipt_path'               => $receiptPath,
+                'plans_snapshot'             => [[
+                    'plan_id'                    => $plan->id,
+                    'plan_name'                  => $plan->name,
+                    'quantity'                   => 1,
+                    'subtotal'                   => $subtotal,
+                    'season_name'                => $activeSeason?->name_ar,
+                    'season_discount_percentage' => $activeSeason?->discount_percentage,
+                    'season_discount'            => $seasonDiscount,
+                    'coupon_discount'            => $couponDiscount,
+                    'final_price'                => $total,
+                    'currency'                   => $currency,
+                    'duration_months'            => $durationMonths,
                 ]],
             ]);
+
+            // If a family-reward coupon was used, advance the linked invitation to 'used'
+            if ($coupon) {
+                FamilyInvitation::where('coupon_id', $coupon->id)
+                    ->where('status', 'pending')
+                    ->first()
+                    ?->markUsed();
+            }
+
+            return $sub;
         });
 
         session(['last_purchase_id' => $subscription->id]);
