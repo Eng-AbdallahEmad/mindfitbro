@@ -18,7 +18,7 @@
 .online-hero {
     background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 60%, #1e40af 100%);
     border-radius: 0 0 2.5rem 2.5rem;
-    padding-top: 4rem;
+    padding-top: 7.5rem;
     padding-bottom: 5.5rem;
 }
 .online-card-overlap {
@@ -54,6 +54,8 @@
 @endsection
 
 @section('content')
+<x-web.navbar />
+
 <div class="min-h-screen bg-[#F0F4FB]" dir="{{ $dir }}">
 
     {{-- ══════════════════════════════════════
