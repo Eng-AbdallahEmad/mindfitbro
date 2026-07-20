@@ -98,6 +98,9 @@ class Setting extends Model
                 'maintenance_message'      => '',
                 'maintenance_eta'          => '',
             ],
+            'platform' => [
+                'platform_mode' => 'in_person',
+            ],
             'family_reward' => [
                 'family_reward_enabled'        => '0',
                 'family_reward_plan_id'        => '',

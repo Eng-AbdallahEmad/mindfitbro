@@ -96,6 +96,7 @@
                         'marquee'      => ['icon' => 'campaign',        'label' => 'الشريط الإعلاني'],
                         'sections'     => ['icon' => 'view_agenda',     'label' => 'أقسام الصفحة'],
                         'maintenance'  => ['icon' => 'construction',    'label' => 'وضع الصيانة'],
+                        'platform'     => ['icon' => 'devices',          'label' => 'وضع المنصة'],
                     ];
                 @endphp
                 @foreach($tabs as $key => $tab)
@@ -967,6 +968,71 @@
                                class="form-input" dir="ltr"
                                value="{{ $s->get('maintenance_eta', '') }}">
                         <p class="form-hint">يظهر للزوار كعداد تنازلي — اتركه فارغاً لإخفائه</p>
+                    </div>
+
+                </div>
+            </div>
+
+            {{-- ════ PLATFORM MODE ════ --}}
+            @php $isOnline = $s->get('platform_mode', 'in_person') === 'online'; @endphp
+            <div id="tab-platform" class="settings-card hidden" data-tab-panel>
+                <div class="settings-card-header">
+                    <span class="w-8 h-8 rounded-lg {{ $isOnline ? 'bg-blue-50' : 'bg-slate-50' }} flex items-center justify-center flex-shrink-0">
+                        <span class="material-symbols-rounded {{ $isOnline ? 'text-blue-500' : 'text-slate-400' }}" style="font-size:18px;font-variation-settings:'FILL' 1">devices</span>
+                    </span>
+                    <div class="flex-1">
+                        <h3 class="text-sm font-black text-slate-800">وضع المنصة</h3>
+                        <p class="text-[11px] text-slate-400 font-semibold">حدد طريعة تقديم المحتوى التدريبي للمشتركين النشطين</p>
+                    </div>
+                    @if($isOnline)
+                    <span class="flex items-center gap-1.5 bg-blue-100 text-blue-600 text-[10px] font-black px-2.5 py-1 rounded-full">
+                        <span class="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse"></span>
+                        أونلاين
+                    </span>
+                    @endif
+                </div>
+
+                <div class="p-6 space-y-5">
+
+                    @if($isOnline)
+                    <div class="rounded-xl bg-blue-50 border border-blue-200 p-4 flex items-start gap-3">
+                        <span class="material-symbols-rounded text-blue-500 flex-shrink-0 mt-0.5" style="font-size:18px;font-variation-settings:'FILL' 1">info</span>
+                        <p class="text-sm font-bold text-blue-700">المنصة في وضع أونلاين — المشتركون النشطون يرون صفحة تسليم بيانات التطبيق بدل الداشبورد الكامل.</p>
+                    </div>
+                    @endif
+
+                    {{-- Toggle --}}
+                    <label class="flex items-center justify-between gap-4 p-4 rounded-xl border {{ $isOnline ? 'border-blue-200 bg-blue-50' : 'border-slate-100 bg-slate-50' }} cursor-pointer hover:bg-opacity-80 transition-colors">
+                        <div class="flex items-center gap-3">
+                            <span class="w-9 h-9 rounded-xl bg-white border border-slate-200 flex items-center justify-center flex-shrink-0">
+                                <span class="material-symbols-rounded text-slate-500" style="font-size:18px;font-variation-settings:'FILL' 1">swap_horiz</span>
+                            </span>
+                            <div>
+                                <p class="text-sm font-black text-slate-800">وضع أونلاين</p>
+                                <p class="text-[11px] text-slate-400 font-semibold">المشتركون النشطون يرون صفحة تسليم بيانات دخول تطبيق CRM</p>
+                            </div>
+                        </div>
+                        <div class="relative flex-shrink-0">
+                            <input type="hidden" name="settings[platform_mode]" value="in_person">
+                            <input type="checkbox" name="settings[platform_mode]" value="online"
+                                   class="sr-only peer" {{ $isOnline ? 'checked' : '' }}>
+                            <div class="w-11 h-6 bg-slate-200 peer-checked:bg-blue-500 rounded-full transition-colors duration-200"></div>
+                            <div class="absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform duration-200 peer-checked:translate-x-5"></div>
+                        </div>
+                    </label>
+
+                    {{-- روابط المتاجر --}}
+                    <div class="rounded-xl border border-dashed border-slate-200 bg-slate-50/50 p-4 flex items-start gap-3">
+                        <span class="material-symbols-rounded text-slate-400 flex-shrink-0 mt-0.5" style="font-size:18px">link</span>
+                        <div class="flex-1 min-w-0">
+                            <p class="text-xs font-black text-slate-600 mb-1">روابط تحميل التطبيق</p>
+                            <p class="text-[11px] text-slate-400 font-semibold leading-relaxed">
+                                روابط Google Play و App Store تُحدَّد من
+                                <button type="button" onclick="switchTab('social', document.querySelector('[data-tab=social]'))"
+                                        class="text-blue-600 font-black hover:underline">تاب السوشيال ميديا</button>
+                                — اذهب إليه لتعيين الروابط أو تعديلها.
+                            </p>
+                        </div>
                     </div>
 
                 </div>

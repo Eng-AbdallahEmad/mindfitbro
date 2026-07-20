@@ -141,6 +141,7 @@ Route::middleware('auth.custom')->group(function () {
                 Route::post('/attendance', [SubscriberController::class, 'storeAttendance'])->name('attendance');
                 Route::post('/evaluation', [SubscriberController::class, 'storeEvaluation'])->name('evaluation');
                 Route::get('/{userId}',    [SubscriberController::class, 'show'])->name('show')->whereNumber('userId');
+                Route::post('/{userId}/crm', [SubscriberController::class, 'updateCrmCredentials'])->name('crm')->whereNumber('userId');
             });
 
             Route::get('/assessment/{subscription}',  [AssessmentController::class, 'show'])->name('assessment.show');

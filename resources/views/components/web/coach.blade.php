@@ -28,6 +28,7 @@
         saving: false,
         hasAssessment: false,
         assessmentData: null,
+        isOnlineMode: false,
         cbFilled: { birthDate: false, height: false, startWeight: false, goalWeight: false },
 
         days: [
@@ -49,9 +50,10 @@
                 this.planDuration = d.planDuration || 30;
                 this.autoCalc     = true;
                 this.saving       = false;
-                this.hasAssessment  = d.hasAssessment ?? false;
-                this.assessmentData = d.assessment    ?? null;
-                this.open         = true;
+                this.hasAssessment  = d.hasAssessment  ?? false;
+                this.assessmentData = d.assessment     ?? null;
+                this.isOnlineMode   = d.isOnlineMode   ?? false;
+                this.open           = true;
 
                 this.days.forEach(day => {
                     day.isRest = (day.order === 4 || day.order === 7);
@@ -382,7 +384,34 @@
                     </div>
                 </div>
 
-                {{-- ── قسم 5: ماذا سيحدث؟ ── --}}
+                {{-- ── قسم 5: بيانات دخول CRM (أونلاين فقط) ── --}}
+                <div x-show="isOnlineMode" x-cloak class="flex flex-col gap-3 border-t border-blue-100 pt-5">
+                    <div class="flex items-center gap-2">
+                        <span class="w-6 h-6 rounded-lg bg-blue-50 flex items-center justify-center flex-shrink-0">
+                            <span class="material-symbols-rounded text-blue-500" style="font-size:14px;font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 20">smartphone</span>
+                        </span>
+                        <p class="text-xs font-black text-textColor font-arabic">بيانات دخول تطبيق CRM</p>
+                        <span class="text-[9px] font-bold text-blue-400 bg-blue-50 border border-blue-100 px-1.5 py-0.5 rounded-full font-arabic">اختياري</span>
+                    </div>
+                    <div class="bg-blue-50/60 border border-blue-100 rounded-xl px-3 py-2.5 flex items-start gap-2">
+                        <span class="material-symbols-rounded text-blue-400 flex-shrink-0 mt-0.5" style="font-size:14px">info</span>
+                        <p class="text-[10px] font-bold text-blue-600 font-arabic leading-relaxed">ممكن تضيفها بعدين من صفحة المشترك لو مش عندك البيانات دلوقتي</p>
+                    </div>
+                    <div class="grid grid-cols-1 gap-3">
+                        <div>
+                            <label class="text-[11px] font-bold text-gray-400">إيميل CRM</label>
+                            <input type="email" name="crm_email" placeholder="user@example.com"
+                                class="mt-1 focus:border-blue-400 focus:bg-white bg-gray-50/80 border border-gray-200 rounded-xl px-3.5 py-2.5 text-sm outline-none transition-all w-full" dir="ltr">
+                        </div>
+                        <div>
+                            <label class="text-[11px] font-bold text-gray-400">باسورد CRM</label>
+                            <input type="text" name="crm_password" placeholder="••••••••"
+                                class="mt-1 focus:border-blue-400 focus:bg-white bg-gray-50/80 border border-gray-200 rounded-xl px-3.5 py-2.5 text-sm outline-none transition-all w-full font-mono" dir="ltr" autocomplete="new-password">
+                        </div>
+                    </div>
+                </div>
+
+                {{-- ── قسم 6: ماذا سيحدث؟ ── --}}
                 <div class="bg-gradient-to-br from-primary/[0.04] to-blue-50/50 rounded-2xl p-4 border border-primary/10">
                     <div class="flex items-center gap-2 mb-3">
                         <span class="material-symbols-rounded text-primary" style="font-size:16px;font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 20">info</span>
@@ -880,6 +909,7 @@
                                     'formAction'    => route('coach.bookings.confirm', $booking->id),
                                     'planDuration'  => ($booking->subscription->duration_months ?? 3) * 30,
                                     'hasAssessment' => (bool) $cbTa,
+                                    'isOnlineMode'  => \App\Services\Web\PlatformService::isOnlineMode(),
                                     'assessment'    => $cbTa ? [
                                         'dateOfBirth'     => $cbTa->date_of_birth?->format('Y-m-d'),
                                         'height'          => $cbTa->height         ? (float) $cbTa->height         : null,

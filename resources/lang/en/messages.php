@@ -317,6 +317,22 @@ return [
         'title' => 'Dashboard',
     ],
 
+    'online' => [
+        'page_title'     => 'Your Training Program',
+        'greeting'       => 'Welcome :name 👋',
+        'your_plan'      => 'Your Plan',
+        'subtitle'       => 'Your program is ready — download the app and start your journey',
+        'login_data'     => 'App Login Credentials',
+        'login_data_hint'=> 'Use these to sign in to the CRM app',
+        'email_label'    => 'Email',
+        'password_label' => 'Password',
+        'security_note'  => 'Keep these credentials safe and do not share them with anyone',
+        'pending_title'  => 'Your credentials are being prepared',
+        'pending_body'   => 'Your coach will add your app login details shortly — they will appear here once added',
+        'download_app'   => 'Download the App',
+        'support_note'   => 'Having trouble? Contact your coach directly',
+    ],
+
     'calculator' => [
         'title'      => 'Calorie Calculator',
         'free_badge' => '100% Free',

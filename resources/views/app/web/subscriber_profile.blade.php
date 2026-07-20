@@ -497,6 +497,72 @@
             @endforelse
         </div>
 
+        {{-- ── CRM Credentials (online mode only) ── --}}
+        @if($isOnlineMode && $subscription)
+        <div class="card" style="padding:0; overflow:hidden; direction:rtl">
+            <div class="flex items-center justify-between px-6 py-4 border-b border-blue-100 bg-blue-50/40">
+                <h3 class="font-black text-textColor text-sm font-arabic flex items-center gap-2">
+                    <span class="material-symbols-rounded text-blue-500" style="font-size:18px;font-variation-settings:'FILL' 1">smartphone</span>
+                    بيانات دخول تطبيق CRM
+                </h3>
+                @if($subscription->crm_email)
+                <span class="text-[10px] font-black text-blue-700 bg-blue-100 border border-blue-200 px-3 py-1 rounded-full font-arabic">مُعيَّنة</span>
+                @else
+                <span class="text-[10px] font-black text-amber-600 bg-amber-50 border border-amber-200 px-3 py-1 rounded-full font-arabic">لم تُعيَّن بعد</span>
+                @endif
+            </div>
+
+            <form method="POST" action="{{ route('coach.subscribers.crm', $member->id) }}" class="p-6 space-y-4">
+                @csrf
+                @if(session('success'))
+                <div class="flex items-center gap-2 bg-green-50 border border-green-200 rounded-xl px-4 py-3">
+                    <span class="material-symbols-rounded text-green-500" style="font-size:16px;font-variation-settings:'FILL' 1">check_circle</span>
+                    <p class="text-xs font-bold text-green-700 font-arabic">{{ session('success') }}</p>
+                </div>
+                @endif
+
+                <div class="grid grid-cols-1 gap-4">
+                    <div>
+                        <label class="block text-xs font-black text-gray-500 mb-1.5 font-arabic">إيميل CRM</label>
+                        <input type="email" name="crm_email" dir="ltr"
+                            value="{{ $subscription->crm_email ?? '' }}"
+                            placeholder="user@example.com"
+                            class="w-full border border-gray-200 rounded-xl px-3.5 py-2.5 text-sm focus:outline-none focus:border-blue-400 focus:bg-white bg-gray-50 transition">
+                        @error('crm_email')
+                        <p class="text-xs text-red-500 font-bold mt-1">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <div x-data="{ show: false }">
+                        <label class="block text-xs font-black text-gray-500 mb-1.5 font-arabic">باسورد CRM</label>
+                        <div class="relative">
+                            <input :type="show ? 'text' : 'password'" name="crm_password" dir="ltr"
+                                placeholder="{{ $subscription->crm_password ? '••••••••' : 'أدخل الباسورد' }}"
+                                class="w-full border border-gray-200 rounded-xl px-3.5 py-2.5 text-sm focus:outline-none focus:border-blue-400 focus:bg-white bg-gray-50 transition pr-10 font-mono"
+                                autocomplete="new-password">
+                            <button type="button" @click="show = !show"
+                                class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition">
+                                <span class="material-symbols-rounded" style="font-size:18px" x-text="show ? 'visibility_off' : 'visibility'">visibility</span>
+                            </button>
+                        </div>
+                        <p class="text-[10px] text-gray-400 font-semibold mt-1 font-arabic">اتركه فارغاً لو ما تريدش تغيير الباسورد الحالي</p>
+                        @error('crm_password')
+                        <p class="text-xs text-red-500 font-bold mt-1">{{ $message }}</p>
+                        @enderror
+                    </div>
+                </div>
+
+                <div class="flex justify-end">
+                    <button type="submit"
+                        class="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-black text-xs px-5 py-2.5 rounded-xl transition font-arabic">
+                        <span class="material-symbols-rounded" style="font-size:15px;font-variation-settings:'FILL' 1">save</span>
+                        حفظ بيانات CRM
+                    </button>
+                </div>
+            </form>
+        </div>
+        @endif
+
         {{-- ── Trainee Assessment ── --}}
         <div class="card" id="assessment" style="padding:0; overflow:hidden; direction:rtl">
             <div class="flex items-center justify-between px-6 py-4 border-b border-gray-100">

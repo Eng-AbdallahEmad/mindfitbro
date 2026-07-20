@@ -11,6 +11,8 @@ use App\Models\TraineeAssessment;
 use App\Models\User;
 use App\Models\UserProfile;
 use App\Models\WeightLog;
+use App\Services\Web\PlatformService;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 
 class SubscriberController extends Controller
@@ -166,13 +168,47 @@ class SubscriberController extends Controller
             ->latest('submitted_at')
             ->first();
 
+        $isOnlineMode = PlatformService::isOnlineMode();
+
         return view('app.web.subscriber_profile', compact(
             'coach', 'member', 'subscription', 'program',
             'todayIsRest', 'todayAttendance',
             'presentCount', 'lateCount', 'absentCount', 'markedCount', 'attendanceRate',
             'grid90', 'recentAttendance',
-            'evaluations', 'weightLogs', 'traineeAssessment'
+            'evaluations', 'weightLogs', 'traineeAssessment',
+            'isOnlineMode'
         ));
+    }
+
+    public function updateCrmCredentials(Request $request, int $userId): RedirectResponse
+    {
+        $member = User::findOrFail($userId);
+
+        $subscription = Subscription::where('user_id', $userId)
+            ->where('status', 'active')
+            ->latest()
+            ->first();
+
+        abort_unless($subscription, 403);
+
+        $validated = $request->validate([
+            'crm_email'    => ['nullable', 'email', 'max:255'],
+            'crm_password' => ['nullable', 'string', 'max:191'],
+        ]);
+
+        $updateData = [];
+        if (array_key_exists('crm_email', $validated)) {
+            $updateData['crm_email'] = $validated['crm_email'] ?: null;
+        }
+        if (array_key_exists('crm_password', $validated) && $validated['crm_password'] !== null) {
+            $updateData['crm_password'] = $validated['crm_password'];
+        }
+
+        if (!empty($updateData)) {
+            $subscription->update($updateData);
+        }
+
+        return back()->with('success', 'تم حفظ بيانات CRM بنجاح');
     }
 
     public function storeAttendance(Request $request)

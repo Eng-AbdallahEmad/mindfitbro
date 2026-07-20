@@ -18,6 +18,7 @@ use App\Models\Plan;
 use App\Mail\MeetingLinkMail;
 use App\Services\Web\CoachDashboardService;
 use App\Services\Web\DashboardService;
+use App\Services\Web\PlatformService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -86,6 +87,19 @@ class DashboardController extends Controller
         }
 
         $plan = $subscription?->plan;
+
+        // ── 1b. Online-mode delivery page (checked every request — no session cache) ─
+        if (
+            in_array($dashboardState, ['active', 'start_ceremony']) &&
+            PlatformService::isOnlineMode()
+        ) {
+            $crmEmail    = $subscription->crm_email ?? null;
+            $crmPassword = $subscription->crm_password ?? null;
+
+            return view('app.web.dashboard_online', compact(
+                'subscription', 'plan', 'crmEmail', 'crmPassword'
+            ));
+        }
 
         // ── 2. Booking step (meeting_phase only) ───────────────────────────────
         $bookingStep = 1;
@@ -277,6 +291,8 @@ class DashboardController extends Controller
             'goal_weight'  => ['required', 'numeric', 'min:30', 'max:300'],
             'day_types'    => ['nullable', 'array'],
             'day_types.*'  => ['in:workout,rest'],
+            'crm_email'    => ['nullable', 'email', 'max:255'],
+            'crm_password' => ['nullable', 'string', 'max:191'],
         ]);
 
         $subscription = $booking->subscription;
@@ -291,11 +307,18 @@ class DashboardController extends Controller
             $startDate      = \Carbon\Carbon::parse($request->start_date);
             $durationMonths = (int) ($subscription->duration_months ?? 3);
 
-            $subscription->update([
+            $activationData = [
                 'status'     => 'active',
                 'start_date' => $startDate,
                 'end_date'   => $startDate->copy()->addMonths($durationMonths),
-            ]);
+            ];
+            if ($request->filled('crm_email')) {
+                $activationData['crm_email'] = $request->crm_email;
+            }
+            if ($request->filled('crm_password')) {
+                $activationData['crm_password'] = $request->crm_password;
+            }
+            $subscription->update($activationData);
 
             // ── 3. حساب عدد الأسابيع ─────────────────────────────
             $start      = \Carbon\Carbon::parse($request->start_date);

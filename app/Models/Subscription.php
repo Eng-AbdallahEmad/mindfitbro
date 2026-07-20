@@ -45,6 +45,8 @@ class Subscription extends Model
         'reviewed_by',
         'reviewed_at',
         'journey_started_at',
+        'crm_email',
+        'crm_password',
     ];
 
     protected $casts = [
@@ -59,6 +61,7 @@ class Subscription extends Model
         'total'                      => 'decimal:3',
         'reviewed_at'                => 'datetime',
         'journey_started_at'         => 'datetime',
+        'crm_password'               => 'encrypted',
     ];
 
     public function user()
