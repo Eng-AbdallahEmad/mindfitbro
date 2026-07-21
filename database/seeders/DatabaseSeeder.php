@@ -18,6 +18,7 @@ class DatabaseSeeder extends Seeder
             PlanSeeder::class,
             CoachSeeder::class,
             AdminSeeder::class,
+            PageContentSeeder::class,
         ]);
     }
 }

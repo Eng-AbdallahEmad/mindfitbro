@@ -268,49 +268,74 @@ return [
     'privacy' => [
         'title'        => 'Privacy Policy',
         'badge'        => 'Legal Documents',
-        'last_updated' => 'Last updated: September 22, 2025',
-        'intro'        => 'At MindFitBro, your privacy matters to us. This Privacy Policy explains how we collect, use, and protect your information when you visit our website, use our services, or interact with us.',
-        'collect_title' => 'Information We Collect',
-        'collect_intro' => 'We may collect the following types of information:',
-        'collect_items' => [
-            ['bold' => 'Personal Information:',     'text' => 'Name, email address, phone number, billing data, etc. (when you fill out forms or make a purchase).'],
-            ['bold' => 'Usage Information:',         'text' => 'Pages you visit, actions you take, device type, IP address.'],
-            ['bold' => 'Cookies & Tracking Data:',  'text' => 'To improve your browsing experience and analyze traffic.'],
+        'last_updated' => 'Last Updated: July 2026',
+        'intro'        => 'MindFitBro ("we," "us," or "our") respects your privacy. This policy explains what data we collect, why we collect it, and how we use and protect it.',
+
+        's31_title' => '3.1 Information We Collect',
+        's31_intro' => 'We may collect the following information:',
+        's31_items_bold' => [
+            'Identity & Contact Data:',
+            'Health & Fitness Data:',
+            'Payment Data:',
         ],
-        'how_use_title' => 'How We Use Your Information',
-        'how_use_intro' => 'Your information may be used to:',
-        'how_use_items' => [
-            'Provide and improve our services.',
-            'Process payments and manage subscriptions.',
-            'Send important updates, newsletters, or promotional offers (you can unsubscribe at any time).',
-            'Ensure website security and prevent fraud.',
+        's31_items_text' => [
+            'Such as your name, email address, phone or WhatsApp number, and country of residence.',
+            'Such as age, weight, height, body measurements, medical history, injuries, dietary preferences, and fitness goals, in order to prepare a personalized training and nutrition program for you.',
+            'Payments are processed securely through our approved payment service provider, and we do not store your full bank card details on our servers.',
         ],
-        'sharing_title' => 'Sharing Information',
-        'no_sell'       => 'We do not sell or rent your personal data to third parties.',
-        'sharing_intro' => 'We may share limited information with:',
-        'sharing_items' => [
-            'Trusted third-party service providers (e.g., payment processors, email platforms).',
-            'Legal authorities, if required by law.',
+
+        's32_title' => '3.2 How We Use Your Information',
+        's32_intro' => 'We use your information for the following purposes:',
+        's32_items' => [
+            'Preparing and updating your personalized training and nutrition program.',
+            'Selecting the trainer or nutrition specialist best suited to you.',
+            'Communicating with you about your program, billing, and support services.',
+            'Improving our services, and sending marketing offers or updates where you have consented to this.',
         ],
-        'security_title' => 'Data Security',
-        'security_body'  => 'We use internationally compliant security standards (encryption, secure servers, firewalls) to protect your data. However, no method of internet transmission is 100% secure.',
-        'cookies_title'  => 'Cookies & Tracking',
-        'cookies_body'   => 'We use cookies to improve your browsing experience. You can disable cookies from your browser settings, but some features may not function correctly.',
-        'rights_title'   => 'Your Rights',
-        'rights_items'   => [
-            'Access, update, or delete your personal data.',
-            'Opt out of marketing communications.',
-            'Request a copy of your stored data.',
+
+        's33_title' => '3.3 Legal Basis & Sensitive Data',
+        's33_body'  => 'Because health and physical information is considered sensitive personal data, we only collect the information necessary to provide our services, and will not use it for any other purpose without your explicit consent.',
+
+        's34_title'  => '3.4 Sharing Your Data',
+        's34_no_sell' => 'We do not sell your data to any party.',
+        's34_intro'  => 'We may only share your data with:',
+        's34_items'  => [
+            'The trainer or nutrition specialist responsible for your program (within our team).',
+            'Our approved payment service provider, solely for the purpose of processing payments.',
+            'Service providers such as hosting or email services, who are bound to keep data confidential.',
+            'Government or legal authorities, where required to do so by law.',
         ],
-        'rights_contact'     => 'To exercise your rights, contact us at',
-        'third_party_title'  => 'Third-Party Links',
-        'third_party_body'   => 'Our website may contain links to other sites. We are not responsible for their privacy practices.',
-        'children_title'     => 'Children\'s Privacy',
-        'children_body'      => 'Our services are not directed at children under 13. We do not intentionally collect personal information from minors.',
-        'changes_title'      => 'Changes to this Policy',
-        'changes_body'       => 'We may update this Privacy Policy from time to time. The latest version will always be published on this page with the update date.',
-        'contact_title'      => 'Contact Us',
-        'contact_intro'      => 'If you have any questions about this Privacy Policy, feel free to reach out:',
+
+        's35_title' => '3.5 International Data Transfer',
+        's35_body'  => 'Your data may be transferred to, and processed in, a country other than your country of residence, including the country in which MindFitBro operates. By using our services, you consent to this transfer, and we are committed to taking appropriate measures to protect your data.',
+
+        's36_title' => '3.6 Data Retention',
+        's36_body'  => 'We retain your data for as long as your account remains active, and for two years after its closure for legal and record-keeping purposes, unless you request its deletion earlier, as permitted by law.',
+
+        's37_title'        => '3.7 Your Rights',
+        's37_intro'        => 'You have the right, at any time, to:',
+        's37_items'        => [
+            'Request access to your personal data.',
+            'Request correction of any inaccurate data.',
+            'Request deletion of your personal data, in accordance with applicable laws.',
+        ],
+        's37_gdpr'         => 'Residents of the European Union or the United Kingdom also have additional rights under data protection law, such as the right to data portability and the right to object to processing.',
+        's37_contact_note' => 'For inquiries or to exercise any of these rights, please contact us by email:',
+
+        's38_title' => '3.8 Data Security',
+        's38_body'  => 'We use technical and organizational measures consistent with industry-recognized standards to protect your data from unauthorized access, loss, or misuse.',
+
+        's39_title'  => '3.9 Cookies',
+        's39_intro'  => 'We use cookies and similar technologies on our website in order to:',
+        's39_items'  => [
+            'Keep you signed in.',
+            'Remember your preferences.',
+            'Understand how the site is used so we can improve our services.',
+        ],
+        's39_footer' => 'You can control or disable cookies through your browser settings, noting that disabling them may affect the functioning of some site features.',
+
+        's310_title' => '3.10 Changes to This Privacy Policy',
+        's310_body'  => 'We may update this Privacy Policy from time to time. Your continued use of our services after any update is posted constitutes your acceptance of the Privacy Policy as amended.',
     ],
 
     'dashboard' => [
@@ -452,6 +477,104 @@ return [
 
         'contact_title' => 'Contact Us',
         'contact_intro' => 'If you have any questions about these Terms of Service, feel free to reach out:',
+    ],
+
+    'about_us' => [
+        'title'               => 'About Us',
+        'badge'               => 'About MindFitBro',
+        'meta_description'    => 'Learn about MindFitBro, an online fitness and nutrition coaching service founded by a certified personal trainer and nutrition coach, operated under Egyptian law from Cairo, Egypt.',
+        'intro'               => 'MindFitBro is an online fitness and nutrition coaching service helping clients worldwide build sustainable, personalized health habits.',
+        'approach_title'      => 'Our Approach',
+        'approach_body'       => 'We combine certified personal trainers and certified nutrition specialists with structured follow-up to design workout and nutrition plans tailored to each client\'s goals, lifestyle, and health background.',
+        'founder_title'       => 'Our Founder',
+        'founder_body'        => 'MindFitBro was founded by a certified personal trainer and nutrition coach with 10+ years of hands-on coaching experience and internationally recognized certifications in personal training and sports nutrition. The platform was built to bring structured, evidence-based coaching to clients across the region and beyond.',
+        'legal_title'         => 'Legal Information',
+        'legal_law'           => 'MindFitBro is operated under Egyptian law.',
+        'legal_address_label' => 'Business Address:',
+        'legal_address'       => 'Cairo, Egypt',
+    ],
+
+    'contact_us' => [
+        'title'          => 'Contact Us',
+        'badge'          => 'Get In Touch',
+        'meta_description' => 'Contact MindFitBro by email, phone, or WhatsApp. Find our business hours and Cairo, Egypt address — we respond to all inquiries within 24 hours.',
+        'lead'           => 'Have a question or need help with your subscription? Reach us through any of the channels below.',
+        'email_label'    => 'Email',
+        'phone_label'    => 'Phone / WhatsApp',
+        'hours_label'    => 'Business Hours',
+        'hours_value'    => 'Every day, 10 AM – 8 PM (Cairo time)',
+        'address_label'  => 'Address',
+        'address_value'  => 'Cairo, Egypt',
+        'call_btn'       => 'Call',
+        'whatsapp_btn'   => 'WhatsApp',
+        'response_note'  => 'We aim to respond to all inquiries within 24 hours.',
+    ],
+
+    'delivery_policy' => [
+        'title'            => 'Delivery Policy',
+        'badge'            => 'Legal Documents',
+        'last_updated'     => 'Last Updated: July 2026',
+        'meta_description' => 'MindFitBro Delivery Policy: how our digital fitness and nutrition coaching plans are delivered, timelines, and what happens if a delivery is late.',
+
+        's41_title' => '4.1 Digital Services',
+        's41_body'  => 'MindFitBro provides digital fitness coaching and personalized online services only. We do not sell or ship physical products.',
+
+        's42_title' => '4.2 Service Delivery Timeline',
+        's42_intro' => 'After payment is confirmed, our team will contact you within 24 hours via email or WhatsApp to collect the information needed to build your program (e.g., health history, goals, measurements, lifestyle details).',
+        's42_items' => [
+            'Your personalized workout and nutrition plan will be delivered within 2–5 business days of receiving all required information, depending on your selected package.',
+            '"Business days" means Sunday through Thursday, excluding official public holidays in our country of operation.',
+            'Delays may occur if required information is incomplete, or during periods explicitly announced on our Contact Us page (e.g., extended holidays).',
+        ],
+
+        's43_title' => '4.3 What Happens If We\'re Late',
+        's43_body'  => 'If delivery is delayed beyond the stated window due to reasons within our control, you may request either an extension of your subscription equal to the delay period, or — if your plan has not yet been started — a full refund under Section 5.',
+
+        's44_title' => '4.4 No Physical Shipping',
+        's44_body'  => 'As all services are delivered digitally, no shipping fees or delivery charges apply.',
+    ],
+
+    'refund_policy' => [
+        'title'            => 'Refund & Cancellation Policy',
+        'badge'            => 'Legal Documents',
+        'last_updated'     => 'Last Updated: July 2026',
+        'meta_description' => 'MindFitBro Refund & Cancellation Policy: 14-day full refund window, non-refundable conditions after plan delivery, service-quality complaints, and refund processing times.',
+        'intro'            => 'MindFitBro is committed to providing high-quality, personalized coaching. Because our programs are custom-built for each client, refund eligibility depends on how far your program has progressed.',
+
+        's51_title' => '5.1 Full Refund Window',
+        's51_intro' => 'You may request a full refund within 14 calendar days of purchase, provided that:',
+        's51_items' => [
+            'No consultation call has taken place, and',
+            'No personalized workout or nutrition plan has been created or sent to you.',
+        ],
+
+        's52_title' => '5.2 After Your Plan Has Been Delivered',
+        's52_intro' => 'Once we have sent you your first personalized plan or conducted your first coaching consultation, the service is considered "started." From that point:',
+        's52_items' => [
+            'The purchase becomes non-refundable, due to the customized, non-reusable nature of the work already completed.',
+            'You may still request to pause/freeze your subscription (see Section 5.4).',
+        ],
+
+        's53_title'  => '5.3 Service-Quality Issues',
+        's53_before' => 'If you believe your plan or coaching does not match what was promised (e.g., not personalized, factually unsafe, or materially different from your package description), contact us at',
+        's53_after'  => 'within 7 days of delivery. We will review the complaint and, at our discretion, offer a correction, an upgrade, a partial refund, or a full refund depending on the finding.',
+
+        's54_title' => '5.4 Freezing/Pausing a Subscription',
+        's54_body'  => 'Subscriptions are generally not eligible for freezing or pausing, as our services are delivered online and accessible from anywhere. In exceptional circumstances (e.g., a serious medical condition), MindFitBro may, at its sole discretion, approve a temporary freeze after reviewing the request.',
+
+        's55_title' => '5.5 Promotional Offers',
+        's55_body'  => 'Purchases made during promotional offers or discounted campaigns are subject to the same refund terms set out in Sections 5.1–5.3, unless the specific promotion or offer expressly states different refund or cancellation conditions before purchase. By completing your purchase, you acknowledge and accept any such offer-specific terms.',
+
+        's56_title' => '5.6 Refund Processing',
+        's56_body'  => 'Approved refunds are processed via the original payment method within 7–14 business days, depending on your bank/payment provider. Currency conversion differences or bank fees, if any, are outside our control.',
+
+        's57_title' => '5.7 Governing Law & Disputes',
+        's57_body'  => 'This policy, and any dispute arising from your use of MindFitBro\'s services, is governed by the laws of the Arab Republic of Egypt. Any dispute that cannot be resolved amicably shall be submitted to the competent courts of Cairo, without prejudice to any mandatory consumer-protection rights you may have under the law of your country of residence.',
+
+        's6_title'  => '6. Complaints & Suggestions',
+        's6_before' => 'Not fully satisfied, or have feedback? Contact us directly at',
+        's6_or'     => 'or',
+        's6_after'  => 'and we will respond within 48 hours. We keep records of all support interactions to ensure quality and to resolve disputes fairly.',
     ],
 
     'register' => [

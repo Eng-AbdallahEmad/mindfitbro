@@ -231,10 +231,20 @@
             </div>
 
             {{-- Legal Links --}}
-            <div class="flex items-center gap-5 text-xs text-white/30">
-                <a href="{{ route('privacy-policy') }}" class="hover:text-white/60 transition-colors duration-300">{{ __('messages.footer.privacy') }}</a>
-                <span class="text-white/10">|</span>
-                <a href="{{ route('terms-of-service') }}" class="hover:text-white/60 transition-colors duration-300">{{ __('messages.footer.terms') }}</a>
+            <div class="flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-xs text-white/30">
+                @foreach([
+                    ['label' => __('messages.footer.privacy'),              'href' => route('privacy-policy')],
+                    ['label' => __('messages.footer.terms'),                'href' => route('terms-of-service')],
+                    ['label' => __('messages.about_us.title'),              'href' => route('about-us')],
+                    ['label' => __('messages.contact_us.title'),            'href' => route('contact-us')],
+                    ['label' => __('messages.delivery_policy.title'),       'href' => route('delivery-policy')],
+                    ['label' => __('messages.refund_policy.title'),         'href' => route('refund-cancellation-policy')],
+                ] as $index => $link)
+                    @if($index > 0)
+                        <span class="text-white/10">|</span>
+                    @endif
+                    <a href="{{ $link['href'] }}" class="hover:text-white/60 transition-colors duration-300">{{ $link['label'] }}</a>
+                @endforeach
             </div>
 
         </div>

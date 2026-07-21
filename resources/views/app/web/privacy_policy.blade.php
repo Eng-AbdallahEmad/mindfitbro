@@ -1,10 +1,17 @@
 @extends('layouts.web.app')
 
-@section('title', __('messages.privacy.title'))
+@section('title', \App\Models\PageContent::get('privacy_policy', 'title', app()->getLocale(), __('messages.privacy.title')))
 
 @section('content')
 
-@php $isRtl = app()->getLocale() === 'ar'; @endphp
+@php
+    $isRtl  = app()->getLocale() === 'ar';
+    $locale = app()->getLocale();
+    $pc     = fn ($key, $default) => nl2br(e(\App\Models\PageContent::get('privacy_policy', $key, $locale, $default)));
+    $pcItems = fn ($key, $default) => \App\Models\PageContent::items('privacy_policy', $key, $locale, $default);
+
+    $contact = \App\Services\Web\ContactInfo::current();
+@endphp
 
     {{-- Nav Bar --}}
     <x-web.navbar :transparent="true" />
@@ -18,13 +25,13 @@
 
         <div class="relative z-10 flex flex-col items-center gap-4">
             <span class="bg-accent text-darkBg text-[11px] font-black tracking-widest px-5 py-1.5 rounded-full font-arabic">
-                {{ __('messages.privacy.badge') }}
+                {!! $pc('badge', __('messages.privacy.badge')) !!}
             </span>
             <h1 class="font-display text-6xl md:text-7xl font-black text-white">
-                {{ __('messages.privacy.title') }}
+                {!! $pc('title', __('messages.privacy.title')) !!}
             </h1>
             <p class="font-arabic text-white/50 text-sm font-semibold">
-                {{ __('messages.privacy.last_updated') }}
+                {!! $pc('last_updated', __('messages.privacy.last_updated')) !!}
             </p>
         </div>
 
@@ -37,40 +44,44 @@
             {{-- Intro Card --}}
             <div class="rounded-[20px] bg-white border border-gray-100 p-8 font-arabic">
                 <p class="text-gray-600 text-base leading-[2] font-medium">
-                    {{ __('messages.privacy.intro') }}
+                    {!! $pc('intro', __('messages.privacy.intro')) !!}
                 </p>
             </div>
 
-            {{-- 1. Information We Collect --}}
+            {{-- 3.1 Information We Collect --}}
             <div class="rounded-[20px] bg-white border border-gray-100 p-8 font-arabic flex flex-col gap-5">
                 <div class="flex items-center gap-3">
                     <div class="w-10 h-10 rounded-[10px] bg-[#EFF5FF] flex items-center justify-center flex-shrink-0">
                         <span class="material-symbols-rounded text-primary" style="font-size:20px">database</span>
                     </div>
-                    <h2 class="font-display text-2xl font-semibold text-textColor">{{ __('messages.privacy.collect_title') }}</h2>
+                    <h2 class="font-display text-2xl font-semibold text-textColor">{!! $pc('s31_title', __('messages.privacy.s31_title')) !!}</h2>
                 </div>
-                <p class="text-gray-500 text-sm leading-relaxed">{{ __('messages.privacy.collect_intro') }}</p>
+                <p class="text-gray-500 text-sm leading-relaxed">{!! $pc('s31_intro', __('messages.privacy.s31_intro')) !!}</p>
                 <ul class="flex flex-col gap-3">
-                    @foreach(__('messages.privacy.collect_items') as $item)
+                    @php
+                        $s31Bold = $pcItems('s31_items_bold', __('messages.privacy.s31_items_bold'));
+                        $s31Text = $pcItems('s31_items_text', __('messages.privacy.s31_items_text'));
+                    @endphp
+                    @foreach($s31Bold as $i => $bold)
                     <li class="flex items-start gap-3 text-sm text-gray-600 leading-relaxed">
                         <span class="material-symbols-rounded text-primary flex-shrink-0 mt-0.5" style="font-size:18px;font-variation-settings:'FILL' 1">check_circle</span>
-                        <span><span class="font-black text-textColor">{{ $item['bold'] }}</span> {{ $item['text'] }}</span>
+                        <span><span class="font-black text-textColor">{{ $bold }}</span> {{ $s31Text[$i] ?? '' }}</span>
                     </li>
                     @endforeach
                 </ul>
             </div>
 
-            {{-- 2. How We Use --}}
+            {{-- 3.2 How We Use Your Information --}}
             <div class="rounded-[20px] bg-white border border-gray-100 p-8 font-arabic flex flex-col gap-5">
                 <div class="flex items-center gap-3">
                     <div class="w-10 h-10 rounded-[10px] bg-[#EFF5FF] flex items-center justify-center flex-shrink-0">
                         <span class="material-symbols-rounded text-primary" style="font-size:20px">settings</span>
                     </div>
-                    <h2 class="font-display text-2xl font-semibold text-textColor">{{ __('messages.privacy.how_use_title') }}</h2>
+                    <h2 class="font-display text-2xl font-semibold text-textColor">{!! $pc('s32_title', __('messages.privacy.s32_title')) !!}</h2>
                 </div>
-                <p class="text-gray-500 text-sm leading-relaxed">{{ __('messages.privacy.how_use_intro') }}</p>
+                <p class="text-gray-500 text-sm leading-relaxed">{!! $pc('s32_intro', __('messages.privacy.s32_intro')) !!}</p>
                 <ul class="flex flex-col gap-3">
-                    @foreach(__('messages.privacy.how_use_items') as $item)
+                    @foreach($pcItems('s32_items', __('messages.privacy.s32_items')) as $item)
                     <li class="flex items-start gap-3 text-sm text-gray-600 leading-relaxed">
                         <span class="material-symbols-rounded text-accent flex-shrink-0 mt-0.5" style="font-size:18px;font-variation-settings:'FILL' 1">check_circle</span>
                         {{ $item }}
@@ -79,23 +90,36 @@
                 </ul>
             </div>
 
-            {{-- 3. Sharing --}}
+            {{-- 3.3 Legal Basis & Sensitive Data --}}
+            <div class="rounded-[20px] bg-white border border-gray-100 p-8 font-arabic flex flex-col gap-4">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-[10px] bg-[#EFF5FF] flex items-center justify-center flex-shrink-0">
+                        <span class="material-symbols-rounded text-primary" style="font-size:20px">health_and_safety</span>
+                    </div>
+                    <h2 class="font-display text-2xl font-semibold text-textColor">{!! $pc('s33_title', __('messages.privacy.s33_title')) !!}</h2>
+                </div>
+                <p class="text-gray-500 text-sm leading-[2]">
+                    {!! $pc('s33_body', __('messages.privacy.s33_body')) !!}
+                </p>
+            </div>
+
+            {{-- 3.4 Sharing Your Data --}}
             <div class="rounded-[20px] bg-white border border-gray-100 p-8 font-arabic flex flex-col gap-5">
                 <div class="flex items-center gap-3">
                     <div class="w-10 h-10 rounded-[10px] bg-[#EFF5FF] flex items-center justify-center flex-shrink-0">
                         <span class="material-symbols-rounded text-primary" style="font-size:20px">share</span>
                     </div>
-                    <h2 class="font-display text-2xl font-semibold text-textColor">{{ __('messages.privacy.sharing_title') }}</h2>
+                    <h2 class="font-display text-2xl font-semibold text-textColor">{!! $pc('s34_title', __('messages.privacy.s34_title')) !!}</h2>
                 </div>
                 <div class="flex items-start gap-3 bg-green-50 border border-green-100 rounded-[12px] p-4">
                     <span class="material-symbols-rounded text-green-500 flex-shrink-0" style="font-size:20px;font-variation-settings:'FILL' 1">verified_user</span>
                     <p class="text-sm text-green-700 font-semibold leading-relaxed">
-                        {{ __('messages.privacy.no_sell') }}
+                        {!! $pc('s34_no_sell', __('messages.privacy.s34_no_sell')) !!}
                     </p>
                 </div>
-                <p class="text-gray-500 text-sm leading-relaxed">{{ __('messages.privacy.sharing_intro') }}</p>
+                <p class="text-gray-500 text-sm leading-relaxed">{!! $pc('s34_intro', __('messages.privacy.s34_intro')) !!}</p>
                 <ul class="flex flex-col gap-3">
-                    @foreach(__('messages.privacy.sharing_items') as $item)
+                    @foreach($pcItems('s34_items', __('messages.privacy.s34_items')) as $item)
                     <li class="flex items-start gap-3 text-sm text-gray-600 leading-relaxed">
                         <span class="material-symbols-rounded text-primary flex-shrink-0 mt-0.5" style="font-size:18px;font-variation-settings:'FILL' 1">check_circle</span>
                         {{ $item }}
@@ -104,131 +128,116 @@
                 </ul>
             </div>
 
-            {{-- 4. Data Security --}}
+            {{-- 3.5 & 3.6: International Data Transfer + Data Retention — Side by Side --}}
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+
+                {{-- 3.5 International Data Transfer --}}
+                <div class="rounded-[20px] bg-white border border-gray-100 p-8 font-arabic flex flex-col gap-4">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-[10px] bg-[#EFF5FF] flex items-center justify-center flex-shrink-0">
+                            <span class="material-symbols-rounded text-primary" style="font-size:20px">public</span>
+                        </div>
+                        <h2 class="font-display text-xl font-semibold text-textColor">{!! $pc('s35_title', __('messages.privacy.s35_title')) !!}</h2>
+                    </div>
+                    <p class="text-gray-500 text-sm leading-[2]">
+                        {!! $pc('s35_body', __('messages.privacy.s35_body')) !!}
+                    </p>
+                </div>
+
+                {{-- 3.6 Data Retention --}}
+                <div class="rounded-[20px] bg-white border border-gray-100 p-8 font-arabic flex flex-col gap-4">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-[10px] bg-[#EFF5FF] flex items-center justify-center flex-shrink-0">
+                            <span class="material-symbols-rounded text-primary" style="font-size:20px">inventory_2</span>
+                        </div>
+                        <h2 class="font-display text-xl font-semibold text-textColor">{!! $pc('s36_title', __('messages.privacy.s36_title')) !!}</h2>
+                    </div>
+                    <p class="text-gray-500 text-sm leading-[2]">
+                        {!! $pc('s36_body', __('messages.privacy.s36_body')) !!}
+                    </p>
+                </div>
+
+            </div>
+
+            {{-- 3.7 Your Rights --}}
+            <div class="rounded-[20px] border-2 border-accent bg-gradient-to-l from-[#fffde8] to-[#f0f5ff] p-8 font-arabic flex flex-col gap-5">
+
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-[10px] bg-accent/30 flex items-center justify-center flex-shrink-0">
+                        <span class="material-symbols-rounded text-textColor" style="font-size:20px">gavel</span>
+                    </div>
+                    <h2 class="font-display text-2xl font-semibold text-textColor">{!! $pc('s37_title', __('messages.privacy.s37_title')) !!}</h2>
+                </div>
+
+                <p class="text-gray-500 text-sm leading-relaxed">{!! $pc('s37_intro', __('messages.privacy.s37_intro')) !!}</p>
+                <ul class="flex flex-col gap-2.5">
+                    @foreach($pcItems('s37_items', __('messages.privacy.s37_items')) as $item)
+                    <li class="flex items-start gap-2.5 text-sm text-gray-600 leading-relaxed">
+                        <span class="material-symbols-rounded text-primary flex-shrink-0 mt-0.5" style="font-size:16px;font-variation-settings:'FILL' 1">check_circle</span>
+                        {{ $item }}
+                    </li>
+                    @endforeach
+                </ul>
+
+                <p class="text-gray-500 text-sm leading-relaxed">
+                    {!! $pc('s37_gdpr', __('messages.privacy.s37_gdpr')) !!}
+                </p>
+
+                <p class="text-sm text-gray-600 leading-relaxed">
+                    {!! $pc('s37_contact_note', __('messages.privacy.s37_contact_note')) !!}
+                    <a href="mailto:{{ $contact['email'] }}" class="text-primary font-bold hover:underline" dir="ltr">
+                        {{ $contact['email'] }}
+                    </a>
+                </p>
+
+            </div>
+
+            {{-- 3.8 Data Security --}}
             <div class="rounded-[20px] bg-primary p-8 font-arabic flex flex-col gap-5">
                 <div class="flex items-center gap-3">
                     <div class="w-10 h-10 rounded-[10px] bg-white/10 flex items-center justify-center flex-shrink-0">
                         <span class="material-symbols-rounded text-accent" style="font-size:20px">lock</span>
                     </div>
-                    <h2 class="font-display text-2xl font-semibold text-white">{{ __('messages.privacy.security_title') }}</h2>
+                    <h2 class="font-display text-2xl font-semibold text-white">{!! $pc('s38_title', __('messages.privacy.s38_title')) !!}</h2>
                 </div>
                 <p class="text-white/70 text-sm leading-[2]">
-                    {{ __('messages.privacy.security_body') }}
+                    {!! $pc('s38_body', __('messages.privacy.s38_body')) !!}
                 </p>
             </div>
 
-            {{-- 5 & 6: Cookies + Your Rights — Side by Side --}}
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-
-                {{-- Cookies --}}
-                <div class="rounded-[20px] bg-white border border-gray-100 p-8 font-arabic flex flex-col gap-4">
-                    <div class="flex items-center gap-3">
-                        <div class="w-10 h-10 rounded-[10px] bg-[#EFF5FF] flex items-center justify-center flex-shrink-0">
-                            <span class="material-symbols-rounded text-primary" style="font-size:20px">cookie</span>
-                        </div>
-                        <h2 class="font-display text-xl font-semibold text-textColor">{{ __('messages.privacy.cookies_title') }}</h2>
-                    </div>
-                    <p class="text-gray-500 text-sm leading-[2]">
-                        {{ __('messages.privacy.cookies_body') }}
-                    </p>
-                </div>
-
-                {{-- Your Rights --}}
-                <div class="rounded-[20px] bg-white border border-gray-100 p-8 font-arabic flex flex-col gap-4">
-                    <div class="flex items-center gap-3">
-                        <div class="w-10 h-10 rounded-[10px] bg-[#EFF5FF] flex items-center justify-center flex-shrink-0">
-                            <span class="material-symbols-rounded text-primary" style="font-size:20px">gavel</span>
-                        </div>
-                        <h2 class="font-display text-xl font-semibold text-textColor">{{ __('messages.privacy.rights_title') }}</h2>
-                    </div>
-                    <ul class="flex flex-col gap-2.5">
-                        @foreach(__('messages.privacy.rights_items') as $right)
-                        <li class="flex items-start gap-2.5 text-sm text-gray-600 leading-relaxed">
-                            <span class="material-symbols-rounded text-primary flex-shrink-0 mt-0.5" style="font-size:16px;font-variation-settings:'FILL' 1">check_circle</span>
-                            {{ $right }}
-                        </li>
-                        @endforeach
-                    </ul>
-                    <p class="text-xs text-gray-400 leading-relaxed mt-1">
-                        {{ __('messages.privacy.rights_contact') }}
-                        <a href="mailto:info@mindfitbro.com" class="text-primary font-bold hover:underline">
-                            info@mindfitbro.com
-                        </a>
-                    </p>
-                </div>
-
-            </div>
-
-            {{-- 7. Third-Party Links --}}
-            <div class="rounded-[20px] bg-white border border-gray-100 p-8 font-arabic flex flex-col gap-4">
+            {{-- 3.9 Cookies --}}
+            <div class="rounded-[20px] bg-white border border-gray-100 p-8 font-arabic flex flex-col gap-5">
                 <div class="flex items-center gap-3">
                     <div class="w-10 h-10 rounded-[10px] bg-[#EFF5FF] flex items-center justify-center flex-shrink-0">
-                        <span class="material-symbols-rounded text-primary" style="font-size:20px">link</span>
+                        <span class="material-symbols-rounded text-primary" style="font-size:20px">cookie</span>
                     </div>
-                    <h2 class="font-display text-2xl font-semibold text-textColor">{{ __('messages.privacy.third_party_title') }}</h2>
+                    <h2 class="font-display text-2xl font-semibold text-textColor">{!! $pc('s39_title', __('messages.privacy.s39_title')) !!}</h2>
                 </div>
+                <p class="text-gray-500 text-sm leading-relaxed">{!! $pc('s39_intro', __('messages.privacy.s39_intro')) !!}</p>
+                <ul class="flex flex-col gap-3">
+                    @foreach($pcItems('s39_items', __('messages.privacy.s39_items')) as $item)
+                    <li class="flex items-start gap-3 text-sm text-gray-600 leading-relaxed">
+                        <span class="material-symbols-rounded text-primary flex-shrink-0 mt-0.5" style="font-size:18px;font-variation-settings:'FILL' 1">check_circle</span>
+                        {{ $item }}
+                    </li>
+                    @endforeach
+                </ul>
                 <p class="text-gray-500 text-sm leading-[2]">
-                    {{ __('messages.privacy.third_party_body') }}
+                    {!! $pc('s39_footer', __('messages.privacy.s39_footer')) !!}
                 </p>
             </div>
 
-            {{-- 8. Children's Privacy --}}
-            <div class="rounded-[20px] bg-white border border-gray-100 p-8 font-arabic flex flex-col gap-4">
-                <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-[10px] bg-[#EFF5FF] flex items-center justify-center flex-shrink-0">
-                        <span class="material-symbols-rounded text-primary" style="font-size:20px">child_care</span>
-                    </div>
-                    <h2 class="font-display text-2xl font-semibold text-textColor">{{ __('messages.privacy.children_title') }}</h2>
-                </div>
-                <p class="text-gray-500 text-sm leading-[2]">
-                    {{ __('messages.privacy.children_body') }}
-                </p>
-            </div>
-
-            {{-- 9. Changes --}}
+            {{-- 3.10 Changes to This Privacy Policy --}}
             <div class="rounded-[20px] bg-white border border-gray-100 p-8 font-arabic flex flex-col gap-4">
                 <div class="flex items-center gap-3">
                     <div class="w-10 h-10 rounded-[10px] bg-[#EFF5FF] flex items-center justify-center flex-shrink-0">
                         <span class="material-symbols-rounded text-primary" style="font-size:20px">update</span>
                     </div>
-                    <h2 class="font-display text-2xl font-semibold text-textColor">{{ __('messages.privacy.changes_title') }}</h2>
+                    <h2 class="font-display text-2xl font-semibold text-textColor">{!! $pc('s310_title', __('messages.privacy.s310_title')) !!}</h2>
                 </div>
                 <p class="text-gray-500 text-sm leading-[2]">
-                    {{ __('messages.privacy.changes_body') }}
+                    {!! $pc('s310_body', __('messages.privacy.s310_body')) !!}
                 </p>
-            </div>
-
-            {{-- 10. Contact Us --}}
-            <div class="rounded-[20px] border-2 border-accent bg-gradient-to-l from-[#fffde8] to-[#f0f5ff] p-8 font-arabic flex flex-col gap-5">
-
-                <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-[10px] bg-accent/30 flex items-center justify-center flex-shrink-0">
-                        <span class="material-symbols-rounded text-textColor" style="font-size:20px">contact_support</span>
-                    </div>
-                    <h2 class="font-display text-2xl font-semibold text-textColor">{{ __('messages.privacy.contact_title') }}</h2>
-                </div>
-
-                <p class="text-gray-500 text-sm leading-relaxed">
-                    {{ __('messages.privacy.contact_intro') }}
-                </p>
-
-                <div class="flex flex-col gap-3">
-                    <a href="mailto:info@mindfitbro.com"
-                        class="group flex items-center gap-3 text-sm text-gray-600 hover:text-primary transition-colors duration-300 w-fit">
-                        <div class="w-8 h-8 rounded-[8px] bg-white border border-gray-100 flex items-center justify-center flex-shrink-0 group-hover:border-primary/30 transition-colors">
-                            <span class="material-symbols-rounded text-primary" style="font-size:16px">mail</span>
-                        </div>
-                        <span class="font-semibold">info@mindfitbro.com</span>
-                    </a>
-                    <a href="tel:+966593035979"
-                        class="group flex items-center gap-3 text-sm text-gray-600 hover:text-primary transition-colors duration-300 w-fit">
-                        <div class="w-8 h-8 rounded-[8px] bg-white border border-gray-100 flex items-center justify-center flex-shrink-0 group-hover:border-primary/30 transition-colors">
-                            <span class="material-symbols-rounded text-primary" style="font-size:16px">call</span>
-                        </div>
-                        <span class="font-semibold" dir="ltr">+966593035979</span>
-                    </a>
-                </div>
-
             </div>
 
         </div>

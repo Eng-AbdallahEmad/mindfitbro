@@ -210,6 +210,11 @@
             الإعدادات
         </a>
 
+        <a href="{{ route('admin.pages.index') }}" class="nav-item {{ request()->routeIs('admin.pages*') ? 'active' : '' }}" onclick="closeSidebar()">
+            <span class="material-symbols-rounded nav-icon">article</span>
+            صفحات الموقع
+        </a>
+
     </nav>
 
     {{-- Admin Info + Logout --}}

@@ -16,13 +16,18 @@ use App\Http\Controllers\Admin\SubscriptionsController as AdminSubscriptionsCont
 use App\Http\Controllers\Auth\AdminAuthController;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\LocaleController;
+use App\Http\Controllers\Web\AboutUsController;
 use App\Http\Controllers\Web\AssessmentController;
 use App\Http\Controllers\Web\BookingController;
+use App\Http\Controllers\Web\ContactUsController;
+use App\Http\Controllers\Web\DeliveryPolicyController;
 use App\Http\Controllers\Web\GuestAccountController;
 use App\Http\Controllers\Web\DashboardController;
 use App\Http\Controllers\Web\CurrencyController;
 use App\Http\Controllers\Web\HomeController;
+use App\Http\Controllers\Admin\PageContentController as AdminPageContentController;
 use App\Http\Controllers\Web\PrivacyPolicyController;
+use App\Http\Controllers\Web\RefundCancellationPolicyController;
 use App\Http\Controllers\Web\ProfileController;
 use App\Http\Controllers\Web\JourneyController;
 use App\Http\Controllers\Web\FamilyInvitationController;
@@ -58,6 +63,8 @@ if (app()->environment('local', 'development')) {
         return response()->json([
             'ip'                           => request()->ip(),
             'session_currency'             => session('currency', '(not set)'),
+            'session_detected_country'     => session('detected_country', '(not set)'),
+            'contact_info_is_egypt'        => \App\Services\Web\ContactInfo::isEgypt(),
             'config_testing_enabled'       => config('services.location.testing_enabled'),
             'config_testing_country_code'  => config('services.location.testing_country_code'),
             'currency_service_current'     => $svc->current(),
@@ -72,6 +79,10 @@ Route::get('/', [HomeController::class, 'index'])->name('home');
 
 Route::get('privacy-policy', [PrivacyPolicyController::class, 'index'])->name('privacy-policy');
 Route::get('terms-of-service', [TermsOfServiceController::class, 'index'])->name('terms-of-service');
+Route::get('about-us', [AboutUsController::class, 'index'])->name('about-us');
+Route::get('contact-us', [ContactUsController::class, 'index'])->name('contact-us');
+Route::get('delivery-policy', [DeliveryPolicyController::class, 'index'])->name('delivery-policy');
+Route::get('refund-cancellation-policy', [RefundCancellationPolicyController::class, 'index'])->name('refund-cancellation-policy');
 Route::view('calorie-calculator', 'app.web.calorie_calculator')->name('calorie-calculator');
 
 // ── Direct Purchase Flow ────────────────────────────────────────
@@ -110,9 +121,9 @@ Route::middleware('auth.custom')->group(function () {
         });
 
         // ── Arabic PDF smoke-test (dev only) ─────────────────────────────────
-        if (app()->environment('local', 'development')) {
-            Route::get('journey-pdf-test', [JourneyController::class, 'pdfTest'])->name('journey.pdf-test');
-        }
+        // if (app()->environment('local', 'development')) {
+        //     Route::get('journey-pdf-test', [JourneyController::class, 'pdfTest'])->name('journey.pdf-test');
+        // }
 
         // ── All other routes gated: expired users redirected to /journey/{id} ─
         Route::middleware('gate.expired')->group(function () {
@@ -215,6 +226,13 @@ Route::prefix('admin')->name('admin.')->group(function () {
         // Settings
         Route::get('settings', [AdminSettingsController::class, 'index'])->name('settings.index');
         Route::post('settings', [AdminSettingsController::class, 'update'])->name('settings.update');
+
+        // Site Pages (About Us, Contact Us, Delivery Policy, Refund & Cancellation Policy)
+        Route::get('pages', [AdminPageContentController::class, 'index'])->name('pages.index');
+        Route::get('pages/{page}', [AdminPageContentController::class, 'edit'])->name('pages.edit')
+            ->where('page', 'about_us|contact_us|delivery_policy|refund_policy|privacy_policy|terms_of_service');
+        Route::put('pages/{page}', [AdminPageContentController::class, 'update'])->name('pages.update')
+            ->where('page', 'about_us|contact_us|delivery_policy|refund_policy|privacy_policy|terms_of_service');
 
         // Family Invitations (read-only index for audit)
         Route::get('family-invitations', [AdminFamilyInvitationsController::class, 'index'])->name('family-invitations.index');
