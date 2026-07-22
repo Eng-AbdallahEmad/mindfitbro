@@ -7,6 +7,7 @@
     $alignStart = $isRtl ? 'text-right' : 'text-left';
     $dur3Label = __('messages.programs.duration_3months');
     $dur6Label = __('messages.programs.duration_6months');
+    $contact   = \App\Services\Web\ContactInfo::current();
 @endphp
 
 @section('style')
@@ -670,7 +671,7 @@
                         </div>
 
                         {{-- WhatsApp CTA --}}
-                        <a href="https://wa.me/{{ $settings->get('whatsapp_number', '966593035979') }}?text={{ urlencode(__('messages.programs.coming_soon_wa_msg')) }}"
+                        <a href="https://wa.me/{{ $contact['whatsapp'] }}?text={{ urlencode(__('messages.programs.coming_soon_wa_msg')) }}"
                            target="_blank" rel="noopener"
                            class="inline-flex items-center gap-3 bg-[#25D366] text-white font-black text-sm px-7 py-3.5 rounded-full hover:bg-[#1ebe5d] transition-all duration-200 hover:-translate-y-0.5 shadow-[0_4px_16px_rgba(37,211,102,0.3)]">
                             <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
@@ -1300,11 +1301,11 @@
                 </div>
                 <span class="text-lg font-black text-textColor">{{ __('messages.contact.phone_title') }}</span>
                 <span class="text-xs text-gray-400 font-semibold leading-relaxed">{{ __('messages.contact.phone_hours') }}</span>
-                <span class="text-sm font-bold text-primary" dir="ltr">{{ $settings->get('contact_phone', '+966593035979') }}</span>
+                <span class="text-sm font-bold text-primary" dir="ltr">{{ $contact['phone'] }}</span>
             </div>
 
             {{-- WhatsApp --}}
-            <a href="https://wa.me/{{ $settings->get('whatsapp_number', '966593035979') }}" target="_blank" rel="noopener noreferrer"
+            <a href="https://wa.me/{{ $contact['whatsapp'] }}" target="_blank" rel="noopener noreferrer"
                 class="group relative rounded-[20px] p-6 bg-white border-2 border-white hover:border-accent flex flex-col items-center text-center gap-3 transition-all duration-300 hover:-translate-y-1 font-arabic cursor-pointer">
                 <div class="w-14 h-14 rounded-[14px] bg-[#EFF5FF] flex items-center justify-center">
                     <span class="material-symbols-rounded text-primary" style="font-size:28px">chat</span>
@@ -1321,7 +1322,7 @@
                 </div>
                 <span class="text-lg font-black text-textColor">{{ __('messages.contact.email_title') }}</span>
                 <span class="text-xs text-gray-400 font-semibold leading-relaxed">{{ __('messages.contact.email_hours') }}</span>
-                <a href="mailto:{{ $settings->get('contact_email', 'info@mindfitbro.com') }}" class="text-sm font-bold text-primary hover:underline">{{ $settings->get('contact_email', 'info@mindfitbro.com') }}</a>
+                <a href="mailto:{{ $contact['email'] }}" class="text-sm font-bold text-primary hover:underline">{{ $contact['email'] }}</a>
             </div>
 
         </div>
@@ -1359,7 +1360,7 @@
                         </div>
                         <div>
                             <p class="text-[11px] text-white/50 font-semibold mb-0.5">{{ __('messages.contact.location_label') }}</p>
-                            <p class="text-sm font-bold text-white">{{ __('messages.contact.location_value') }}</p>
+                            <p class="text-sm font-bold text-white">{{ $contact['address_' . app()->getLocale()] }}</p>
                         </div>
                     </div>
 
@@ -1370,7 +1371,7 @@
                         </div>
                         <div>
                             <p class="text-[11px] text-white/50 font-semibold mb-0.5">{{ __('messages.contact.phone_label') }}</p>
-                            <p class="text-sm font-bold text-white" dir="ltr">{{ $settings->get('contact_phone_display', '+966 593 035 979') }}</p>
+                            <p class="text-sm font-bold text-white" dir="ltr">{{ $contact['phone'] }}</p>
                         </div>
                     </div>
 
@@ -1417,7 +1418,7 @@
                         </div>
                         <div class="flex flex-col gap-1.5">
                             <label class="text-[13px] font-bold text-textColor">{{ __('messages.contact.phone_num') }}</label>
-                            <input type="tel" name="phone" placeholder="+966 5xx xxx xxx"
+                            <input type="tel" name="phone" placeholder="{{ $contact['phone_placeholder'] }}"
                                 class="bg-[#F4F7FF] border border-[#e0e8ff] focus:border-primary rounded-xl px-4 py-3 text-sm text-textColor outline-none transition-colors duration-200 font-arabic w-full">
                         </div>
                     </div>

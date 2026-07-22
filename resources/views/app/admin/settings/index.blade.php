@@ -139,42 +139,112 @@
                             <input type="text" name="settings[site_name]"
                                    value="{{ $s->get('site_name', 'MindFitBro') }}" class="form-input">
                         </div>
-                        <div>
-                            <label class="form-label">الموقع / المدينة</label>
-                            <input type="text" name="settings[location]"
-                                   value="{{ $s->get('location') }}" class="form-input">
-                        </div>
                     </div>
 
-                    <p class="section-divider">التواصل</p>
+                    <div class="rounded-xl bg-blue-50 border border-blue-200 p-4 flex items-start gap-3">
+                        <span class="material-symbols-rounded text-blue-500 flex-shrink-0 mt-0.5" style="font-size:18px;font-variation-settings:'FILL' 1">info</span>
+                        <p class="text-xs font-bold text-blue-700">بيانات التواصل بتظهر حسب دولة الزائر (مصر أو دولي) — عدّل كل مجموعة على حدة.</p>
+                    </div>
+
+                    <p class="section-divider">بيانات التواصل — مصر</p>
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                         <div>
-                            <label class="form-label">رقم الهاتف (للعرض)</label>
-                            <input type="text" name="settings[contact_phone]" dir="ltr"
-                                   value="{{ $s->get('contact_phone') }}" class="form-input"
-                                   placeholder="+966593035979">
-                            <p class="form-hint">يظهر في قسم التواصل</p>
+                            <label class="form-label">البريد الإلكتروني</label>
+                            <input type="email" name="settings[contact_eg_email]" dir="ltr"
+                                   value="{{ $s->get('contact_eg_email') }}" class="form-input"
+                                   placeholder="info@mindfitbro.com">
                         </div>
                         <div>
-                            <label class="form-label">رقم الهاتف (منسَّق)</label>
-                            <input type="text" name="settings[contact_phone_display]" dir="ltr"
-                                   value="{{ $s->get('contact_phone_display') }}" class="form-input"
-                                   placeholder="+966 593 035 979">
-                            <p class="form-hint">يظهر في بطاقة المعلومات مع مسافات</p>
+                            <label class="form-label">رقم الهاتف (لرابط الاتصال)</label>
+                            <input type="text" name="settings[contact_eg_phone]" dir="ltr"
+                                   value="{{ $s->get('contact_eg_phone') }}" class="form-input"
+                                   placeholder="+201xxxxxxxxx">
                         </div>
                         <div>
                             <label class="form-label">رقم واتساب (بدون +)</label>
-                            <input type="text" name="settings[whatsapp_number]" dir="ltr"
-                                   value="{{ $s->get('whatsapp_number') }}" class="form-input"
+                            <input type="text" name="settings[contact_eg_whatsapp]" dir="ltr"
+                                   value="{{ $s->get('contact_eg_whatsapp') }}" class="form-input"
+                                   placeholder="201xxxxxxxxx">
+                            <p class="form-hint">يُستخدم في رابط wa.me/...</p>
+                        </div>
+                        <div>
+                            <label class="form-label">مثال رقم الهاتف (Placeholder)</label>
+                            <input type="text" name="settings[contact_eg_phone_placeholder]" dir="ltr"
+                                   value="{{ $s->get('contact_eg_phone_placeholder') }}" class="form-input"
+                                   placeholder="+20 1xx xxx xxxx">
+                            <p class="form-hint">يظهر كمثال في خانات إدخال رقم الهاتف</p>
+                        </div>
+                        <div>
+                            <label class="form-label">ساعات العمل (عربي)</label>
+                            <input type="text" name="settings[contact_eg_hours_ar]" dir="rtl"
+                                   value="{{ $s->get('contact_eg_hours_ar') }}" class="form-input font-arabic">
+                        </div>
+                        <div>
+                            <label class="form-label">ساعات العمل (إنجليزي)</label>
+                            <input type="text" name="settings[contact_eg_hours_en]" dir="ltr"
+                                   value="{{ $s->get('contact_eg_hours_en') }}" class="form-input">
+                        </div>
+                        <div>
+                            <label class="form-label">العنوان (عربي)</label>
+                            <input type="text" name="settings[contact_eg_address_ar]" dir="rtl"
+                                   value="{{ $s->get('contact_eg_address_ar') }}" class="form-input font-arabic">
+                        </div>
+                        <div>
+                            <label class="form-label">العنوان (إنجليزي)</label>
+                            <input type="text" name="settings[contact_eg_address_en]" dir="ltr"
+                                   value="{{ $s->get('contact_eg_address_en') }}" class="form-input">
+                        </div>
+                    </div>
+
+                    <p class="section-divider">بيانات التواصل — الدولية (السعودية وباقي الدول)</p>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                        <div>
+                            <label class="form-label">البريد الإلكتروني</label>
+                            <input type="email" name="settings[contact_intl_email]" dir="ltr"
+                                   value="{{ $s->get('contact_intl_email') }}" class="form-input"
+                                   placeholder="info@mindfitbro.com">
+                        </div>
+                        <div>
+                            <label class="form-label">رقم الهاتف (لرابط الاتصال)</label>
+                            <input type="text" name="settings[contact_intl_phone]" dir="ltr"
+                                   value="{{ $s->get('contact_intl_phone') }}" class="form-input"
+                                   placeholder="+966593035979">
+                        </div>
+                        <div>
+                            <label class="form-label">رقم واتساب (بدون +)</label>
+                            <input type="text" name="settings[contact_intl_whatsapp]" dir="ltr"
+                                   value="{{ $s->get('contact_intl_whatsapp') }}" class="form-input"
                                    placeholder="966593035979">
                             <p class="form-hint">يُستخدم في رابط wa.me/...</p>
                         </div>
                         <div>
-                            <label class="form-label">البريد الإلكتروني</label>
-                            <input type="email" name="settings[contact_email]" dir="ltr"
-                                   value="{{ $s->get('contact_email') }}" class="form-input"
-                                   placeholder="info@mindfitbro.com">
+                            <label class="form-label">مثال رقم الهاتف (Placeholder)</label>
+                            <input type="text" name="settings[contact_intl_phone_placeholder]" dir="ltr"
+                                   value="{{ $s->get('contact_intl_phone_placeholder') }}" class="form-input"
+                                   placeholder="+966 5xx xxx xxx">
+                            <p class="form-hint">يظهر كمثال في خانات إدخال رقم الهاتف</p>
+                        </div>
+                        <div>
+                            <label class="form-label">ساعات العمل (عربي)</label>
+                            <input type="text" name="settings[contact_intl_hours_ar]" dir="rtl"
+                                   value="{{ $s->get('contact_intl_hours_ar') }}" class="form-input font-arabic">
+                        </div>
+                        <div>
+                            <label class="form-label">ساعات العمل (إنجليزي)</label>
+                            <input type="text" name="settings[contact_intl_hours_en]" dir="ltr"
+                                   value="{{ $s->get('contact_intl_hours_en') }}" class="form-input">
+                        </div>
+                        <div>
+                            <label class="form-label">العنوان (عربي)</label>
+                            <input type="text" name="settings[contact_intl_address_ar]" dir="rtl"
+                                   value="{{ $s->get('contact_intl_address_ar') }}" class="form-input font-arabic">
+                        </div>
+                        <div>
+                            <label class="form-label">العنوان (إنجليزي)</label>
+                            <input type="text" name="settings[contact_intl_address_en]" dir="ltr"
+                                   value="{{ $s->get('contact_intl_address_en') }}" class="form-input">
                         </div>
                     </div>
                 </div>

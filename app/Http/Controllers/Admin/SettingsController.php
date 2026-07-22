@@ -31,6 +31,17 @@ class SettingsController extends Controller
         $settings = $request->input('settings', []);
 
         foreach ($settings as $key => $value) {
+            // Region-scoped contact data (contact_eg_*/contact_intl_*) is
+            // shown across the whole site — an empty submission never blanks
+            // it out. Every other setting keeps its existing "clear to reset
+            // to default" behavior (e.g. maintenance_message).
+            if (str_starts_with($key, 'contact_eg_') || str_starts_with($key, 'contact_intl_')) {
+                $existing = Setting::get($key, '');
+                if ($value === '' && $existing !== '') {
+                    $value = $existing;
+                }
+            }
+
             Setting::updateOrCreate(['key' => $key], ['value' => $value]);
         }
 

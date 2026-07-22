@@ -309,7 +309,7 @@
                     <label class="text-sm font-black text-textColor font-arabic text-right">رقم الهاتف</label>
                     <input type="tel" name="phone"
                            value="{{ old('phone') }}"
-                           placeholder="05xxxxxxxx"
+                           placeholder="{{ \App\Services\Web\ContactInfo::current()['phone_placeholder'] }}"
                            autocomplete="tel"
                            class="auth-input @error('phone') error @enderror">
                     @error('phone')

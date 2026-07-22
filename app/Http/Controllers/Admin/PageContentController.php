@@ -61,20 +61,9 @@ class PageContentController extends Controller
                     ['key' => 'lead',          'label' => 'فقرة المقدمة',        'type' => 'textarea'],
                     ['key' => 'response_note', 'label' => 'ملاحظة وقت الرد',     'type' => 'textarea'],
                 ]],
-                ['number' => null, 'title' => 'بيانات مصر', 'fields' => [
-                    ['key' => 'contact_eg_email',    'label' => 'البريد الإلكتروني',        'type' => 'setting_single'],
-                    ['key' => 'contact_eg_phone',    'label' => 'رقم الهاتف (لرابط الاتصال)', 'type' => 'setting_single'],
-                    ['key' => 'contact_eg_whatsapp', 'label' => 'رقم واتساب (بدون +)',        'type' => 'setting_single'],
-                    ['key' => 'contact_eg_hours',    'label' => 'ساعات العمل',               'type' => 'setting_bilingual'],
-                    ['key' => 'contact_eg_address',  'label' => 'العنوان',                   'type' => 'setting_bilingual'],
-                ]],
-                ['number' => null, 'title' => 'البيانات الدولية (السعودية وباقي الدول)', 'fields' => [
-                    ['key' => 'contact_intl_email',    'label' => 'البريد الإلكتروني',        'type' => 'setting_single'],
-                    ['key' => 'contact_intl_phone',    'label' => 'رقم الهاتف (لرابط الاتصال)', 'type' => 'setting_single'],
-                    ['key' => 'contact_intl_whatsapp', 'label' => 'رقم واتساب (بدون +)',        'type' => 'setting_single'],
-                    ['key' => 'contact_intl_hours',    'label' => 'ساعات العمل',               'type' => 'setting_bilingual'],
-                    ['key' => 'contact_intl_address',  'label' => 'العنوان',                   'type' => 'setting_bilingual'],
-                ]],
+                // Note: region-scoped contact data (email/phone/whatsapp/hours/
+                // address for Egypt & international) is now edited from
+                // Admin → Settings → General, not here — see ContactInfo::current().
             ],
 
             'delivery_policy' => [

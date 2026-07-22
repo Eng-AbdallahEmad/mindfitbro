@@ -38,7 +38,7 @@ class MaintenanceMode
         // ── Serve maintenance page ─────────────────────────────────────────
         $eta      = Setting::get('maintenance_eta') ?: null;
         $message  = Setting::get('maintenance_message') ?: 'نعمل على تحسينات لتجربتك. سنعود قريباً!';
-        $waNumber = Setting::get('whatsapp_number', '966593035979');
+        $waNumber = \App\Services\Web\ContactInfo::current()['whatsapp'];
 
         $response = $this->noCache(
             response()->view('maintenance', compact('message', 'eta', 'waNumber'), 503)

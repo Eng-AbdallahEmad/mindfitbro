@@ -667,22 +667,24 @@ class PageContentSeeder extends Seeder
         //    keys so the footer is not affected) ──────────────────────
         $regionContactSettings = [
             // Egypt
-            'contact_eg_email'      => 'info@mindfitbro.com',
-            'contact_eg_phone'      => '+201141483981',
-            'contact_eg_whatsapp'   => '201141483981',
-            'contact_eg_hours_ar'   => 'يومياً، من 10 صباحاً – 8 مساءً (بتوقيت القاهرة)',
-            'contact_eg_hours_en'   => 'Every day, 10 AM – 8 PM (Cairo time)',
-            'contact_eg_address_ar' => 'القاهرة، مصر',
-            'contact_eg_address_en' => 'Cairo, Egypt',
+            'contact_eg_email'             => 'info@mindfitbro.com',
+            'contact_eg_phone'             => '+201141483981',
+            'contact_eg_whatsapp'          => '201141483981',
+            'contact_eg_phone_placeholder' => '+20 1xx xxx xxxx',
+            'contact_eg_hours_ar'          => 'يومياً، من 10 صباحاً – 8 مساءً (بتوقيت القاهرة)',
+            'contact_eg_hours_en'          => 'Every day, 10 AM – 8 PM (Cairo time)',
+            'contact_eg_address_ar'        => 'القاهرة، مصر',
+            'contact_eg_address_en'        => 'Cairo, Egypt',
 
             // International (Saudi Arabia & rest of world)
-            'contact_intl_email'      => 'info@mindfitbro.com',
-            'contact_intl_phone'      => '+966593035979',
-            'contact_intl_whatsapp'   => '966593035979',
-            'contact_intl_hours_ar'   => 'يومياً، من 10 صباحاً – 8 مساءً (بتوقيت الرياض)',
-            'contact_intl_hours_en'   => 'Every day, 10 AM – 8 PM (Riyadh time)',
-            'contact_intl_address_ar' => 'الرياض، المملكة العربية السعودية',
-            'contact_intl_address_en' => 'Riyadh, Saudi Arabia',
+            'contact_intl_email'             => 'info@mindfitbro.com',
+            'contact_intl_phone'             => '+966593035979',
+            'contact_intl_whatsapp'          => '966593035979',
+            'contact_intl_phone_placeholder' => '+966 5xx xxx xxx',
+            'contact_intl_hours_ar'          => 'يومياً، من 10 صباحاً – 8 مساءً (بتوقيت الرياض)',
+            'contact_intl_hours_en'          => 'Every day, 10 AM – 8 PM (Riyadh time)',
+            'contact_intl_address_ar'        => 'الرياض، المملكة العربية السعودية',
+            'contact_intl_address_en'        => 'Riyadh, Saudi Arabia',
         ];
 
         foreach ($regionContactSettings as $key => $value) {

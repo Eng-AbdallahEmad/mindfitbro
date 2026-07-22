@@ -240,7 +240,7 @@
                         id="phone"
                         name="phone"
                         value="{{ old('phone') }}"
-                        placeholder="+966 5X XXX XXXX"
+                        placeholder="{{ \App\Services\Web\ContactInfo::current()['phone_placeholder'] }}"
                         class="sa-input"
                         dir="ltr"
                         autocomplete="tel"

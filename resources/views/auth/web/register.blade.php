@@ -366,7 +366,7 @@
                         type="tel"
                         name="phone"
                         value="{{ old('phone') }}"
-                        placeholder="+966 5xx xxx xxx"
+                        placeholder="{{ \App\Services\Web\ContactInfo::current()['phone_placeholder'] }}"
                         autocomplete="tel"
                         class="auth-input @error('phone') error @enderror"
                     >
