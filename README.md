@@ -5,7 +5,7 @@
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/Version-1.1.0-D4ED57?style=for-the-badge"/>
+  <img src="https://img.shields.io/badge/Version-1.2.0-D4ED57?style=for-the-badge"/>
   <img src="https://img.shields.io/badge/Laravel-12.0-FF2D20?style=for-the-badge&logo=laravel&logoColor=white"/>
   <img src="https://img.shields.io/badge/PHP-8.2+-777BB4?style=for-the-badge&logo=php&logoColor=white"/>
   <img src="https://img.shields.io/badge/MySQL-Database-4479A1?style=for-the-badge&logo=mysql&logoColor=white"/>
@@ -55,13 +55,17 @@ The platform supports **3 distinct roles**:
 - **Member Management** — Create, update, deactivate members; coach assignment with OTP verification
 - **Plan & Pricing Control** — Create plans, set per-currency per-duration prices, toggle active/inactive
 - **Coupon Management** — Create, enable/disable, and set max-uses on discount codes
+- **Seasonal Discounts** — Create time-boxed seasons with an automatic percentage discount applied across all plans
+- **Site Pages CMS** — Edit About Us, Contact Us, Delivery Policy, Refund & Cancellation Policy, Privacy Policy, and Terms of Service directly from the dashboard — bilingual (AR/EN), no code changes needed
 - **Content Management** — Videos, before/after photos, testimonials — all with toggle active/inactive
 - **Partner Logos** — Add, edit, reorder, and delete partner logos; show/hide the partners section
+- **Platform Mode Toggle** — Switch the whole platform between in-person and online coaching delivery
 - **Maintenance Mode** — Take the site offline instantly with a branded 503 page, optional ETA countdown, and WhatsApp contact link; authenticated admins always bypass it
-- **Settings Panel (10 tabs)** — Full control over every platform parameter without touching code
+- **Settings Panel (12 tabs)** — Full control over every platform parameter without touching code
 
 ### 🌐 General
 - **Bilingual (AR / EN)** — Full RTL Arabic and LTR English UI with a single locale toggle
+- **Geo-Aware Contact Info** — Visitors from Egypt see Egyptian contact details (phone, WhatsApp, address, business hours); everyone else sees the international (Saudi) set — fully admin-editable, applied site-wide (footer, homepage, floating WhatsApp button, forms, and the legal pages)
 - **Automated Emails** — Transactional emails at every key event (10 mailables)
 - **Maintenance Mode** — Instant site-wide toggle; no-cache headers ensure browsers always see the current state
 - **App Store Links** — Google Play and App Store download buttons in the hero and footer (configurable)
@@ -71,22 +75,39 @@ The platform supports **3 distinct roles**:
 
 ## Admin Settings Panel
 
-Accessible at `/admin/settings`, organized into **10 tabs**:
+Accessible at `/admin/settings`, organized into **12 tabs**:
 
 | Tab | What You Control |
 |-----|-----------------|
-| **الإعدادات العامة** | Site name, contact phone/email, WhatsApp number, location |
+| **الإعدادات العامة** | Site name; region-scoped contact info — email, phone, WhatsApp, phone-input placeholder, business hours, and address, edited separately for **Egypt** and **International** visitors |
 | **السوشيال ميديا** | Instagram, TikTok, YouTube, WhatsApp URLs; Google Play & App Store URLs |
 | **الإحصائيات** | Hero success count, Why-Us card counts, testimonials stats, partners stats |
 | **الفيديوهات** | Upload and toggle active/inactive coaching videos |
 | **الشهادات** | Add, edit, reorder, toggle client testimonials |
 | **قبل وبعد** | Upload before/after transformation photos |
+| **نظام مكافأة العائلة** | Enable/disable referral reward, set discount mode (fixed/%), value, cap, eligible plan |
+| **مواعيد الحجز** | Configure which days and time slots are available for session booking |
 | **الشريط المتحرك** | Arabic and English ticker text (newline-separated items) |
 | **أقسام الصفحة** | Show/hide partners section; manage partner logos (add/edit/delete/reorder) |
 | **وضع الصيانة** | Enable/disable maintenance mode, set custom message and ETA countdown |
-| **نظام مكافأة العائلة** | Enable/disable referral reward, set discount mode (fixed/%), value, cap, eligible plan |
+| **وضع المنصة** | Toggle the whole platform between in-person and online coaching delivery |
 
-All settings are stored in the `settings` table and cached per-request. The cache flushes automatically after every save.
+All settings are stored in the `settings` table and cached per-request. The cache flushes automatically after every save. Region-scoped contact fields are additionally protected from being blanked by an accidentally empty form submission.
+
+---
+
+## Legal & Info Pages (Site Pages CMS)
+
+Six public pages — **About Us**, **Contact Us**, **Delivery Policy**, **Refund & Cancellation Policy**, **Privacy Policy**, and **Terms of Service** — are fully admin-editable from `/admin/pages`, no code deployment required:
+
+- **Bilingual editing** — every field has separate Arabic and English textareas, side by side
+- **Structure-safe** — numbered legal clauses (e.g. `4.1`, `5.7`, `3.1`–`3.10`) render as static, non-editable labels; admins can only edit the wording, never break the numbering or the contact-link markup
+- **Legal warning banner** — Delivery Policy, Refund Policy, Privacy Policy, and Terms of Service (the pages required for **Paymob** payment-gateway compliance) show a clear warning to edit carefully
+- **Anti-wipe protection** — an empty/broken form submission never overwrites existing content; only genuine edits are saved
+- **Instant cache invalidation** — an Eloquent Observer busts the page's cache the moment it's saved, so edits appear on the live site immediately
+- **Geo-aware contact values** — the email/phone/WhatsApp shown inside these pages automatically match the visitor's region (Egypt vs. international)
+
+Backed by a `page_contents` key-value table (`page`, `field_key`, `value_ar`, `value_en`), seeded from the original content via an idempotent seeder.
 
 ---
 
@@ -226,13 +247,33 @@ All settings are stored in the `settings` table and cached per-request. The cach
         │
         └── Fresh → DetectCurrency middleware → ip-api.com lookup
               SA → SAR  |  EG → EGP  |  TN → TND  |  Other → USD
-              Saved in session
+              Saved in session, alongside the raw detected_country code
         │
   All prices → Plan::priceFor($currency, $months)
   Fallback chain: matching PlanPrice → SAR PlanPrice → plan->price
         │
   Symbol rendered via <x-web.currency-symbol :currency="$currency" />
-  Manual switch: POST /currency/switch
+  Manual switch: POST /currency/switch (does not affect detected_country)
+```
+
+### Geo-Aware Contact Info
+
+```
+  Visitor arrives
+        │
+  DetectCurrency middleware stores session('detected_country')
+  independently of any later manual currency switch
+        │
+  ContactInfo::isEgypt() → detected_country === 'EG'
+        │
+        ├── EG  → Setting::get('contact_eg_*')
+        └── other → Setting::get('contact_intl_*')
+        │
+  Used by: footer, homepage contact section, floating WhatsApp button,
+  maintenance page, phone-input placeholders (register / setup account /
+  complete account / complete profile), and the 6 legal/info pages
+        │
+  Edited from: Admin → Settings → الإعدادات العامة
 ```
 
 ---
@@ -261,7 +302,7 @@ All settings are stored in the `settings` table and cached per-request. The cach
 ```
 MaintenanceMode      ← 503 with admin bypass + no-cache headers on all responses
 SetLocale            ← ar / en from session
-DetectCurrency       ← SAR / EGP / TND / USD via IP lookup
+DetectCurrency       ← SAR / EGP / TND / USD + detected_country via IP lookup
 ```
 
 ---
@@ -364,6 +405,8 @@ subscriptions            ← Full lifecycle: status, duration_months, currency,
 carts                    ← Shopping carts (currency-aware)
 cart_items               ← Line items with price/duration snapshot
 coupons                  ← Discount codes (value, max_uses, is_active)
+seasons                  ← Time-boxed seasonal discounts (name_ar/en,
+                           discount_percentage, starts_at, ends_at, is_active)
 
 Bookings & Coaching
 ────────────────────────────────────────────────────
@@ -386,7 +429,10 @@ family_invitations       ← Referral invitations
 
 Content & Settings
 ────────────────────────────────────────────────────
-settings                 ← Key-value platform settings grouped by tab
+settings                 ← Key-value platform settings grouped by tab, incl.
+                           region-scoped contact_eg_*/contact_intl_* keys
+page_contents            ← Admin-editable bilingual content for the 6 legal/
+                           info pages { page, field_key, value_ar, value_en }
 videos                   ← Coaching video links (sort_order, is_active)
 testimonials             ← Client reviews (sort_order, is_active)
 before_afters            ← Transformation photos (sort_order, is_active)
@@ -413,7 +459,9 @@ app/
 │   │   │   ├── CoachesController.php
 │   │   │   ├── PlansController.php          ← Plans + features CRUD
 │   │   │   ├── CouponsController.php
-│   │   │   ├── SettingsController.php       ← 10-tab settings panel
+│   │   │   ├── SeasonsController.php        ← Seasonal discount CRUD
+│   │   │   ├── SettingsController.php       ← 12-tab settings panel
+│   │   │   ├── PageContentController.php    ← Site Pages CMS (6 legal/info pages)
 │   │   │   ├── PartnersController.php       ← Partner logo CRUD
 │   │   │   ├── VideosController.php
 │   │   │   ├── TestimonialsController.php
@@ -429,25 +477,37 @@ app/
 │   │       ├── SubscriberController.php      ← Coach subscriber monitoring
 │   │       ├── JourneyController.php         ← Journey view + PDF export
 │   │       ├── FamilyInvitationController.php
-│   │       └── CurrencyController.php        ← Manual currency switch
+│   │       ├── CurrencyController.php        ← Manual currency switch
+│   │       ├── AboutUsController.php
+│   │       ├── ContactUsController.php
+│   │       ├── DeliveryPolicyController.php
+│   │       ├── RefundCancellationPolicyController.php
+│   │       ├── PrivacyPolicyController.php
+│   │       └── TermsOfServiceController.php
 │   └── Middleware/
 │       ├── MaintenanceMode.php               ← 503 + no-cache on all web responses
 │       ├── SetLocale.php
-│       └── DetectCurrency.php
+│       └── DetectCurrency.php                ← Currency + detected_country via IP lookup
+├── Observers/
+│   └── PageContentObserver.php               ← Busts a page's cache the moment it's saved
 ├── Mail/                                     ← 10 mailable classes
-├── Models/                                   ← 20+ Eloquent models
+├── Models/                                   ← 20+ Eloquent models, incl. PageContent, Season
 └── Services/Web/
     ├── HomeService.php
     ├── DashboardService.php
     ├── CoachDashboardService.php
-    └── CurrencyService.php                   ← Currency detection, formatting, meta
+    ├── CurrencyService.php                   ← Currency detection, formatting, meta
+    ├── SeasonService.php                     ← Active season lookup + discount math
+    ├── PlatformService.php                   ← Online vs in-person mode check
+    └── ContactInfo.php                       ← Region-aware (Egypt/international) contact data
 
 resources/
 ├── views/
 │   ├── layouts/web/app.blade.php            ← Main layout
 │   ├── components/web/                      ← footer, navbar, currency-symbol, ...
-│   ├── app/web/                             ← All public pages
+│   ├── app/web/                             ← All public pages (incl. the 6 legal/info pages)
 │   ├── app/admin/                           ← Admin panel pages
+│   │   └── pages/                           ← Site Pages CMS edit screens
 │   ├── mail/                                ← Email templates
 │   └── maintenance.blade.php                ← Standalone 503 page
 ├── lang/
@@ -489,6 +549,12 @@ MFB10 · MINDFITBRO · WELCOME · EID2025
 | `/calorie-calculator` | GET | Calorie calculator |
 | `/locale/{lang}` | GET | Switch language (ar / en) |
 | `/currency/switch` | POST | Switch display currency |
+| `/about-us` | GET | About Us |
+| `/contact-us` | GET | Contact Us (geo-aware contact details) |
+| `/delivery-policy` | GET | Delivery Policy |
+| `/refund-cancellation-policy` | GET | Refund & Cancellation Policy |
+| `/privacy-policy` | GET | Privacy Policy |
+| `/terms-of-service` | GET | Terms of Service |
 
 ### Client (authenticated)
 | Path | Method | Description |
@@ -524,7 +590,10 @@ MFB10 · MINDFITBRO · WELCOME · EID2025
 | `/admin/coaches` | Coach management |
 | `/admin/plans` | Plan & feature management |
 | `/admin/coupons` | Coupon management |
-| `/admin/settings` | 10-tab settings panel |
+| `/admin/seasons` | Seasonal discount management |
+| `/admin/settings` | 12-tab settings panel |
+| `/admin/pages` | Site Pages CMS — list of the 6 editable legal/info pages |
+| `/admin/pages/{page}` | Edit a page's bilingual content |
 | `/admin/partners` | Partner logo CRUD |
 | `/admin/family-invitations` | Referral invitation list |
 
@@ -539,9 +608,10 @@ MFB10 · MINDFITBRO · WELCOME · EID2025
 - [x] Journey PDF export
 - [x] Automated email system (10 mailables)
 - [x] App Store download buttons (hero + footer)
-- [ ] Online payment gateway (Stripe / Moyasar)
-- [ ] Advanced reports & analytics dashboard
-- [ ] Mobile app
+- [x] Seasonal discounts
+- [x] Site Pages CMS — admin-editable legal/info pages
+- [x] Geo-aware contact info (Egypt vs. international)
+- [ ] PayMob payment gateway for Egyptian Pound (EGP)
 
 ---
 
