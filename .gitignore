@@ -13,6 +13,7 @@
 /.zed
 /auth.json
 /node_modules
+/OVERVIEW_PROJECT.md
 /public/hot
 /public/storage
 /storage/*.key

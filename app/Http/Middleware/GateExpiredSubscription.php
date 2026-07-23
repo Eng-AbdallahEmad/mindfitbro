@@ -22,6 +22,10 @@ class GateExpiredSubscription
         'password.*',
         'privacy-policy',
         'terms-of-service',
+        'about-us',
+        'contact-us',
+        'delivery-policy',
+        'refund-cancellation-policy',
         'calorie-calculator',
     ];
 
