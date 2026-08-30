@@ -224,6 +224,8 @@
             {{-- Copyright --}}
             <p class="text-xs text-white/30 font-medium">
                 © {{ date('Y') }} MindFitBro — {{ __('messages.footer.copyright') }}
+                ·
+                <a href="https://www.exchangerate-api.com" target="_blank" rel="noopener" class="hover:text-white/50 transition-colors duration-300">Exchange rates by ExchangeRate-API</a>
             </p>
 
             {{-- Middle: Guarantee Badge --}}

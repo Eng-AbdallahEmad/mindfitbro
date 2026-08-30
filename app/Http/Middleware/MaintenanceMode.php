@@ -13,8 +13,10 @@ class MaintenanceMode
 {
     public function handle(Request $request, Closure $next): Response
     {
-        // Never intercept admin panel, health-check, or API routes.
-        if ($request->is('admin*') || $request->is('up') || $request->is('api*')) {
+        // Never intercept admin panel, health-check, API, or Paymob routes.
+        // The webhook especially must always be reachable regardless of site
+        // maintenance state — Paymob doesn't know or care that we're down.
+        if ($request->is('admin*') || $request->is('up') || $request->is('api*') || $request->is('paymob*')) {
             return $next($request);
         }
 

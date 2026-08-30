@@ -26,10 +26,18 @@ class UserFactory extends Factory
     {
         return [
             'name' => fake()->name(),
+            'username' => fake()->unique()->userName(),
             'email' => fake()->unique()->safeEmail(),
             'email_verified_at' => now(),
             'password' => static::$password ??= Hash::make('password'),
             'remember_token' => Str::random(10),
+            // Explicit, not just relying on the DB column default: Eloquent's
+            // create() doesn't pull DB-generated defaults back into the
+            // in-memory instance, so an omitted 'role' leaves $user->role
+            // empty in PHP even though the row itself gets 'user' — and
+            // actingAs() uses that exact stale in-memory instance, tripping
+            // any `role !== 'user'` guard even though the DB row is correct.
+            'role' => 'user',
         ];
     }
 
@@ -40,6 +48,13 @@ class UserFactory extends Factory
     {
         return $this->state(fn (array $attributes) => [
             'email_verified_at' => null,
+        ]);
+    }
+
+    public function admin(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'role' => 'admin',
         ]);
     }
 }

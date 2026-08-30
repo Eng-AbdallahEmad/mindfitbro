@@ -19,6 +19,14 @@ class Subscription extends Model
     // Legacy status (pre-Phase A records)
     const STATUS_CANCELLED      = 'cancelled';
 
+    // Paymob-flow statuses
+    const STATUS_AWAITING_PAYMENT = 'awaiting_payment';
+    const STATUS_PAYMENT_FAILED   = 'payment_failed';
+    const STATUS_REFUNDED         = 'refunded';
+
+    const GATEWAY_PAYMOB = 'paymob';
+    const GATEWAY_MANUAL = 'manual';
+
     protected $fillable = [
         'user_id',
         'guest_name',
@@ -47,6 +55,19 @@ class Subscription extends Model
         'journey_started_at',
         'crm_email',
         'crm_password',
+        'paymob_order_id',
+        'paymob_order_ids',
+        'paymob_transaction_id',
+        'paymob_intention_id',
+        'billing_phone',
+        'charged_currency',
+        'charged_amount_cents',
+        'fx_rate',
+        'fx_rate_source',
+        'payment_intended_at',
+        'paid_at',
+        'payment_failure_reason',
+        'payment_gateway',
     ];
 
     protected $casts = [
@@ -62,6 +83,11 @@ class Subscription extends Model
         'reviewed_at'                => 'datetime',
         'journey_started_at'         => 'datetime',
         'crm_password'               => 'encrypted',
+        'payment_intended_at'        => 'datetime',
+        'paid_at'                    => 'datetime',
+        'charged_amount_cents'       => 'integer',
+        'fx_rate'                    => 'decimal:6',
+        'paymob_order_ids'           => 'array',
     ];
 
     public function user()
@@ -97,6 +123,47 @@ class Subscription extends Model
     public function season()
     {
         return $this->belongsTo(Season::class);
+    }
+
+    public function scopeAwaitingPayment($query)
+    {
+        return $query->where('status', self::STATUS_AWAITING_PAYMENT);
+    }
+
+    public function scopePaid($query)
+    {
+        return $query->whereNotNull('paid_at');
+    }
+
+    public function scopeViaPaymob($query)
+    {
+        return $query->where('payment_gateway', self::GATEWAY_PAYMOB);
+    }
+
+    public function scopeViaManual($query)
+    {
+        return $query->where('payment_gateway', self::GATEWAY_MANUAL);
+    }
+
+    public function isPaid(): bool
+    {
+        return !is_null($this->paid_at);
+    }
+
+    public function isAwaitingPayment(): bool
+    {
+        return $this->status === self::STATUS_AWAITING_PAYMENT;
+    }
+
+    /**
+     * Single source of truth for cents -> EGP display conversion. Nothing
+     * else in the app should divide charged_amount_cents by 100 by hand.
+     */
+    public function chargedAmountEgp(): ?float
+    {
+        return is_null($this->charged_amount_cents)
+            ? null
+            : $this->charged_amount_cents / 100;
     }
 
     protected static function booted(): void

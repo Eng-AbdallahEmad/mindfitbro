@@ -26,12 +26,15 @@ use App\Http\Controllers\Web\DashboardController;
 use App\Http\Controllers\Web\CurrencyController;
 use App\Http\Controllers\Web\HomeController;
 use App\Http\Controllers\Admin\PageContentController as AdminPageContentController;
+use App\Http\Controllers\Admin\FxRatesController as AdminFxRatesController;
 use App\Http\Controllers\Web\PrivacyPolicyController;
 use App\Http\Controllers\Web\RefundCancellationPolicyController;
 use App\Http\Controllers\Web\ProfileController;
 use App\Http\Controllers\Web\JourneyController;
 use App\Http\Controllers\Web\FamilyInvitationController;
 use App\Http\Controllers\Web\PurchaseController;
+use App\Http\Controllers\Web\PaymobWebhookController;
+use App\Http\Controllers\Web\PaymobCallbackController;
 use App\Http\Controllers\Web\SetupAccountController;
 use App\Http\Controllers\Web\SubscriberController;
 use App\Http\Controllers\Web\TermsOfServiceController;
@@ -90,11 +93,41 @@ Route::get('/purchase', fn () => redirect(route('home') . '#programs'));
 
 Route::prefix('purchase')->name('purchase.')->group(function () {
     Route::get('/success/{id}',      [PurchaseController::class, 'success'])->name('success');
-    Route::post('/check-coupon',     [PurchaseController::class, 'checkCoupon'])->name('check-coupon');
-    Route::post('/check-email',      [PurchaseController::class, 'checkEmail'])->name('check-email');
+    Route::post('/check-coupon',     [PurchaseController::class, 'checkCoupon'])->name('check-coupon')->middleware('throttle:20,1');
+    Route::post('/check-email',      [PurchaseController::class, 'checkEmail'])->name('check-email')->middleware('throttle:20,1');
     Route::get('/{plan:key}',        [PurchaseController::class, 'showForm'])->name('form');
-    Route::post('/{plan:key}',       [PurchaseController::class, 'submit'])->name('submit');
+    Route::post('/{plan:key}',       [PurchaseController::class, 'initiatePayment'])->name('submit');
+    Route::post('/{subscription}/retry', [PurchaseController::class, 'retryPayment'])->name('retry')->middleware('throttle:10,1');
+    Route::get('/{subscription}/status', [PaymobCallbackController::class, 'status'])->name('status')->middleware('throttle:30,1');
 });
+
+// ── Paymob (Batch 6) ────────────────────────────────────────────────────
+// The webhook must be reachable with none of the site's usual per-request
+// overhead or failure surfaces: no session (nothing to persist for a
+// server-to-server caller), no locale/currency detection (DetectCurrency
+// makes an external HTTP call — must never gate the webhook on a THIRD
+// third party's uptime), no maintenance-mode gate (also excluded directly
+// in MaintenanceMode.php as a second layer). CSRF exemption is in
+// bootstrap/app.php (Paymob can't carry our token).
+Route::post('/paymob/webhook', [PaymobWebhookController::class, 'handle'])
+    ->name('paymob.webhook')
+    ->withoutMiddleware([
+        // ValidateCsrfToken must be fully REMOVED, not just marked except()
+        // in bootstrap/app.php — even on an exempt route it still tries to
+        // write an XSRF-TOKEN cookie via $request->session(), which throws
+        // once StartSession below is also removed (verified: this
+        // combination 500'd until ValidateCsrfToken was excluded too).
+        \Illuminate\Foundation\Http\Middleware\ValidateCsrfToken::class,
+        \Illuminate\Session\Middleware\StartSession::class,
+        \Illuminate\View\Middleware\ShareErrorsFromSession::class,
+        \App\Http\Middleware\MaintenanceMode::class,
+        \App\Http\Middleware\SetLocale::class,
+        \App\Http\Middleware\DetectCurrency::class,
+    ]);
+
+// Browser redirect target — a real page for a real visitor, normal
+// middleware applies (session/locale/currency all make sense here).
+Route::get('/paymob/callback', [PaymobCallbackController::class, 'show'])->name('paymob.callback');
 
 // ── Complete Account (guest email link — old pre-approval flow) ──
 Route::get('/complete-account/{token}', [GuestAccountController::class, 'completeAccount'])->name('complete-account.show');
@@ -226,6 +259,10 @@ Route::prefix('admin')->name('admin.')->group(function () {
         // Settings
         Route::get('settings', [AdminSettingsController::class, 'index'])->name('settings.index');
         Route::post('settings', [AdminSettingsController::class, 'update'])->name('settings.update');
+
+        // FX rates (Batch 5.5) — visibility into the scheduled rate fetch
+        Route::get('fx-rates', [AdminFxRatesController::class, 'index'])->name('fx-rates.index');
+        Route::post('fx-rates/refresh', [AdminFxRatesController::class, 'refresh'])->name('fx-rates.refresh');
 
         // Site Pages (About Us, Contact Us, Delivery Policy, Refund & Cancellation Policy)
         Route::get('pages', [AdminPageContentController::class, 'index'])->name('pages.index');

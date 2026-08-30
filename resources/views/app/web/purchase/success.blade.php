@@ -190,48 +190,77 @@
             {{-- Body ── --}}
             <div class="px-6 pt-6 pb-8 space-y-5">
 
-                {{-- What happens next ── --}}
-                <div>
-                    <p class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">ماذا سيحدث بعد ذلك؟</p>
-                    <div class="bg-[#F8FAFF] border border-[#E0E8FF] rounded-2xl px-4 py-2">
-                        <div class="step-item">
-                            <div class="step-num">١</div>
-                            <div class="step-text">
-                                <strong>مراجعة الإيصال</strong>
-                                سيقوم فريق MindFitBro بمراجعة إيصال الدفع الخاص بك.
-                            </div>
+                @if($subscription->payment_gateway === 'paymob')
+                    {{-- Minimal Batch 5 addition for the Paymob failure/retry
+                         case. Batch 7 fully reworks this page into three clean
+                         states (success / awaiting confirmation / failed); this
+                         is deliberately lightweight until then. --}}
+                    @if($subscription->status === \App\Models\Subscription::STATUS_PAYMENT_FAILED)
+                        <div class="warning-box" style="margin-top:0;">
+                            <span class="material-symbols-rounded" style="font-size:18px;font-variation-settings:'FILL' 1;flex-shrink:0">warning</span>
+                            <span>{{ $subscription->payment_failure_reason ?: __('messages.purchase.payment_failed_default_reason') }}</span>
                         </div>
-                        <div class="step-item">
-                            <div class="step-num">٢</div>
-                            <div class="step-text">
-                                <strong>تفعيل الاشتراك</strong>
-                                بعد التأكيد ستصلك رسالة بريد إلكتروني بتفعيل اشتراكك.
-                            </div>
-                        </div>
-                        <div class="step-item">
-                            <div class="step-num">٣</div>
-                            <div class="step-text">
-                                <strong>ابدأ رحلتك</strong>
-                                ادخل لحسابك وابدأ برنامجك التدريبي مباشرةً.
-                            </div>
-                        </div>
-                    </div>
-                </div>
 
-                {{-- CTA ── --}}
-                @if(! $subscription->user_id)
-                    {{-- Guest ── --}}
-                    <div class="guest-notice">
-                        <span class="material-symbols-rounded" style="font-size:22px;flex-shrink:0;font-variation-settings:'FILL' 1">mail</span>
-                        <span>
-                            ستصلك رسالة بريد إلكتروني بمجرد مراجعة إيصالك وتفعيل اشتراكك —
-                            تتضمن رابطاً لإعداد كلمة المرور والدخول لحسابك.
-                        </span>
-                    </div>
+                        <form action="{{ route('purchase.retry', $subscription) }}" method="POST">
+                            @csrf
+                            @unless($subscription->user_id)
+                                <input type="hidden" name="guest_token" value="{{ $subscription->guest_token }}">
+                            @endunless
+                            <button type="submit" class="cta-btn" style="border:none;cursor:pointer;">
+                                {{ __('messages.purchase.retry_payment_btn') }}
+                            </button>
+                        </form>
+                    @else
+                        <div class="guest-notice">
+                            <span class="material-symbols-rounded" style="font-size:22px;flex-shrink:0;font-variation-settings:'FILL' 1">hourglass_top</span>
+                            <span>{{ __('messages.purchase.awaiting_confirmation_notice') }}</span>
+                        </div>
+                    @endif
                 @else
-                    <a href="{{ route('dashboard') }}" class="cta-btn">
-                        {{ __('messages.purchase.go_dashboard_btn') }}
-                    </a>
+                    {{-- Legacy manual flow (payment_gateway = 'manual') ── --}}
+                    {{-- What happens next ── --}}
+                    <div>
+                        <p class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">ماذا سيحدث بعد ذلك؟</p>
+                        <div class="bg-[#F8FAFF] border border-[#E0E8FF] rounded-2xl px-4 py-2">
+                            <div class="step-item">
+                                <div class="step-num">١</div>
+                                <div class="step-text">
+                                    <strong>مراجعة الإيصال</strong>
+                                    سيقوم فريق MindFitBro بمراجعة إيصال الدفع الخاص بك.
+                                </div>
+                            </div>
+                            <div class="step-item">
+                                <div class="step-num">٢</div>
+                                <div class="step-text">
+                                    <strong>تفعيل الاشتراك</strong>
+                                    بعد التأكيد ستصلك رسالة بريد إلكتروني بتفعيل اشتراكك.
+                                </div>
+                            </div>
+                            <div class="step-item">
+                                <div class="step-num">٣</div>
+                                <div class="step-text">
+                                    <strong>ابدأ رحلتك</strong>
+                                    ادخل لحسابك وابدأ برنامجك التدريبي مباشرةً.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {{-- CTA ── --}}
+                    @if(! $subscription->user_id)
+                        {{-- Guest ── --}}
+                        <div class="guest-notice">
+                            <span class="material-symbols-rounded" style="font-size:22px;flex-shrink:0;font-variation-settings:'FILL' 1">mail</span>
+                            <span>
+                                ستصلك رسالة بريد إلكتروني بمجرد مراجعة إيصالك وتفعيل اشتراكك —
+                                تتضمن رابطاً لإعداد كلمة المرور والدخول لحسابك.
+                            </span>
+                        </div>
+                    @else
+                        <a href="{{ route('dashboard') }}" class="cta-btn">
+                            {{ __('messages.purchase.go_dashboard_btn') }}
+                        </a>
+                    @endif
                 @endif
 
                 <a

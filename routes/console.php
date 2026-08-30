@@ -37,3 +37,13 @@ Schedule::command('family-invitations:expire')
     ->withoutOverlapping()
     ->runInBackground()
     ->appendOutputTo(storage_path('logs/family-invitations-expire.log'));
+
+// تحديث أسعار صرف العملات مقابل الجنيه المصري — يعمل يومياً الساعة 00:25
+// (audit Risk D-7: the cPanel scheduler is unverified — if this stops
+// running, FxConverter's staleness tiers make that visible via warning/
+// error logs rather than silently freezing the charged rate forever.)
+Schedule::command('fx:refresh')
+    ->dailyAt('00:25')
+    ->withoutOverlapping()
+    ->runInBackground()
+    ->appendOutputTo(storage_path('logs/fx-refresh.log'));

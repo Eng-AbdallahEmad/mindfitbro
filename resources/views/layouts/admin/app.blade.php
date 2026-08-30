@@ -210,6 +210,11 @@
             الإعدادات
         </a>
 
+        <a href="{{ route('admin.fx-rates.index') }}" class="nav-item {{ request()->routeIs('admin.fx-rates*') ? 'active' : '' }}" onclick="closeSidebar()">
+            <span class="material-symbols-rounded nav-icon">currency_exchange</span>
+            أسعار الصرف
+        </a>
+
         <a href="{{ route('admin.pages.index') }}" class="nav-item {{ request()->routeIs('admin.pages*') ? 'active' : '' }}" onclick="closeSidebar()">
             <span class="material-symbols-rounded nav-icon">article</span>
             صفحات الموقع

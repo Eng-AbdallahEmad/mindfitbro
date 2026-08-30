@@ -236,7 +236,7 @@
 <div
     class="min-h-screen bg-[#F0F4FB] font-arabic"
     dir="{{ $isRtl ? 'rtl' : 'ltr' }}"
-    x-data="purchaseForm({{ $durationMonths }}, {{ $price3m }}, {{ $price6m }}, {{ $sPrice3m }}, {{ $sPrice6m }})"
+    x-data="purchaseForm({{ $durationMonths }}, {{ $price3m }}, {{ $price6m }}, {{ $sPrice3m }}, {{ $sPrice6m }}, {{ $fxEffectiveRate }}, '{{ $fxRounding }}')"
 >
     {{-- ── Hero Banner ── --}}
     <div class="purchase-hero flex flex-col items-center justify-center text-center px-6 py-12 relative">
@@ -256,6 +256,15 @@
         <h1 class="text-3xl font-black text-white mb-2">{{ __('messages.purchase.hero_title') }}</h1>
         <p class="text-white/70 text-sm">{{ __('messages.purchase.hero_sub') }}</p>
     </div>
+
+    @unless($paymobEnabled)
+    <div class="max-w-2xl mx-auto px-4 -mt-4 relative z-50">
+        <div class="warning-box" style="background:#fff;">
+            <span class="material-symbols-rounded" style="font-size:18px;font-variation-settings:'FILL' 1;flex-shrink:0">warning</span>
+            <span>{{ __('messages.purchase.maintenance_notice') }}</span>
+        </div>
+    </div>
+    @endunless
 
     {{-- ── Main Card ── --}}
     <div class="max-w-2xl mx-auto px-4 -mt-8 pb-20 relative z-50">
@@ -304,7 +313,6 @@
             <form
                 action="{{ route('purchase.submit', $plan) }}"
                 method="POST"
-                enctype="multipart/form-data"
                 class="p-8 space-y-6"
                 @submit.prevent="handleSubmit"
                 id="purchase-form"
@@ -367,6 +375,22 @@
                                     للمتابعة.
                                 </span>
                             </div>
+                        </div>
+
+                        {{-- Phone (required — sent to Paymob as billing_data.phone_number) ── --}}
+                        <div class="sm:col-span-2">
+                            <label class="form-label" for="phone">{{ __('messages.purchase.phone') }} <span class="text-red-500">*</span></label>
+                            <input
+                                type="tel"
+                                id="phone"
+                                name="phone"
+                                class="form-input {{ $errors->has('phone') ? 'has-error' : '' }}"
+                                value="{{ old('phone') }}"
+                                placeholder="{{ __('messages.purchase.phone_placeholder') }}"
+                                required
+                                dir="ltr"
+                            >
+                            @error('phone')<p class="error-msg">{{ $message }}</p>@enderror
                         </div>
                     </div>
                 </div>
@@ -510,127 +534,30 @@
                 </div>
                 @endguest
 
-                {{-- Payment Instructions ── --}}
-                @if(!empty($paymentInstructions))
+                {{-- EGP Charge Summary — pre-redirect notice (decision D4) ── --}}
+                @if($fxRateConfigured)
                 <div>
-                    <p class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-4">{{ __('messages.purchase.payment_instructions') }}</p>
                     <div class="payment-card">
-                        <div class="payment-card-title">{{ $paymentInstructions['country_label'] ?? '' }}</div>
-
-                        @if(($paymentInstructions['type'] ?? '') === 'instapay')
-                            @isset($paymentInstructions['instapay_id'])
-                            <div class="payment-row">
-                                <span class="key">InstaPay ID</span>
-                                <span class="val">{{ $paymentInstructions['instapay_id'] }}</span>
-                            </div>
-                            @endisset
-                            @isset($paymentInstructions['phone'])
-                            <div class="payment-row">
-                                <span class="key">{{ __('messages.purchase.phone') }}</span>
-                                <span class="val" dir="ltr">{{ $paymentInstructions['phone'] }}</span>
-                            </div>
-                            @endisset
-                            @isset($paymentInstructions['link'])
-                            <div class="payment-row">
-                                <span class="key">{{ __('messages.purchase.pay_via') }}</span>
-                                <a href="{{ $paymentInstructions['link'] }}" target="_blank" rel="noopener" class="val text-[#174DAD] underline">
-                                    {{ __('messages.purchase.pay_link') }}
-                                </a>
-                            </div>
-                            @endisset
-                        @else
-                            @isset($paymentInstructions['bank_name'])
-                            <div class="payment-row">
-                                <span class="key">{{ __('messages.purchase.bank') }}</span>
-                                <span class="val">{{ $paymentInstructions['bank_name'] }}</span>
-                            </div>
-                            @endisset
-                            @isset($paymentInstructions['account_name'])
-                            <div class="payment-row">
-                                <span class="key">{{ __('messages.purchase.account_name') }}</span>
-                                <span class="val">{{ $paymentInstructions['account_name'] }}</span>
-                            </div>
-                            @endisset
-                            @isset($paymentInstructions['account_number'])
-                            <div class="payment-row">
-                                <span class="key">{{ __('messages.purchase.account_number') }}</span>
-                                <span class="val" dir="ltr">{{ $paymentInstructions['account_number'] }}</span>
-                            </div>
-                            @endisset
-                            @isset($paymentInstructions['iban'])
-                            <div class="payment-row">
-                                <span class="key">IBAN</span>
-                                <span class="val" dir="ltr">{{ $paymentInstructions['iban'] }}</span>
-                            </div>
-                            @endisset
-                            @isset($paymentInstructions['rib'])
-                            <div class="payment-row">
-                                <span class="key">RIB</span>
-                                <span class="val" dir="ltr">{{ $paymentInstructions['rib'] }}</span>
-                            </div>
-                            @endisset
-                        @endif
-
-                        {{-- Amount reflects final price after coupon ── --}}
-                        <div class="payment-row" style="background:#EBF0FF;border-radius:10px;margin-top:10px;padding:10px 12px;">
+                        <div class="payment-card-title">{{ __('messages.purchase.egp_charge_title') }}</div>
+                        <div class="payment-row" style="background:#EBF0FF;border-radius:10px;padding:10px 12px;">
                             <span class="key font-bold text-[#174DAD]">{{ __('messages.purchase.amount_to_pay') }}</span>
-                            <span class="val text-[#174DAD] text-base" x-text="finalPriceFormatted + ' {{ $symbol }}'"></span>
+                            <span class="val text-[#174DAD] text-base" dir="ltr" x-text="egpAmountFormatted + ' ' + '{{ __('messages.purchase.egp_symbol') }}'"></span>
                         </div>
+                        <p style="font-size:11px;color:#9ca3af;margin-top:10px;line-height:1.6;">
+                            {{ __('messages.purchase.egp_charge_notice') }}
+                        </p>
                     </div>
+                </div>
+                @else
+                <div class="warning-box" style="margin-top:0;">
+                    <span class="material-symbols-rounded" style="font-size:18px;font-variation-settings:'FILL' 1;flex-shrink:0">warning</span>
+                    <span>{{ __('messages.purchase.currency_unavailable_notice') }}</span>
                 </div>
                 @endif
 
-                {{-- Receipt Upload ── --}}
-                <div>
-                    <p class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-4">{{ __('messages.purchase.upload_receipt') }}</p>
-
-                    <div
-                        class="upload-zone"
-                        :class="{ dragging: isDragging }"
-                        @dragover.prevent="isDragging = true"
-                        @dragleave.prevent="isDragging = false"
-                        @drop.prevent="handleDrop($event)"
-                    >
-                        <input
-                            type="file"
-                            name="receipt"
-                            id="receipt-input"
-                            accept=".jpg,.jpeg,.png,.gif,.pdf"
-                            @change="handleFile($event)"
-                            required
-                        >
-                        <div x-show="!previewFile">
-                            <div class="mb-3"><span class="material-symbols-rounded text-gray-400" style="font-size:40px">attach_file</span></div>
-                            <p class="font-bold text-gray-600 text-sm mb-1">{{ __('messages.purchase.upload_hint') }}</p>
-                            <p class="text-gray-400 text-xs">{{ __('messages.purchase.upload_formats') }}</p>
-                        </div>
-                        <div x-show="previewFile" x-cloak>
-                            <div class="mb-2"><span class="material-symbols-rounded text-green-500" style="font-size:32px;font-variation-settings:'FILL' 1">check_circle</span></div>
-                            <p class="font-bold text-green-600 text-sm">{{ __('messages.purchase.file_selected') }}</p>
-                        </div>
-                    </div>
-
-                    {{-- File Preview ── --}}
-                    <div x-show="previewFile" x-cloak class="file-preview-box mt-3">
-                        <template x-if="previewUrl && !isPdf">
-                            <img :src="previewUrl" class="file-preview-img" alt="preview">
-                        </template>
-                        <template x-if="isPdf || !previewUrl">
-                            <div class="file-preview-icon"><span class="material-symbols-rounded text-gray-400" style="font-size:36px;font-variation-settings:'FILL' 1">description</span></div>
-                        </template>
-                        <div>
-                            <div class="file-preview-name" x-text="fileName"></div>
-                            <div class="file-preview-size" x-text="fileSize"></div>
-                        </div>
-                        <button type="button" @click="clearFile" class="ms-auto text-gray-400 hover:text-red-500 text-xl leading-none">&times;</button>
-                    </div>
-
-                    @error('receipt')<p class="error-msg mt-2">{{ $message }}</p>@enderror
-                </div>
-
                 {{-- Submit ── --}}
                 <div class="pt-2">
-                    <button type="submit" class="submit-btn" :disabled="submitting">
+                    <button type="submit" class="submit-btn" :disabled="submitting || {{ ($fxRateConfigured && $paymobEnabled) ? 'false' : 'true' }}">
                         <span x-show="!submitting">{{ __('messages.purchase.submit_btn') }}</span>
                         <span x-show="submitting" x-cloak>{{ __('messages.purchase.submitting') }}</span>
                     </button>
@@ -644,22 +571,17 @@
 
 @section('script')
 <script>
-function purchaseForm(initialMonths, price3m, price6m, sPrice3m, sPrice6m) {
+function purchaseForm(initialMonths, price3m, price6m, sPrice3m, sPrice6m, fxEffectiveRate, fxRounding) {
     return {
         months: initialMonths,
         _price3m: price3m,
         _price6m: price6m,
         _sPrice3m: sPrice3m,
         _sPrice6m: sPrice6m,
+        _fxRate: fxEffectiveRate,
+        _fxRounding: fxRounding,
         hasSeason: sPrice3m < price3m || sPrice6m < price6m,
 
-        // File upload
-        isDragging: false,
-        previewFile: false,
-        previewUrl: null,
-        isPdf: false,
-        fileName: '',
-        fileSize: '',
         submitting: false,
 
         // Email check (guests only)
@@ -715,6 +637,24 @@ function purchaseForm(initialMonths, price3m, price6m, sPrice3m, sPrice6m) {
         },
         _smartFmt(n) {
             return Math.round(n).toLocaleString('{{ $locale }}', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+        },
+
+        // ── EGP charge estimate (display only) ────────────────────
+        // Mirrors App\Services\FxConverter's formula for the pre-redirect
+        // summary. The actual charge is always computed authoritatively by
+        // FxConverter server-side at submission — this never feeds back
+        // into what gets persisted or charged, it only shows the customer
+        // what to expect before they submit.
+        _applyRounding(n) {
+            if (this._fxRounding === 'up_to_nearest_5') return Math.ceil(n / 5) * 5;
+            if (this._fxRounding === 'up_to_nearest_10') return Math.ceil(n / 10) * 10;
+            return n;
+        },
+        get egpAmount() {
+            return this._applyRounding(this.finalPrice * this._fxRate);
+        },
+        get egpAmountFormatted() {
+            return Math.round(this.egpAmount).toLocaleString('ar-EG', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
         },
 
         // ── Email duplicate check ────────────────────────────────
@@ -824,45 +764,6 @@ function purchaseForm(initialMonths, price3m, price6m, sPrice3m, sPrice6m) {
             this.discount3m    = 0;
             this.discount6m    = 0;
             this.couponError   = '';
-        },
-
-        // ── File upload ──────────────────────────────────────────
-        handleFile(event) {
-            const file = event.target.files[0];
-            if (file) this.setFile(file);
-        },
-
-        handleDrop(event) {
-            this.isDragging = false;
-            const file = event.dataTransfer.files[0];
-            if (!file) return;
-            const dt = new DataTransfer();
-            dt.items.add(file);
-            document.getElementById('receipt-input').files = dt.files;
-            this.setFile(file);
-        },
-
-        setFile(file) {
-            this.previewFile = true;
-            this.fileName    = file.name;
-            this.fileSize    = (file.size / 1024 / 1024).toFixed(2) + ' MB';
-            this.isPdf       = file.type === 'application/pdf';
-            if (!this.isPdf) {
-                const reader = new FileReader();
-                reader.onload = (e) => { this.previewUrl = e.target.result; };
-                reader.readAsDataURL(file);
-            } else {
-                this.previewUrl = null;
-            }
-        },
-
-        clearFile() {
-            this.previewFile = false;
-            this.previewUrl  = null;
-            this.isPdf       = false;
-            this.fileName    = '';
-            this.fileSize    = '';
-            document.getElementById('receipt-input').value = '';
         },
 
         handleSubmit() {
