@@ -420,8 +420,11 @@
                                class="w-8 h-8 rounded-lg bg-blue-50 hover:bg-blue-100 text-blue-500 flex items-center justify-center transition">
                                 <span class="material-symbols-rounded" style="font-size:16px">visibility</span>
                             </a>
+                            @php
+                                $subActiveLink = $sub->meetingBookings->whereIn('status', ['pending', 'confirmed'])->sortByDesc('id')->first()?->meet_link;
+                            @endphp
                             <button title="تعديل"
-                                onclick="openEdit({{ $sub->id }}, '{{ $sub->status }}', '{{ $sub->start_date?->format('Y-m-d') ?? '' }}', '{{ $sub->end_date?->format('Y-m-d') ?? '' }}', {{ $sub->duration_months ?? 'null' }})"
+                                onclick="openEdit({{ $sub->id }}, '{{ $sub->status }}', '{{ $sub->start_date?->format('Y-m-d') ?? '' }}', '{{ $sub->end_date?->format('Y-m-d') ?? '' }}', {{ $sub->duration_months ?? 'null' }}, '{{ $subActiveLink }}')"
                                 class="w-8 h-8 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-500 flex items-center justify-center transition">
                                 <span class="material-symbols-rounded" style="font-size:16px">edit_calendar</span>
                             </button>
@@ -483,19 +486,32 @@
                 <span class="material-symbols-rounded" style="font-size:20px">close</span>
             </button>
         </div>
-        <form id="editForm" method="POST" class="p-6 flex flex-col gap-4">
+        {{-- ── Phase 1: meeting link (always shown first) ── --}}
+        <form id="meetingLinkForm" class="p-6 flex flex-col gap-4">
+            <div class="flex flex-col gap-1.5">
+                <label class="text-xs font-black text-slate-500">رابط الاجتماع (Google Meet)</label>
+                <input type="url" id="meetLinkInput" class="modal-input" dir="ltr"
+                       placeholder="https://meet.google.com/xxx-xxxx-xxx" required>
+                <p class="text-[11px] text-slate-400 font-semibold">بعد الحفظ، سيصل للعميل إيميل بميعاده المحدد ورابط الاجتماع.</p>
+            </div>
+            <div id="meetingLinkError" class="hidden bg-red-50 border border-red-200 rounded-xl px-4 py-3 text-xs text-red-600 font-bold"></div>
+            <div id="meetingLinkSuccess" class="hidden bg-green-50 border border-green-200 rounded-xl px-4 py-3 text-xs text-green-700 font-bold"></div>
+            <div class="flex gap-3 pt-1">
+                <button type="submit" id="meetingLinkSaveBtn" class="flex-1 bg-blue-500 hover:bg-blue-600 text-white font-black text-sm py-2.5 rounded-xl transition">حفظ</button>
+                <button type="button" onclick="closeModal('editModal')" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-600 font-black text-sm py-2.5 rounded-xl transition">إلغاء</button>
+            </div>
+        </form>
+
+        {{-- ── Phase 2: status/duration/dates (revealed after phase 1 saves) ── --}}
+        <form id="editForm" method="POST" class="hidden p-6 pt-0 flex flex-col gap-4">
             @csrf @method('PUT')
 
             <div class="flex flex-col gap-1.5">
                 <label class="text-xs font-black text-slate-500">حالة الاشتراك</label>
                 <select id="editStatus" name="status" class="modal-input">
-                    <option value="pending_review">بانتظار المراجعة</option>
-                    <option value="approved">موافق عليه</option>
                     <option value="active">نشط</option>
                     <option value="expired">منتهي</option>
-                    <option value="rejected">مرفوض</option>
                     <option value="cancelled">ملغي</option>
-                    <option value="waiting">في الانتظار (قديم)</option>
                 </select>
             </div>
 
@@ -609,14 +625,67 @@
 
     document.getElementById('editStart').addEventListener('change', recalcEnd);
 
-    function openEdit(id, status, startDate, endDate, durationMonths) {
+    function openEdit(id, status, startDate, endDate, durationMonths, meetLink) {
         document.getElementById('editStatus').value = status;
         document.getElementById('editStart').value  = startDate;
         document.getElementById('editEnd').value    = endDate;
         document.getElementById('editForm').action  = `/admin/subscriptions/${id}`;
         setActiveDur(durationMonths);
+
+        // Always reset to phase 1 (meeting link) on open — see openEditModal.
+        document.getElementById('meetLinkInput').value = meetLink || '';
+        document.getElementById('meetingLinkForm').dataset.subscriptionId = id;
+        document.getElementById('meetingLinkForm').classList.remove('hidden');
+        document.getElementById('editForm').classList.add('hidden');
+        document.getElementById('meetingLinkError').classList.add('hidden');
+        document.getElementById('meetingLinkSuccess').classList.add('hidden');
+
         openModal('editModal');
     }
+
+    document.getElementById('meetingLinkForm').addEventListener('submit', async function (e) {
+        e.preventDefault();
+
+        const subscriptionId = this.dataset.subscriptionId;
+        const link = document.getElementById('meetLinkInput').value;
+        const saveBtn = document.getElementById('meetingLinkSaveBtn');
+        const errorBox = document.getElementById('meetingLinkError');
+        const successBox = document.getElementById('meetingLinkSuccess');
+
+        errorBox.classList.add('hidden');
+        saveBtn.disabled = true;
+        const originalLabel = saveBtn.textContent;
+        saveBtn.textContent = 'جاري الحفظ...';
+
+        try {
+            const resp = await fetch(`/admin/subscriptions/${subscriptionId}/meeting-link`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'Accept': 'application/json',
+                },
+                body: JSON.stringify({ meet_link: link }),
+            });
+            const data = await resp.json();
+
+            if (resp.ok) {
+                successBox.textContent = data.message || 'تم الحفظ';
+                successBox.classList.remove('hidden');
+                document.getElementById('editForm').classList.remove('hidden');
+            } else {
+                const firstError = data.errors ? Object.values(data.errors)[0][0] : (data.message || 'حدث خطأ');
+                errorBox.textContent = firstError;
+                errorBox.classList.remove('hidden');
+            }
+        } catch (err) {
+            errorBox.textContent = 'حدث خطأ في الاتصال، حاول مرة أخرى';
+            errorBox.classList.remove('hidden');
+        }
+
+        saveBtn.disabled = false;
+        saveBtn.textContent = originalLabel;
+    });
 
     function openDelete(id, name) {
         document.getElementById('deleteName').textContent = name;

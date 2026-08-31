@@ -220,6 +220,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('subscriptions/{subscription}/receipt', [AdminSubscriptionsController::class, 'viewReceipt'])->name('subscriptions.receipt');
         Route::post('subscriptions/{subscription}/approve', [AdminSubscriptionsController::class, 'approve'])->name('subscriptions.approve');
         Route::post('subscriptions/{subscription}/reject', [AdminSubscriptionsController::class, 'reject'])->name('subscriptions.reject');
+        Route::post('subscriptions/{subscription}/meeting-link', [AdminSubscriptionsController::class, 'updateMeetingLink'])->name('subscriptions.meeting-link');
         Route::get('subscriptions/{subscription}', [AdminSubscriptionsController::class, 'show'])->name('subscriptions.show');
         Route::put('subscriptions/{subscription}', [AdminSubscriptionsController::class, 'update'])->name('subscriptions.update');
         Route::delete('subscriptions/{subscription}', [AdminSubscriptionsController::class, 'destroy'])->name('subscriptions.destroy');

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Exceptions\OrderNotApprovableException;
 use App\Exceptions\OrderNotRejectableException;
 use App\Http\Controllers\Controller;
+use App\Mail\MeetingLinkMail;
 use App\Models\Plan;
 use App\Models\Subscription;
 use App\Services\OrderApprovalService;
@@ -12,13 +13,15 @@ use App\Services\OrderRejectionService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
 
 class SubscriptionsController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Subscription::with(['user', 'plan']);
+        $query = Subscription::with(['user', 'plan', 'meetingBookings']);
 
         // ── Search ──────────────────────────────────────────────
         if ($search = $request->input('search')) {
@@ -85,13 +88,19 @@ class SubscriptionsController extends Controller
     {
         $subscription->load(['user', 'plan', 'meetingBookings', 'reviewer']);
 
-        return view('app.admin.subscriptions.show', compact('subscription'));
+        $activeMeetLink = $this->activeBookingFor($subscription)?->meet_link;
+
+        return view('app.admin.subscriptions.show', compact('subscription', 'activeMeetLink'));
     }
 
     public function update(Request $request, Subscription $subscription)
     {
         $request->validate([
-            'status'          => 'required|in:pending_review,approved,active,expired,rejected,cancelled,waiting',
+            // Only the 3 terminal/live states an admin should ever set by
+            // hand here — activation itself happens via the booking
+            // confirmation flow (DashboardController::confirmBooking()),
+            // not this form.
+            'status'          => 'required|in:active,expired,cancelled',
             'duration_months' => 'nullable|in:3,6',
             'start_date'      => 'nullable|date',
             'end_date'        => 'nullable|date|after_or_equal:start_date',
@@ -104,6 +113,61 @@ class SubscriptionsController extends Controller
         Cache::forget('popular_plan_id');
 
         return back()->with('success', 'تم تحديث الاشتراك بنجاح');
+    }
+
+    /**
+     * The meeting-link "gate" step in the edit-subscription modal: saving
+     * this sends the customer an email with the meeting time THEY picked
+     * (MeetingBooking::meeting_date/meeting_time) plus the link the admin
+     * just set — reusing the same MeetingLinkMail the coach dashboard sends
+     * (DashboardController::updateMeetLink()). Only after this succeeds does
+     * the modal reveal the status/duration/dates fields.
+     */
+    public function updateMeetingLink(Request $request, Subscription $subscription)
+    {
+        $validated = $request->validate([
+            'meet_link' => ['required', 'url', 'starts_with:https://meet.google.com/'],
+        ], [
+            'meet_link.required'    => 'رابط الاجتماع مطلوب',
+            'meet_link.url'         => 'الرابط غير صحيح',
+            'meet_link.starts_with' => 'يجب أن يكون رابط Google Meet',
+        ]);
+
+        $booking = $this->activeBookingFor($subscription);
+
+        if (!$booking) {
+            return response()->json([
+                'message' => 'لا يوجد حجز ميعاد نشط لهذا الاشتراك حالياً.',
+            ], 422);
+        }
+
+        $booking->update(['meet_link' => $validated['meet_link']]);
+
+        $user = $booking->user;
+        if ($user && $user->email) {
+            try {
+                Mail::to($user->email)->send(new MeetingLinkMail($booking, $user->name));
+            } catch (\Throwable $e) {
+                Log::error('MeetingLinkMail failed', ['booking' => $booking->id, 'err' => $e->getMessage()]);
+            }
+        }
+
+        return response()->json([
+            'message' => 'تم حفظ الرابط، ووصل للعميل إيميل بميعاده ورابط الاجتماع.',
+        ]);
+    }
+
+    /**
+     * The latest still-relevant booking for a subscription — a subscription
+     * can have more than one MeetingBooking (e.g. a reschedule), so this is
+     * the single place that decides which one "the meeting link" means.
+     */
+    private function activeBookingFor(Subscription $subscription)
+    {
+        return $subscription->meetingBookings
+            ->whereIn('status', ['pending', 'confirmed'])
+            ->sortByDesc('id')
+            ->first();
     }
 
     // ── Phase B: Approve ────────────────────────────────────────
