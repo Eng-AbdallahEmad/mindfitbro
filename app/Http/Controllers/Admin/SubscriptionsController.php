@@ -73,11 +73,12 @@ class SubscriptionsController extends Controller
             ->get();
 
         $stats = [
-            'total'          => Subscription::count(),
-            'active'         => Subscription::where('status', 'active')->count(),
-            'pending_review' => Subscription::where('status', 'pending_review')->count(),
-            'approved'       => Subscription::where('status', 'approved')->count(),
-            'expired'        => Subscription::where('status', 'expired')->count(),
+            'total'    => Subscription::count(),
+            'active'   => Subscription::where('status', 'active')->count(),
+            // "بإنتظار التأكيد" — orders paid via Paymob (status=approved),
+            // waiting on the coach to confirm the booked meeting slot.
+            'approved' => Subscription::where('status', 'approved')->count(),
+            'expired'  => Subscription::where('status', 'expired')->count(),
             'revenue_by_currency' => $revenueRows->pluck('total', 'currency')->toArray(),
         ];
 
@@ -112,16 +113,27 @@ class SubscriptionsController extends Controller
         $subscription->update($request->only('status', 'duration_months', 'start_date', 'end_date'));
         Cache::forget('popular_plan_id');
 
-        return back()->with('success', 'تم تحديث الاشتراك بنجاح');
+        $redirect = back()->with('success', 'تم تحديث الاشتراك بنجاح');
+
+        // Only reopen the edit modal when this update came from within it —
+        // the sidebar "quick status change" buttons on show.blade.php post
+        // to this same route/action and should NOT pop the modal open.
+        if ($request->boolean('from_modal')) {
+            $redirect->with('reopen_subscription_id', $subscription->id);
+        }
+
+        return $redirect;
     }
 
     /**
-     * The meeting-link "gate" step in the edit-subscription modal: saving
-     * this sends the customer an email with the meeting time THEY picked
-     * (MeetingBooking::meeting_date/meeting_time) plus the link the admin
-     * just set — reusing the same MeetingLinkMail the coach dashboard sends
-     * (DashboardController::updateMeetLink()). Only after this succeeds does
-     * the modal reveal the status/duration/dates fields.
+     * The meeting-link step in the edit-subscription modal. A plain form
+     * POST + redirect-back (no AJAX) — the "gate" is a ONE-TIME thing: while
+     * no link exists yet, the view shows only this field; once a link is
+     * saved, the page reload naturally shows this field alongside the rest
+     * from then on (the view decides that from $activeMeetLink, not from
+     * any per-visit JS state). Saving a DIFFERENT link than what was there
+     * sends a "the link changed" email instead of the original "here's your
+     * link" one — saving the SAME value again is a no-op (no duplicate email).
      */
     public function updateMeetingLink(Request $request, Subscription $subscription)
     {
@@ -136,25 +148,37 @@ class SubscriptionsController extends Controller
         $booking = $this->activeBookingFor($subscription);
 
         if (!$booking) {
-            return response()->json([
-                'message' => 'لا يوجد حجز ميعاد نشط لهذا الاشتراك حالياً.',
-            ], 422);
+            return back()
+                ->with('error', 'لا يوجد حجز ميعاد نشط لهذا الاشتراك حالياً.')
+                ->with('reopen_subscription_id', $subscription->id);
         }
 
-        $booking->update(['meet_link' => $validated['meet_link']]);
+        $previousLink = $booking->meet_link;
+        $newLink      = $validated['meet_link'];
+
+        if ($previousLink === $newLink) {
+            return back()
+                ->with('success', 'لم يتغيّر الرابط.')
+                ->with('reopen_subscription_id', $subscription->id);
+        }
+
+        $booking->update(['meet_link' => $newLink]);
+        $isChange = !empty($previousLink);
 
         $user = $booking->user;
         if ($user && $user->email) {
             try {
-                Mail::to($user->email)->send(new MeetingLinkMail($booking, $user->name));
+                Mail::to($user->email)->send(new MeetingLinkMail($booking, $user->name, $isChange));
             } catch (\Throwable $e) {
                 Log::error('MeetingLinkMail failed', ['booking' => $booking->id, 'err' => $e->getMessage()]);
             }
         }
 
-        return response()->json([
-            'message' => 'تم حفظ الرابط، ووصل للعميل إيميل بميعاده ورابط الاجتماع.',
-        ]);
+        return back()
+            ->with('success', $isChange
+                ? 'تم تحديث الرابط، ووصل للعميل إيميل بالتغيير.'
+                : 'تم حفظ الرابط، ووصل للعميل إيميل بميعاده ورابط الاجتماع.')
+            ->with('reopen_subscription_id', $subscription->id);
     }
 
     /**

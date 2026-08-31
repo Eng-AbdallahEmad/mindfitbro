@@ -16,12 +16,15 @@ class MeetingLinkMail extends Mailable
     public function __construct(
         public MeetingBooking $booking,
         public string $customerName,
+        public bool $isChange = false,
     ) {}
 
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'تم تحديد رابط جلستك الأولى — MindFitBro',
+            subject: $this->isChange
+                ? 'تم تغيير رابط اجتماعك — MindFitBro'
+                : 'تم تحديد رابط جلستك الأولى — MindFitBro',
         );
     }
 

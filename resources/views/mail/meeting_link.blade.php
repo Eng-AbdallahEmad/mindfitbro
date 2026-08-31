@@ -23,9 +23,9 @@ body { margin:0; padding:0; background:#F0F4FB; font-family:'Cairo','Segoe UI',T
 
     {{-- ── Header ── --}}
     <div style="background:linear-gradient(135deg,#174DAD 0%,#0f3a87 100%);padding:44px 36px;text-align:center;">
-        <div style="display:inline-block;background:#D4ED57;color:#1C1C1C;font-size:12px;font-weight:900;padding:5px 18px;border-radius:20px;margin-bottom:16px;font-family:'Cairo','Segoe UI',Tahoma,Arial,sans-serif;">جلسة مؤكدة</div>
-        <div style="color:#ffffff;font-size:26px;font-weight:900;margin-bottom:8px;font-family:'Cairo','Segoe UI',Tahoma,Arial,sans-serif;">تم تحديد رابط جلستك الأولى!</div>
-        <div style="color:rgba(255,255,255,0.75);font-size:13px;font-family:'Cairo','Segoe UI',Tahoma,Arial,sans-serif;">جلستك مع الكوتش جاهزة — كل اللي تحتاجه هنا</div>
+        <div style="display:inline-block;background:#D4ED57;color:#1C1C1C;font-size:12px;font-weight:900;padding:5px 18px;border-radius:20px;margin-bottom:16px;font-family:'Cairo','Segoe UI',Tahoma,Arial,sans-serif;">{{ $isChange ? 'تحديث الرابط' : 'جلسة مؤكدة' }}</div>
+        <div style="color:#ffffff;font-size:26px;font-weight:900;margin-bottom:8px;font-family:'Cairo','Segoe UI',Tahoma,Arial,sans-serif;">{{ $isChange ? 'تم تغيير رابط اجتماعك' : 'تم تحديد رابط جلستك الأولى!' }}</div>
+        <div style="color:rgba(255,255,255,0.75);font-size:13px;font-family:'Cairo','Segoe UI',Tahoma,Arial,sans-serif;">{{ $isChange ? 'يرجى استخدام الرابط الجديد أدناه بدلاً من القديم' : 'جلستك مع الكوتش جاهزة — كل اللي تحتاجه هنا' }}</div>
     </div>
 
     {{-- ── Body ── --}}
@@ -34,8 +34,13 @@ body { margin:0; padding:0; background:#F0F4FB; font-family:'Cairo','Segoe UI',T
         {{-- Greeting --}}
         <p style="font-size:15px;color:#374151;margin:0 0 28px;line-height:1.8;font-family:'Cairo','Segoe UI',Tahoma,Arial,sans-serif;">
             أهلاً <strong style="color:#174DAD;">{{ $customerName }}</strong>،<br>
-            يسعدنا إبلاغك بأن كوتشك قام بتحديد رابط الجلسة الأولى.
-            الجلسة ستكون عبر Google Meet في الموعد التالي:
+            @if($isChange)
+                نود إخطارك بأنه تم تغيير رابط اجتماعك القادم.
+                برجاء استخدام الرابط الجديد أدناه فقط — الجلسة عبر Google Meet في نفس الموعد:
+            @else
+                يسعدنا إبلاغك بأن كوتشك قام بتحديد رابط الجلسة الأولى.
+                الجلسة ستكون عبر Google Meet في الموعد التالي:
+            @endif
         </p>
 
         {{-- Date + Time chips --}}

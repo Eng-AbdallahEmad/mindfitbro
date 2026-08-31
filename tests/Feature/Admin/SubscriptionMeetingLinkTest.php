@@ -29,11 +29,13 @@ class SubscriptionMeetingLinkTest extends TestCase
         ]);
 
         $response = $this->actingAs($this->admin(), 'admin')
-            ->postJson(route('admin.subscriptions.meeting-link', $subscription), [
+            ->post(route('admin.subscriptions.meeting-link', $subscription), [
                 'meet_link' => 'https://meet.google.com/abc-defg-hij',
             ]);
 
-        $response->assertOk();
+        $response->assertRedirect();
+        $response->assertSessionHas('success');
+        $response->assertSessionHas('reopen_subscription_id', $subscription->id);
 
         $booking->refresh();
         $this->assertSame('https://meet.google.com/abc-defg-hij', $booking->meet_link);
@@ -41,8 +43,56 @@ class SubscriptionMeetingLinkTest extends TestCase
         Mail::assertSent(MeetingLinkMail::class, function ($mail) use ($booking, $customer) {
             return $mail->hasTo($customer->email)
                 && $mail->booking->id === $booking->id
-                && $mail->booking->meet_link === 'https://meet.google.com/abc-defg-hij';
+                && $mail->booking->meet_link === 'https://meet.google.com/abc-defg-hij'
+                && $mail->isChange === false;
         });
+    }
+
+    public function test_changing_an_existing_link_sends_a_different_change_email(): void
+    {
+        Mail::fake();
+
+        $customer = User::factory()->create();
+        $subscription = Subscription::factory()->create(['user_id' => $customer->id, 'status' => Subscription::STATUS_APPROVED]);
+        $booking = MeetingBooking::factory()->confirmed()->create([
+            'user_id' => $customer->id,
+            'subscription_id' => $subscription->id,
+            'meet_link' => 'https://meet.google.com/old-link-xyz',
+        ]);
+
+        $this->actingAs($this->admin(), 'admin')
+            ->post(route('admin.subscriptions.meeting-link', $subscription), [
+                'meet_link' => 'https://meet.google.com/new-link-abc',
+            ])
+            ->assertRedirect();
+
+        $this->assertSame('https://meet.google.com/new-link-abc', $booking->fresh()->meet_link);
+
+        Mail::assertSent(MeetingLinkMail::class, function ($mail) use ($customer) {
+            return $mail->hasTo($customer->email) && $mail->isChange === true;
+        });
+    }
+
+    public function test_saving_the_same_link_again_is_a_no_op_and_sends_no_mail(): void
+    {
+        Mail::fake();
+
+        $customer = User::factory()->create();
+        $subscription = Subscription::factory()->create(['user_id' => $customer->id]);
+        $booking = MeetingBooking::factory()->confirmed()->create([
+            'user_id' => $customer->id,
+            'subscription_id' => $subscription->id,
+            'meet_link' => 'https://meet.google.com/same-link-abc',
+        ]);
+
+        $this->actingAs($this->admin(), 'admin')
+            ->post(route('admin.subscriptions.meeting-link', $subscription), [
+                'meet_link' => 'https://meet.google.com/same-link-abc',
+            ])
+            ->assertRedirect();
+
+        $this->assertSame('https://meet.google.com/same-link-abc', $booking->fresh()->meet_link);
+        Mail::assertNothingSent();
     }
 
     public function test_picks_the_latest_active_booking_when_more_than_one_exists(): void
@@ -63,27 +113,28 @@ class SubscriptionMeetingLinkTest extends TestCase
         ]);
 
         $this->actingAs($this->admin(), 'admin')
-            ->postJson(route('admin.subscriptions.meeting-link', $subscription), [
+            ->post(route('admin.subscriptions.meeting-link', $subscription), [
                 'meet_link' => 'https://meet.google.com/xyz-1234-abc',
             ])
-            ->assertOk();
+            ->assertRedirect();
 
         $this->assertNull($older->fresh()->meet_link);
         $this->assertSame('https://meet.google.com/xyz-1234-abc', $latestActive->fresh()->meet_link);
     }
 
-    public function test_no_active_booking_returns_422_and_sends_no_mail(): void
+    public function test_no_active_booking_redirects_back_with_an_error_and_sends_no_mail(): void
     {
         Mail::fake();
 
         $subscription = Subscription::factory()->create();
 
         $response = $this->actingAs($this->admin(), 'admin')
-            ->postJson(route('admin.subscriptions.meeting-link', $subscription), [
+            ->post(route('admin.subscriptions.meeting-link', $subscription), [
                 'meet_link' => 'https://meet.google.com/abc-defg-hij',
             ]);
 
-        $response->assertStatus(422);
+        $response->assertRedirect();
+        $response->assertSessionHas('error');
         Mail::assertNothingSent();
     }
 
@@ -93,11 +144,10 @@ class SubscriptionMeetingLinkTest extends TestCase
         MeetingBooking::factory()->create(['subscription_id' => $subscription->id, 'status' => 'pending']);
 
         $this->actingAs($this->admin(), 'admin')
-            ->postJson(route('admin.subscriptions.meeting-link', $subscription), [
+            ->post(route('admin.subscriptions.meeting-link', $subscription), [
                 'meet_link' => 'https://zoom.us/j/123456',
             ])
-            ->assertStatus(422)
-            ->assertJsonValidationErrors('meet_link');
+            ->assertSessionHasErrors('meet_link');
     }
 
     // ── Status dropdown restricted to 3 values (this task) ──────────────

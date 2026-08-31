@@ -104,6 +104,16 @@
 </div>
 @endif
 
+@if(session('error'))
+<div id="flashErrorMsg" class="flex items-center gap-3 bg-red-50 border border-red-200 text-red-700 rounded-2xl px-5 py-3.5 mb-5 font-bold text-sm">
+    <span class="material-symbols-rounded text-red-500 flex-shrink-0" style="font-size:20px">error</span>
+    {{ session('error') }}
+    <button onclick="document.getElementById('flashErrorMsg').remove()" class="mr-auto text-red-400 hover:text-red-600 transition">
+        <span class="material-symbols-rounded" style="font-size:18px">close</span>
+    </button>
+</div>
+@endif
+
 {{-- ══ Stats ══ --}}
 <div class="grid grid-cols-2 lg:grid-cols-5 gap-4 mb-6">
 
@@ -132,18 +142,8 @@
             <span class="material-symbols-rounded text-orange-400" style="font-size:22px;font-variation-settings:'FILL' 1">pending</span>
         </div>
         <div>
-            <p class="text-2xl font-black text-slate-800 leading-none">{{ number_format($stats['pending_review']) }}</p>
-            <p class="text-xs font-bold text-slate-400 mt-1">بانتظار المراجعة</p>
-        </div>
-    </div>
-
-    <div class="stat-card">
-        <div class="stat-icon bg-yellow-50">
-            <span class="material-symbols-rounded text-yellow-500" style="font-size:22px;font-variation-settings:'FILL' 1">schedule</span>
-        </div>
-        <div>
             <p class="text-2xl font-black text-slate-800 leading-none">{{ number_format($stats['approved']) }}</p>
-            <p class="text-xs font-bold text-slate-400 mt-1">موافق عليه</p>
+            <p class="text-xs font-bold text-slate-400 mt-1">بإنتظار التأكيد</p>
         </div>
     </div>
 
@@ -486,25 +486,22 @@
                 <span class="material-symbols-rounded" style="font-size:20px">close</span>
             </button>
         </div>
-        {{-- ── Phase 1: meeting link (always shown first) ── --}}
-        <form id="meetingLinkForm" class="p-6 flex flex-col gap-4">
+        {{-- ── Meeting link — always shown; gates the rest ONLY while no link exists yet ── --}}
+        <form id="meetingLinkForm" method="POST" class="p-6 flex flex-col gap-4">
+            @csrf
             <div class="flex flex-col gap-1.5">
                 <label class="text-xs font-black text-slate-500">رابط الاجتماع (Google Meet)</label>
-                <input type="url" id="meetLinkInput" class="modal-input" dir="ltr"
+                <input type="url" id="meetLinkInput" name="meet_link" class="modal-input" dir="ltr"
                        placeholder="https://meet.google.com/xxx-xxxx-xxx" required>
-                <p class="text-[11px] text-slate-400 font-semibold">بعد الحفظ، سيصل للعميل إيميل بميعاده المحدد ورابط الاجتماع.</p>
+                <p id="meetingLinkHint" class="text-[11px] text-slate-400 font-semibold">بعد الحفظ، سيصل للعميل إيميل بميعاده المحدد ورابط الاجتماع.</p>
             </div>
-            <div id="meetingLinkError" class="hidden bg-red-50 border border-red-200 rounded-xl px-4 py-3 text-xs text-red-600 font-bold"></div>
-            <div id="meetingLinkSuccess" class="hidden bg-green-50 border border-green-200 rounded-xl px-4 py-3 text-xs text-green-700 font-bold"></div>
-            <div class="flex gap-3 pt-1">
-                <button type="submit" id="meetingLinkSaveBtn" class="flex-1 bg-blue-500 hover:bg-blue-600 text-white font-black text-sm py-2.5 rounded-xl transition">حفظ</button>
-                <button type="button" onclick="closeModal('editModal')" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-600 font-black text-sm py-2.5 rounded-xl transition">إلغاء</button>
-            </div>
+            <button type="submit" id="meetingLinkSaveBtn" class="w-full bg-blue-500 hover:bg-blue-600 text-white font-black text-sm py-2.5 rounded-xl transition">حفظ الرابط</button>
         </form>
 
-        {{-- ── Phase 2: status/duration/dates (revealed after phase 1 saves) ── --}}
-        <form id="editForm" method="POST" class="hidden p-6 pt-0 flex flex-col gap-4">
+        {{-- ── Status/duration/dates — revealed once a meeting link already exists ── --}}
+        <form id="editForm" method="POST" class="hidden p-6 pt-0 flex flex-col gap-4 border-t border-slate-100 mt-1">
             @csrf @method('PUT')
+            <input type="hidden" name="from_modal" value="1">
 
             <div class="flex flex-col gap-1.5">
                 <label class="text-xs font-black text-slate-500">حالة الاشتراك</label>
@@ -546,11 +543,12 @@
                 </div>
             </div>
 
-            <div class="flex gap-3 pt-1">
-                <button type="submit" class="flex-1 bg-blue-500 hover:bg-blue-600 text-white font-black text-sm py-2.5 rounded-xl transition">حفظ</button>
-                <button type="button" onclick="closeModal('editModal')" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-600 font-black text-sm py-2.5 rounded-xl transition">إلغاء</button>
-            </div>
+            <button type="submit" class="w-full bg-blue-500 hover:bg-blue-600 text-white font-black text-sm py-2.5 rounded-xl transition">حفظ</button>
         </form>
+
+        <div class="px-6 pb-6">
+            <button type="button" onclick="closeModal('editModal')" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-600 font-black text-sm py-2.5 rounded-xl transition">إغلاق</button>
+        </div>
     </div>
 </div>
 
@@ -589,6 +587,27 @@
     function closeModal(id) { document.getElementById(id).classList.remove('is-open'); document.body.style.overflow = ''; }
     function openModal(id)  { document.getElementById(id).classList.add('is-open');    document.body.style.overflow = 'hidden'; }
     document.addEventListener('keydown', e => { if (e.key === 'Escape') ['editModal','deleteModal'].forEach(closeModal); });
+
+    // After saving the meeting link (or the status/dates form), the
+    // controller flashes which subscription to reopen the edit modal for —
+    // this is what makes "save the link → page refreshes → rest of the
+    // fields are there" work without any AJAX.
+    @if(session('reopen_subscription_id'))
+        @php $reopenSub = $subscriptions->firstWhere('id', session('reopen_subscription_id')); @endphp
+        @if($reopenSub)
+            @php $reopenLink = $reopenSub->meetingBookings->whereIn('status', ['pending', 'confirmed'])->sortByDesc('id')->first()?->meet_link; @endphp
+            document.addEventListener('DOMContentLoaded', function () {
+                openEdit(
+                    {{ $reopenSub->id }},
+                    '{{ $reopenSub->status }}',
+                    '{{ $reopenSub->start_date?->format('Y-m-d') ?? '' }}',
+                    '{{ $reopenSub->end_date?->format('Y-m-d') ?? '' }}',
+                    {{ $reopenSub->duration_months ?? 'null' }},
+                    '{{ $reopenLink }}'
+                );
+            });
+        @endif
+    @endif
 
     // ── Duration buttons logic ──────────────────────────────
     function setActiveDur(months) {
@@ -632,60 +651,20 @@
         document.getElementById('editForm').action  = `/admin/subscriptions/${id}`;
         setActiveDur(durationMonths);
 
-        // Always reset to phase 1 (meeting link) on open — see openEditModal.
-        document.getElementById('meetLinkInput').value = meetLink || '';
-        document.getElementById('meetingLinkForm').dataset.subscriptionId = id;
-        document.getElementById('meetingLinkForm').classList.remove('hidden');
-        document.getElementById('editForm').classList.add('hidden');
-        document.getElementById('meetingLinkError').classList.add('hidden');
-        document.getElementById('meetingLinkSuccess').classList.add('hidden');
+        document.getElementById('meetLinkInput').value  = meetLink || '';
+        document.getElementById('meetingLinkForm').action = `/admin/subscriptions/${id}/meeting-link`;
+
+        // The gate is ONE-TIME: once a link already exists, both sections
+        // show together from now on — no per-visit "must save first" step.
+        const hasLink = !!meetLink;
+        document.getElementById('editForm').classList.toggle('hidden', !hasLink);
+        document.getElementById('meetingLinkSaveBtn').textContent = hasLink ? 'تحديث الرابط' : 'حفظ الرابط';
+        document.getElementById('meetingLinkHint').textContent = hasLink
+            ? 'لو غيّرت الرابط وحفظت، هيوصل للعميل إيميل بالتغيير.'
+            : 'بعد الحفظ، سيصل للعميل إيميل بميعاده المحدد ورابط الاجتماع.';
 
         openModal('editModal');
     }
-
-    document.getElementById('meetingLinkForm').addEventListener('submit', async function (e) {
-        e.preventDefault();
-
-        const subscriptionId = this.dataset.subscriptionId;
-        const link = document.getElementById('meetLinkInput').value;
-        const saveBtn = document.getElementById('meetingLinkSaveBtn');
-        const errorBox = document.getElementById('meetingLinkError');
-        const successBox = document.getElementById('meetingLinkSuccess');
-
-        errorBox.classList.add('hidden');
-        saveBtn.disabled = true;
-        const originalLabel = saveBtn.textContent;
-        saveBtn.textContent = 'جاري الحفظ...';
-
-        try {
-            const resp = await fetch(`/admin/subscriptions/${subscriptionId}/meeting-link`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                    'Accept': 'application/json',
-                },
-                body: JSON.stringify({ meet_link: link }),
-            });
-            const data = await resp.json();
-
-            if (resp.ok) {
-                successBox.textContent = data.message || 'تم الحفظ';
-                successBox.classList.remove('hidden');
-                document.getElementById('editForm').classList.remove('hidden');
-            } else {
-                const firstError = data.errors ? Object.values(data.errors)[0][0] : (data.message || 'حدث خطأ');
-                errorBox.textContent = firstError;
-                errorBox.classList.remove('hidden');
-            }
-        } catch (err) {
-            errorBox.textContent = 'حدث خطأ في الاتصال، حاول مرة أخرى';
-            errorBox.classList.remove('hidden');
-        }
-
-        saveBtn.disabled = false;
-        saveBtn.textContent = originalLabel;
-    });
 
     function openDelete(id, name) {
         document.getElementById('deleteName').textContent = name;

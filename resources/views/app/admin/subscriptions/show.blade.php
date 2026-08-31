@@ -538,7 +538,7 @@
                 </div>
             </div>
             <div class="card-body flex flex-col gap-2">
-                @foreach(['pending_review'=>['بانتظار المراجعة','pending','bg-orange-400 hover:bg-orange-500'],'approved'=>['موافقة','thumb_up','bg-blue-500 hover:bg-blue-600'],'active'=>['تفعيل','check_circle','bg-green-500 hover:bg-green-600'],'expired'=>['إنهاء','event_busy','bg-slate-400 hover:bg-slate-500'],'rejected'=>['رفض','cancel','bg-red-500 hover:bg-red-600'],'cancelled'=>['إلغاء','cancel','bg-red-700 hover:bg-red-800'],'waiting'=>['انتظار (قديم)','schedule','bg-yellow-400 hover:bg-yellow-500']] as $s => [$label,$icon,$cls])
+                @foreach(['active'=>['تفعيل','check_circle','bg-green-500 hover:bg-green-600'],'expired'=>['إنهاء','event_busy','bg-slate-400 hover:bg-slate-500'],'cancelled'=>['إلغاء','cancel','bg-red-700 hover:bg-red-800']] as $s => [$label,$icon,$cls])
                 @if($subscription->status !== $s)
                 <form method="POST" action="{{ route('admin.subscriptions.update', $subscription) }}">
                     @csrf @method('PUT')
@@ -673,28 +673,37 @@
                 <span class="material-symbols-rounded" style="font-size:20px">close</span>
             </button>
         </div>
+        @php $hasMeetLink = !empty($activeMeetLink); @endphp
+
         {{-- ── Phase 1: meeting link (always shown first) ── --}}
-        <form id="meetingLinkForm" data-subscription-id="{{ $subscription->id }}"
-              class="{{ $errors->any() ? 'hidden' : '' }} p-6 flex flex-col gap-4">
+        <form id="meetingLinkForm" method="POST" action="{{ route('admin.subscriptions.meeting-link', $subscription) }}"
+              class="p-6 flex flex-col gap-4">
+            @csrf
             <div class="flex flex-col gap-1.5">
                 <label class="text-xs font-black text-slate-500">رابط الاجتماع (Google Meet)</label>
-                <input type="url" id="meetLinkInput" class="modal-input" dir="ltr"
+                <input type="url" name="meet_link" id="meetLinkInput" class="modal-input" dir="ltr"
                        placeholder="https://meet.google.com/xxx-xxxx-xxx"
-                       value="{{ $activeMeetLink ?? '' }}" required>
-                <p class="text-[11px] text-slate-400 font-semibold">بعد الحفظ، سيصل للعميل إيميل بميعاده المحدد ورابط الاجتماع.</p>
+                       value="{{ old('meet_link', $activeMeetLink ?? '') }}" required>
+                <p class="text-[11px] text-slate-400 font-semibold">
+                    {{ $hasMeetLink ? 'لو غيّرت الرابط وحفظت، هيوصل للعميل إيميل بالتغيير.' : 'بعد الحفظ، سيصل للعميل إيميل بميعاده المحدد ورابط الاجتماع.' }}
+                </p>
+                @error('meet_link')
+                <p class="text-red-600 text-xs font-bold">{{ $message }}</p>
+                @enderror
             </div>
-            <div id="meetingLinkError" class="hidden bg-red-50 border border-red-200 rounded-xl px-4 py-3 text-xs text-red-600 font-bold"></div>
-            <div id="meetingLinkSuccess" class="hidden bg-green-50 border border-green-200 rounded-xl px-4 py-3 text-xs text-green-700 font-bold"></div>
             <div class="flex gap-3 pt-1">
-                <button type="submit" id="meetingLinkSaveBtn" class="flex-1 bg-blue-500 hover:bg-blue-600 text-white font-black text-sm py-2.5 rounded-xl transition">حفظ</button>
+                <button type="submit" id="meetingLinkSaveBtn" class="flex-1 bg-blue-500 hover:bg-blue-600 text-white font-black text-sm py-2.5 rounded-xl transition">{{ $hasMeetLink ? 'تحديث الرابط' : 'حفظ الرابط' }}</button>
+                @if(!$hasMeetLink)
                 <button type="button" onclick="closeModal('editModal')" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-600 font-black text-sm py-2.5 rounded-xl transition">إلغاء</button>
+                @endif
             </div>
         </form>
 
-        {{-- ── Phase 2: status/dates (revealed after phase 1 saves) ── --}}
+        {{-- ── Phase 2: status/dates (shown once a meeting link exists) ── --}}
         <form id="editForm" method="POST" action="{{ route('admin.subscriptions.update', $subscription) }}"
-              class="{{ $errors->any() ? '' : 'hidden' }} p-6 pt-0 flex flex-col gap-4">
+              class="{{ $hasMeetLink ? '' : 'hidden' }} p-6 pt-0 flex flex-col gap-4">
             @csrf @method('PUT')
+            <input type="hidden" name="from_modal" value="1">
             <div class="flex flex-col gap-1.5">
                 <label class="text-xs font-black text-slate-500">حالة الاشتراك</label>
                 <select name="status" class="modal-input">
@@ -715,16 +724,18 @@
                            value="{{ $subscription->end_date?->format('Y-m-d') }}">
                 </div>
             </div>
-            @if($errors->any())
-            <div class="bg-red-50 border border-red-200 rounded-xl p-3">
-                @foreach($errors->all() as $e)<p class="text-red-600 text-xs font-bold">• {{ $e }}</p>@endforeach
-            </div>
-            @endif
+            @error('status')<p class="text-red-600 text-xs font-bold">{{ $message }}</p>@enderror
+            @error('end_date')<p class="text-red-600 text-xs font-bold">{{ $message }}</p>@enderror
             <div class="flex gap-3 pt-1">
                 <button type="submit" class="flex-1 bg-blue-500 hover:bg-blue-600 text-white font-black text-sm py-2.5 rounded-xl transition">حفظ</button>
-                <button type="button" onclick="closeModal('editModal')" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-600 font-black text-sm py-2.5 rounded-xl transition">إلغاء</button>
             </div>
         </form>
+
+        @if($hasMeetLink)
+        <div class="px-6 pb-6">
+            <button type="button" onclick="closeModal('editModal')" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-600 font-black text-sm py-2.5 rounded-xl transition">إغلاق</button>
+        </div>
+        @endif
     </div>
 </div>
 
@@ -769,51 +780,7 @@
     function openEditModal()   { openModal('editModal'); }
     function openDeleteModal() { openModal('deleteModal'); }
 
-    @if($errors->any()) openEditModal(); @endif
-
-    document.getElementById('meetingLinkForm').addEventListener('submit', async function (e) {
-        e.preventDefault();
-
-        const subscriptionId = this.dataset.subscriptionId;
-        const link = document.getElementById('meetLinkInput').value;
-        const saveBtn = document.getElementById('meetingLinkSaveBtn');
-        const errorBox = document.getElementById('meetingLinkError');
-        const successBox = document.getElementById('meetingLinkSuccess');
-
-        errorBox.classList.add('hidden');
-        saveBtn.disabled = true;
-        const originalLabel = saveBtn.textContent;
-        saveBtn.textContent = 'جاري الحفظ...';
-
-        try {
-            const resp = await fetch(`/admin/subscriptions/${subscriptionId}/meeting-link`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                    'Accept': 'application/json',
-                },
-                body: JSON.stringify({ meet_link: link }),
-            });
-            const data = await resp.json();
-
-            if (resp.ok) {
-                successBox.textContent = data.message || 'تم الحفظ';
-                successBox.classList.remove('hidden');
-                document.getElementById('editForm').classList.remove('hidden');
-            } else {
-                const firstError = data.errors ? Object.values(data.errors)[0][0] : (data.message || 'حدث خطأ');
-                errorBox.textContent = firstError;
-                errorBox.classList.remove('hidden');
-            }
-        } catch (err) {
-            errorBox.textContent = 'حدث خطأ في الاتصال، حاول مرة أخرى';
-            errorBox.classList.remove('hidden');
-        }
-
-        saveBtn.disabled = false;
-        saveBtn.textContent = originalLabel;
-    });
+    @if($errors->any() || session('reopen_subscription_id') == $subscription->id) openEditModal(); @endif
 
     // ── Auto-calculate end date when start date changes ──────────
     const durationMonths = {{ (int) ($subscription->duration_months ?? 3) }};
