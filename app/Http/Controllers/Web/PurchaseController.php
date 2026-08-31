@@ -82,11 +82,18 @@ class PurchaseController extends Controller
         // for a live estimate. The actual charge is still always computed
         // authoritatively server-side by FxConverter at submission time;
         // this never feeds back into what gets persisted or charged.
-        $fxRateConfigured = $currency === 'EGP' || ! is_null(config("payment.fx.egp_rates.{$currency}"));
-        $fxBaseRate       = $currency === 'EGP' ? 1.0 : (float) (config("payment.fx.egp_rates.{$currency}") ?? 0);
-        $fxMarkupPercent  = (float) config('payment.fx.markup_percent', 0);
-        $fxEffectiveRate  = $currency === 'EGP' ? 1.0 : $fxBaseRate * (1 + $fxMarkupPercent / 100);
-        $fxRounding       = (string) config('payment.fx.rounding', 'none');
+        //
+        // Goes through the SAME FxConverter (DB fx_rates → config fallback)
+        // that submission uses — it never makes an HTTP call, only reads the
+        // DB — so this can't disagree with what actually happens on submit.
+        try {
+            $fxEffectiveRate  = (float) $this->fxConverter->toEgpCents(1, $currency)['rate'];
+            $fxRateConfigured = true;
+        } catch (FxRateNotConfiguredException $e) {
+            $fxEffectiveRate  = 0.0;
+            $fxRateConfigured = false;
+        }
+        $fxRounding = (string) config('payment.fx.rounding', 'none');
 
         return view('app.web.purchase.form', compact(
             'plan', 'currency', 'durationMonths',
