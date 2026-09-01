@@ -25,6 +25,8 @@ class AppServiceProvider extends ServiceProvider
                 hmacSecret: (string) config('services.paymob.hmac_secret'),
                 integrationIdCard: config('services.paymob.integrations.card'),
                 timeout: (int) config('services.paymob.http_timeout', 30),
+                integrationIdWallet: config('services.paymob.integrations.wallet'),
+                integrationIdApplePay: config('services.paymob.integrations.apple_pay'),
             );
         });
     }

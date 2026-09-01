@@ -52,12 +52,15 @@ return [
         'public_key'  => env('PAYMOB_PUBLIC_KEY'),
         'hmac_secret' => env('PAYMOB_HMAC_SECRET'),
 
-        // Integration IDs keyed by payment method. Only 'card' is wired up in
-        // Batch 5; 'wallet' is configured now so this array never needs
-        // reshaping later.
+        // Integration IDs keyed by payment method — all fed into the same
+        // Unified Checkout `payment_methods` array (PaymobClient::createIntention).
+        // 'card' is mandatory; 'wallet' and 'apple_pay' are optional and simply
+        // omitted when null. 'apple_pay' stays null until Paymob issues an
+        // Apple Pay integration ID for this merchant account.
         'integrations' => [
-            'card'   => env('PAYMOB_INTEGRATION_ID_CARD'),
-            'wallet' => env('PAYMOB_INTEGRATION_ID_WALLET'),
+            'card'      => env('PAYMOB_INTEGRATION_ID_CARD'),
+            'wallet'    => env('PAYMOB_INTEGRATION_ID_WALLET'),
+            'apple_pay' => env('PAYMOB_INTEGRATION_ID_APPLE_PAY'),
         ],
 
         // This merchant account is EGP-only (see docs/paymob-migration-audit.md, D1).

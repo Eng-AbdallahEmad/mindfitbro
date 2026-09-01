@@ -896,7 +896,7 @@ return [
         'upload_hint'           => 'اسحب الملف هنا أو اضغط لاختياره',
         'upload_formats'        => 'صور (JPG, PNG) أو PDF — الحد الأقصى 5 ميجابايت',
         'file_selected'         => 'تم اختيار الملف',
-        'submit_btn'            => 'ادفع بالبطاقة',
+        'submit_btn'            => 'إتمام الدفع',
         'submitting'            => 'جاري التجهيز...',
         'secure_notice'         => 'بياناتك ودفعتك تُعالج بأمان عبر بوابة الدفع الإلكتروني',
         'payment_failed_default_reason' => 'تعذر إتمام عملية الدفع.',

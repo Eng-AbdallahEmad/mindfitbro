@@ -13,7 +13,11 @@ use Tests\TestCase;
 
 class PaymobClientTest extends TestCase
 {
-    private function client(?string $integrationId = '4321'): PaymobClient
+    private function client(
+        ?string $integrationId = '4321',
+        ?string $walletId = null,
+        ?string $applePayId = null,
+    ): PaymobClient
     {
         return new PaymobClient(
             baseUrl: 'https://accept.paymob.com',
@@ -22,6 +26,8 @@ class PaymobClientTest extends TestCase
             hmacSecret: 'hmac_test_secret',
             integrationIdCard: $integrationId,
             timeout: 5,
+            integrationIdWallet: $walletId,
+            integrationIdApplePay: $applePayId,
         );
     }
 
@@ -69,6 +75,44 @@ class PaymobClientTest extends TestCase
         });
 
         Http::assertSentCount(1);
+    }
+
+    public function test_appends_wallet_and_apple_pay_integration_ids_when_configured(): void
+    {
+        Http::fake([
+            'accept.paymob.com/v1/intention/' => Http::response([
+                'id' => 'int_abc123', 'intention_order_id' => 555666, 'client_secret' => 'csecret_xyz',
+            ], 201),
+        ]);
+
+        $subscription = Subscription::factory()->paidViaPaymob()->create([
+            'charged_amount_cents' => 12345,
+            'charged_currency' => 'EGP',
+        ]);
+
+        $this->client(integrationId: '4321', walletId: '8765', applePayId: '9999')
+            ->createIntention($subscription, ['full_name' => 'Ahmed Ali', 'email' => 'ahmed@example.com']);
+
+        Http::assertSent(fn ($request) => $request['payment_methods'] === [4321, 8765, 9999]);
+    }
+
+    public function test_omits_wallet_and_apple_pay_from_payment_methods_when_not_configured(): void
+    {
+        Http::fake([
+            'accept.paymob.com/v1/intention/' => Http::response([
+                'id' => 'int_abc123', 'intention_order_id' => 555666, 'client_secret' => 'csecret_xyz',
+            ], 201),
+        ]);
+
+        $subscription = Subscription::factory()->paidViaPaymob()->create([
+            'charged_amount_cents' => 12345,
+            'charged_currency' => 'EGP',
+        ]);
+
+        $this->client(integrationId: '4321')
+            ->createIntention($subscription, ['full_name' => 'Ahmed Ali', 'email' => 'ahmed@example.com']);
+
+        Http::assertSent(fn ($request) => $request['payment_methods'] === [4321]);
     }
 
     // ── createIntention: guard clauses ──────────────────────────────────

@@ -896,7 +896,7 @@ return [
         'upload_hint'           => 'Drag & drop or click to choose a file',
         'upload_formats'        => 'Images (JPG, PNG) or PDF — max 5 MB',
         'file_selected'         => 'File selected',
-        'submit_btn'            => 'Pay by Card',
+        'submit_btn'            => 'Proceed to Payment',
         'submitting'            => 'Preparing...',
         'secure_notice'         => 'Your payment is processed securely through our payment gateway',
         'payment_failed_default_reason' => 'The payment could not be completed.',

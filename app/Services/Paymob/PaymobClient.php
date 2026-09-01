@@ -70,6 +70,13 @@ class PaymobClient
         private readonly string $hmacSecret,
         private readonly ?string $integrationIdCard,
         private readonly int $timeout,
+        // Optional — Unified Checkout shows whichever of these are non-null
+        // as extra payment methods alongside card, no other code change
+        // needed. $integrationIdApplePay stays null until Paymob issues an
+        // Apple Pay integration ID for this merchant account (a business/
+        // KYC step on Paymob's side, not something configurable from here).
+        private readonly ?string $integrationIdWallet = null,
+        private readonly ?string $integrationIdApplePay = null,
     ) {}
 
     /**
@@ -96,15 +103,35 @@ class PaymobClient
 
         $specialReference = $this->buildSpecialReference($subscription);
 
+        // Card is always first/mandatory; wallet and Apple Pay are appended
+        // only when configured — Paymob's Unified Checkout then presents
+        // whichever of these the customer's browser/device supports, no
+        // separate method-picker UI needed on our side.
+        $paymentMethods = array_values(array_filter([
+            (int) $this->integrationIdCard,
+            $this->integrationIdWallet ? (int) $this->integrationIdWallet : null,
+            $this->integrationIdApplePay ? (int) $this->integrationIdApplePay : null,
+        ]));
+
         $payload = [
             'amount' => (int) $subscription->charged_amount_cents,
             'currency' => $subscription->charged_currency,
-            'payment_methods' => [(int) $this->integrationIdCard],
+            'payment_methods' => $paymentMethods,
             'billing_data' => $this->buildBillingData($billing),
             'special_reference' => $specialReference,
             // Per-intention, not dashboard-configured, per Batch 4 instructions.
             'notification_url' => route('paymob.webhook'),
-            'redirection_url' => route('paymob.callback'),
+            // sid/guest_token are OUR OWN query params, not Paymob's — Paymob
+            // treats this URL as opaque and appends its own params (id,
+            // order, success, hmac, ...) on top when it redirects the
+            // browser back, so these survive the round trip. This is what
+            // lets PaymobCallbackController::show() authorize the visitor
+            // (owner or matching guest_token) instead of trusting a
+            // guessable order/transaction id alone.
+            'redirection_url' => route('paymob.callback', array_filter([
+                'sid' => $subscription->id,
+                'guest_token' => $subscription->guest_token,
+            ])),
         ];
 
         $response = $this->post('/v1/intention/', $payload, $subscription);
