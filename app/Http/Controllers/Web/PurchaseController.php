@@ -714,7 +714,7 @@ class PurchaseController extends Controller
     // ── Retry: fresh intention on an existing awaiting_payment/payment_failed order ──
     public function retryPayment(Request $request, Subscription $subscription): RedirectResponse
     {
-        $authorized = (Auth::check() && $subscription->user_id === Auth::id())
+        $authorized = (Auth::check() && (int) $subscription->user_id === (int) Auth::id())
             || (! Auth::check()
                 && $subscription->guest_token
                 && hash_equals($subscription->guest_token, (string) $request->input('guest_token', '')));
@@ -751,7 +751,7 @@ class PurchaseController extends Controller
      */
     public function switchMethod(Request $request, Subscription $subscription): RedirectResponse
     {
-        $authorized = (Auth::check() && $subscription->user_id === Auth::id())
+        $authorized = (Auth::check() && (int) $subscription->user_id === (int) Auth::id())
             || (! Auth::check()
                 && $subscription->guest_token
                 && hash_equals($subscription->guest_token, (string) $request->input('guest_token', '')));

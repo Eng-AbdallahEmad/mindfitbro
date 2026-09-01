@@ -68,7 +68,15 @@ class PaymobCallbackController extends Controller
      */
     private function authorize(Request $request, Subscription $subscription): void
     {
-        $authorized = (Auth::check() && $subscription->user_id === Auth::id())
+        // Cast both sides before comparing — some DB driver configurations
+        // (PDO::ATTR_EMULATE_PREPARES differences between environments) can
+        // return an integer column as a numeric STRING; Auth::id() is always
+        // an int, so a strict === between the two would silently reject the
+        // real owner. Confirmed against a live 403 for a genuinely logged-in
+        // owner. Never null-equals-null: (int) null is 0, and Auth::id() is
+        // never 0 while Auth::check() is true, so a guest subscription can't
+        // accidentally match here.
+        $authorized = (Auth::check() && (int) $subscription->user_id === (int) Auth::id())
             || (!Auth::check()
                 && $subscription->guest_token
                 && hash_equals($subscription->guest_token, (string) $request->query('guest_token', '')));
