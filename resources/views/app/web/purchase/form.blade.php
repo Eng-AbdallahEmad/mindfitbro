@@ -231,12 +231,13 @@
     $isAuth   = Auth::check() ? 'true' : 'false';
     $sPct     = $activeSeason ? (float) $activeSeason->discount_percentage : 0;
     $pctStr   = $sPct > 0 ? rtrim(rtrim(number_format($sPct, 2), '0'), '.') : '';
+    $manualSymbol = $manualMethod ? (\App\Services\Web\CurrencyService::META[$manualMethod['currency']]['symbol'] ?? '') : '';
 @endphp
 
 <div
     class="min-h-screen bg-[#F0F4FB] font-arabic"
     dir="{{ $isRtl ? 'rtl' : 'ltr' }}"
-    x-data="purchaseForm({{ $durationMonths }}, {{ $price3m }}, {{ $price6m }}, {{ $sPrice3m }}, {{ $sPrice6m }}, {{ $fxEffectiveRate }}, '{{ $fxRounding }}')"
+    x-data="purchaseForm({{ $durationMonths }}, {{ $price3m }}, {{ $price6m }}, {{ $sPrice3m }}, {{ $sPrice6m }}, {{ $fxEffectiveRate }}, '{{ $fxRounding }}', {{ $manualMethod ? 'true' : 'false' }}, {{ $manualPrice3m ?? 'null' }}, {{ $manualPrice6m ?? 'null' }}, {{ $manualSPrice3m ?? 'null' }}, {{ $manualSPrice6m ?? 'null' }})"
 >
     {{-- ── Hero Banner ── --}}
     <div class="purchase-hero flex flex-col items-center justify-center text-center px-6 py-12 relative">
@@ -313,6 +314,7 @@
             <form
                 action="{{ route('purchase.submit', $plan) }}"
                 method="POST"
+                enctype="multipart/form-data"
                 class="p-8 space-y-6"
                 @submit.prevent="handleSubmit"
                 id="purchase-form"
@@ -321,6 +323,7 @@
                 <input type="hidden" name="duration_months" :value="months">
                 <input type="hidden" name="coupon_code" :value="couponApplied">
                 <input type="hidden" name="expected_season_id" value="{{ $activeSeason?->id ?? '' }}">
+                <input type="hidden" name="payment_method" :value="paymentMethod">
 
                 @if(session('info'))
                 <div class="flex items-center gap-3 bg-blue-50 border border-blue-200 text-blue-800 rounded-xl px-4 py-3 text-sm font-bold">
@@ -534,9 +537,26 @@
                 </div>
                 @endguest
 
-                {{-- EGP Charge Summary — pre-redirect notice (decision D4) ── --}}
-                @if($fxRateConfigured)
+                {{-- ── Payment method — card is always first/default; manual only
+                     appears at all when the visitor's DETECTED country is eligible
+                     (never a self-service currency switch — docs/dual-payment-plan.md A5) ── --}}
+                @if($manualMethod)
                 <div>
+                    <p class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">{{ __('messages.purchase.pay_via') ?: 'طريقة الدفع' }}</p>
+                    <div class="flex gap-3">
+                        <button type="button" class="dur-btn" :class="{ active: paymentMethod === 'card' }" @click="paymentMethod = 'card'">
+                            بطاقة / محفظة إلكترونية
+                        </button>
+                        <button type="button" class="dur-btn" :class="{ active: paymentMethod === 'manual' }" @click="paymentMethod = 'manual'">
+                            تحويل بنكي محلي
+                        </button>
+                    </div>
+                </div>
+                @endif
+
+                {{-- ── Card path: EGP Charge Summary — pre-redirect notice (decision D4) ── --}}
+                <div x-show="paymentMethod === 'card'" @if($manualMethod) x-cloak @endif>
+                    @if($fxRateConfigured)
                     <div class="payment-card">
                         <div class="payment-card-title">{{ __('messages.purchase.egp_charge_title') }}</div>
                         <div class="payment-row" style="background:#EBF0FF;border-radius:10px;padding:10px 12px;">
@@ -547,21 +567,70 @@
                             {{ __('messages.purchase.egp_charge_notice') }}
                         </p>
                     </div>
+                    @else
+                    <div class="warning-box" style="margin-top:0;">
+                        <span class="material-symbols-rounded" style="font-size:18px;font-variation-settings:'FILL' 1;flex-shrink:0">warning</span>
+                        <span>{{ __('messages.purchase.currency_unavailable_notice') }}</span>
+                    </div>
+                    @endif
                 </div>
-                @else
-                <div class="warning-box" style="margin-top:0;">
-                    <span class="material-symbols-rounded" style="font-size:18px;font-variation-settings:'FILL' 1;flex-shrink:0">warning</span>
-                    <span>{{ __('messages.purchase.currency_unavailable_notice') }}</span>
+
+                {{-- ── Manual path: bank/InstaPay details + receipt upload ── --}}
+                @if($manualMethod)
+                <div x-show="paymentMethod === 'manual'" x-cloak>
+                    <x-web.payment-instructions
+                        :method="$manualMethod"
+                        :currency="$manualMethod['currency']"
+                        :total="$manualPrice3m ?? 0"
+                        liveAmountExpr="manualFinalPriceFormatted"
+                    />
+
+                    <div>
+                        <label class="form-label">{{ __('messages.purchase.upload_receipt') }} <span class="text-red-500">*</span></label>
+                        <div class="upload-zone" :class="{ dragging: isDragging }"
+                             @dragover.prevent="isDragging = true"
+                             @dragleave.prevent="isDragging = false"
+                             @drop.prevent="handleFileDrop($event)"
+                             x-show="!selectedFile"
+                        >
+                            <input type="file" name="receipt" x-ref="receiptInput"
+                                   accept=".jpg,.jpeg,.png,.gif,.pdf"
+                                   :required="paymentMethod === 'manual'"
+                                   @change="handleFileSelect($event)">
+                            <span class="material-symbols-rounded" style="font-size:32px;color:#174DAD;display:block;margin-bottom:8px">cloud_upload</span>
+                            <p class="text-sm font-bold text-gray-600">{{ __('messages.purchase.upload_hint') }}</p>
+                            <p class="text-xs text-gray-400 mt-1">{{ __('messages.purchase.upload_formats') }}</p>
+                        </div>
+
+                        <template x-if="selectedFile">
+                            <div class="file-preview-box">
+                                <div class="file-preview-icon">
+                                    <span class="material-symbols-rounded" style="font-size:26px;color:#174DAD">description</span>
+                                </div>
+                                <div style="flex:1;min-width:0;">
+                                    <p class="file-preview-name" x-text="selectedFile?.name"></p>
+                                    <p class="file-preview-size" x-text="selectedFileSizeFormatted"></p>
+                                </div>
+                                <button type="button" @click="clearFile" class="text-gray-400 hover:text-red-500" title="إزالة الملف">
+                                    <span class="material-symbols-rounded" style="font-size:20px">close</span>
+                                </button>
+                            </div>
+                        </template>
+                        @error('receipt')<p class="error-msg">{{ $message }}</p>@enderror
+                    </div>
                 </div>
                 @endif
 
                 {{-- Submit ── --}}
                 <div class="pt-2">
-                    <button type="submit" class="submit-btn" :disabled="submitting || {{ ($fxRateConfigured && $paymobEnabled) ? 'false' : 'true' }}">
-                        <span x-show="!submitting">{{ __('messages.purchase.submit_btn') }}</span>
+                    <button type="submit" class="submit-btn"
+                        :disabled="submitting
+                            || (paymentMethod === 'card' && {{ ($fxRateConfigured && $paymobEnabled) ? 'false' : 'true' }})
+                            || (paymentMethod === 'manual' && !selectedFile)">
+                        <span x-show="!submitting" x-text="paymentMethod === 'manual' ? 'إرسال الطلب' : '{{ __('messages.purchase.submit_btn') }}'"></span>
                         <span x-show="submitting" x-cloak>{{ __('messages.purchase.submitting') }}</span>
                     </button>
-                    <p class="text-center text-xs text-gray-400 mt-3">{{ __('messages.purchase.secure_notice') }}</p>
+                    <p class="text-center text-xs text-gray-400 mt-3" x-text="paymentMethod === 'manual' ? 'سيراجع فريقنا طلبك بعد إرسال الإيصال' : '{{ __('messages.purchase.secure_notice') }}'"></p>
                 </div>
 
             </form>
@@ -571,7 +640,7 @@
 
 @section('script')
 <script>
-function purchaseForm(initialMonths, price3m, price6m, sPrice3m, sPrice6m, fxEffectiveRate, fxRounding) {
+function purchaseForm(initialMonths, price3m, price6m, sPrice3m, sPrice6m, fxEffectiveRate, fxRounding, manualAvailable, manualPrice3m, manualPrice6m, manualSPrice3m, manualSPrice6m) {
     return {
         months: initialMonths,
         _price3m: price3m,
@@ -581,6 +650,18 @@ function purchaseForm(initialMonths, price3m, price6m, sPrice3m, sPrice6m, fxEff
         _fxRate: fxEffectiveRate,
         _fxRounding: fxRounding,
         hasSeason: sPrice3m < price3m || sPrice6m < price6m,
+
+        // ── Payment method (card is always the default) ───────────
+        paymentMethod: 'card',
+        manualAvailable: manualAvailable,
+        _manualPrice3m: manualPrice3m,
+        _manualPrice6m: manualPrice6m,
+        _manualSPrice3m: manualSPrice3m,
+        _manualSPrice6m: manualSPrice6m,
+        manualDiscount3m: 0,
+        manualDiscount6m: 0,
+        selectedFile: null,
+        isDragging: false,
 
         submitting: false,
 
@@ -637,6 +718,44 @@ function purchaseForm(initialMonths, price3m, price6m, sPrice3m, sPrice6m, fxEff
         },
         _smartFmt(n) {
             return Math.round(n).toLocaleString('{{ $locale }}', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+        },
+
+        // ── Manual-transfer price — its OWN currency, independent of the
+        // display currency above (docs/dual-payment-plan.md A5) ─────
+        get manualBasePrice() {
+            if (!this.manualAvailable) return 0;
+            return this.months === 3 ? this._manualSPrice3m : this._manualSPrice6m;
+        },
+        get manualCurrentDiscount() {
+            return this.months === 3 ? this.manualDiscount3m : this.manualDiscount6m;
+        },
+        get manualFinalPrice() {
+            return Math.round(Math.max(0, this.manualBasePrice - this.manualCurrentDiscount));
+        },
+        get manualFinalPriceFormatted() {
+            return this._smartFmt(this.manualFinalPrice);
+        },
+
+        // ── Receipt upload (manual path) ─────────────────────────
+        get selectedFileSizeFormatted() {
+            if (!this.selectedFile) return '';
+            const kb = this.selectedFile.size / 1024;
+            return kb > 1024 ? (kb / 1024).toFixed(1) + ' MB' : Math.round(kb) + ' KB';
+        },
+        handleFileSelect(e) {
+            this.selectedFile = e.target.files[0] || null;
+        },
+        handleFileDrop(e) {
+            this.isDragging = false;
+            const file = e.dataTransfer.files[0];
+            if (file) {
+                this.$refs.receiptInput.files = e.dataTransfer.files;
+                this.selectedFile = file;
+            }
+        },
+        clearFile() {
+            this.selectedFile = null;
+            this.$refs.receiptInput.value = '';
         },
 
         // ── EGP charge estimate (display only) ────────────────────
@@ -736,21 +855,33 @@ function purchaseForm(initialMonths, price3m, price6m, sPrice3m, sPrice6m, fxEff
                     this.couponApplied = code.toUpperCase();
                     this.discount3m    = data.discount3m;
                     this.discount6m    = data.discount6m;
+                    this.manualDiscount3m = data.manualDiscount3m || 0;
+                    this.manualDiscount6m = data.manualDiscount6m || 0;
                     // Sync season prices from server (handles time-edge: season expired/started mid-session)
                     if (data.season) {
                         this._sPrice3m = data.season.sPrice3m;
                         this._sPrice6m = data.season.sPrice6m;
                         this.hasSeason = true;
+                        if (this.manualAvailable && data.season.manualSPrice3m != null) {
+                            this._manualSPrice3m = data.season.manualSPrice3m;
+                            this._manualSPrice6m = data.season.manualSPrice6m;
+                        }
                     } else {
                         this._sPrice3m = this._price3m;
                         this._sPrice6m = this._price6m;
                         this.hasSeason = false;
+                        if (this.manualAvailable) {
+                            this._manualSPrice3m = this._manualPrice3m;
+                            this._manualSPrice6m = this._manualPrice6m;
+                        }
                     }
                     this.couponError = '';
                 } else {
                     this.couponError = data.message || 'الكوبون غير صالح أو منتهي الصلاحية';
                     this.discount3m  = 0;
                     this.discount6m  = 0;
+                    this.manualDiscount3m = 0;
+                    this.manualDiscount6m = 0;
                 }
             } catch (_) {
                 this.couponError = 'حدث خطأ، يرجى المحاولة مرة أخرى';
@@ -763,6 +894,8 @@ function purchaseForm(initialMonths, price3m, price6m, sPrice3m, sPrice6m, fxEff
             this.couponCode    = '';
             this.discount3m    = 0;
             this.discount6m    = 0;
+            this.manualDiscount3m = 0;
+            this.manualDiscount6m = 0;
             this.couponError   = '';
         },
 

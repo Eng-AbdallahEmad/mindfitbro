@@ -63,6 +63,7 @@ Route::post('/currency/switch', [CurrencyController::class, 'switch'])->name('cu
 if (app()->environment('local', 'development')) {
     Route::get('/currency/debug', function () {
         $svc = app(\App\Services\Web\CurrencyService::class);
+        $eligibility = app(\App\Services\Web\PaymentEligibilityService::class);
         return response()->json([
             'ip'                           => request()->ip(),
             'session_currency'             => session('currency', '(not set)'),
@@ -72,8 +73,7 @@ if (app()->environment('local', 'development')) {
             'config_testing_country_code'  => config('services.location.testing_country_code'),
             'currency_service_current'     => $svc->current(),
             'currency_meta'                => $svc->jsConfig(),
-            'payment_method_key'           => $svc->paymentMethodKey(),
-            'payment_instructions_type'    => $svc->paymentInstructions()['type'] ?? null,
+            'manual_transfer_method'       => $eligibility->manualMethodFor(session('detected_country')),
         ]);
     });
 }
@@ -98,6 +98,7 @@ Route::prefix('purchase')->name('purchase.')->group(function () {
     Route::get('/{plan:key}',        [PurchaseController::class, 'showForm'])->name('form');
     Route::post('/{plan:key}',       [PurchaseController::class, 'initiatePayment'])->name('submit');
     Route::post('/{subscription}/retry', [PurchaseController::class, 'retryPayment'])->name('retry')->middleware('throttle:10,1');
+    Route::post('/{subscription}/switch-method', [PurchaseController::class, 'switchMethod'])->name('switch-method')->middleware('throttle:10,1');
     Route::get('/{subscription}/status', [PaymobCallbackController::class, 'status'])->name('status')->middleware('throttle:30,1');
 });
 

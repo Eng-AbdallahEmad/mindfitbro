@@ -58,16 +58,6 @@ class CurrencyService
         return self::COUNTRY_CURRENCY[strtoupper($code)] ?? 'USD';
     }
 
-    public function paymentMethodKey(?string $currency = null): string
-    {
-        return config('payment.currency_to_method.' . ($currency ?? $this->current()), 'sa_world');
-    }
-
-    public function paymentInstructions(?string $currency = null): array
-    {
-        return config('payment.methods.' . $this->paymentMethodKey($currency), []);
-    }
-
     /** Array consumed by window.MFB_CURRENCY in JS. */
     public function jsConfig(?string $currency = null): array
     {

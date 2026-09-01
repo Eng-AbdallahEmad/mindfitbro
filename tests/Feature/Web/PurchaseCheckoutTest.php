@@ -328,6 +328,37 @@ class PurchaseCheckoutTest extends TestCase
         Http::assertSent(fn ($request) => $request['amount'] === 77700);
     }
 
+    /**
+     * Regression: retryPayment() never reset status back to
+     * awaiting_payment on a fresh intention — a payment_failed row retried
+     * successfully would still sit on payment_failed, and the LATER
+     * webhook's OrderApprovalService::approve() guard (only pending_review/
+     * awaiting_payment are approvable) would then reject a genuinely
+     * successful payment. Fixed in createPaymobIntentionAndRedirect() —
+     * discovered via step 7's switchToCard(), which shares that method.
+     */
+    public function test_retrying_a_payment_failed_order_resets_status_to_awaiting_payment(): void
+    {
+        $this->configurePaymobForTests();
+        $this->fakeSuccessfulIntention('retry-order-3');
+
+        $subscription = Subscription::factory()->create([
+            'user_id' => null,
+            'guest_email' => 'guest@example.com',
+            'guest_token' => 'correct-token',
+            'status' => Subscription::STATUS_PAYMENT_FAILED,
+            'payment_gateway' => Subscription::GATEWAY_PAYMOB,
+            'charged_amount_cents' => 50000,
+            'charged_currency' => 'EGP',
+            'payment_failure_reason' => 'Card declined.',
+        ]);
+
+        $this->post(route('purchase.retry', $subscription), ['guest_token' => 'correct-token'])
+            ->assertRedirect();
+
+        $this->assertSame(Subscription::STATUS_AWAITING_PAYMENT, $subscription->fresh()->status);
+    }
+
     public function test_retry_with_wrong_guest_token_is_forbidden(): void
     {
         $this->configurePaymobForTests();

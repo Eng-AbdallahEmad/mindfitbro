@@ -4,32 +4,53 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Payment Methods (Manual Bank Transfer / InstaPay)
+    | Manual bank transfer / InstaPay — reintroduced alongside Paymob
     |--------------------------------------------------------------------------
-    | Each key maps to a set of payment instructions shown at checkout.
-    | currency_to_method maps the session currency to a method key.
+    | Decision (docs/dual-payment-plan.md, A1-A6, dated 2026-09-01): manual
+    | transfer is a SECOND payment method, additive to Paymob, never a
+    | replacement. Eligibility is read from App\Services\Web\
+    | PaymentEligibilityService, which gates on the visitor's IP-DETECTED
+    | country (session('detected_country'), set once by DetectCurrency and
+    | NOT customer-changeable) — never on the freely-switchable display
+    | currency (session('currency'), changeable via POST /currency/switch
+    | with zero verification). One row per currency, 'enabled' is the single
+    | on/off switch — flip it to add/remove a currency from manual transfer
+    | without touching any other code. A DB-backed (admin-editable) version
+    | of this toggle is a known future step, not needed before the first
+    | real manual transaction goes through this config-file version.
+    |
+    | 'USD' has NO bank details on purpose: it's the "rest of world" catch-
+    | all currency (CurrencyService::fromCountryCode() defaults any country
+    | NOT in COUNTRY_CURRENCY to USD) and never had a real local payment
+    | rail — the old config pointed this entire bucket at a Saudi bank
+    | account, which was a bug (a Kuwaiti or American customer has no reason
+    | to wire riyals to Saudi Arabia), not a decision. Confirmed nothing else
+    | in the app reads a 'USD' entry here.
     */
 
-    'methods' => [
+    'manual' => [
 
-        'sa_world' => [
-            'country_label' => 'للعملاء في السعودية وبقية دول العالم',
-            'type'          => 'bank_transfer',
-            'bank_name'     => 'STC Bank',
-            'account_name'  => 'محمود عبدالله',
-            'account_number'=> '1028992404',
-            'iban'          => 'SA7178000000001028992404',
+        'SAR' => [
+            'enabled'        => true,
+            'country_label'  => 'للعملاء في السعودية',
+            'type'           => 'bank_transfer',
+            'bank_name'      => 'STC Bank',
+            'account_name'   => 'محمود عبدالله',
+            'account_number' => '1028992404',
+            'iban'           => 'SA7178000000001028992404',
         ],
 
-        'eg' => [
-            'country_label' => 'للعملاء في مصر',
-            'type'          => 'instapay',
-            'link'          => 'https://ipn.eg/S/mindfitbro/instapay/4s2ZPS',
-            'instapay_id'   => 'mindfitbro@instapay',
-            'phone'         => '01098630291',
+        'EGP' => [
+            'enabled'      => true,
+            'country_label'=> 'للعملاء في مصر',
+            'type'         => 'instapay',
+            'link'         => 'https://ipn.eg/S/mindfitbro/instapay/4s2ZPS',
+            'instapay_id'  => 'mindfitbro@instapay',
+            'phone'        => '01098630291',
         ],
 
-        'tn' => [
+        'TND' => [
+            'enabled'       => true,
             'country_label' => 'للعملاء في تونس',
             'type'          => 'bank_transfer',
             'bank_name'     => 'الشركة التونسية للبنك (STB)',
@@ -38,13 +59,28 @@ return [
             'swift'         => 'STBKTNTT',
         ],
 
+        'USD' => [
+            'enabled' => false,
+        ],
+
     ],
 
-    'currency_to_method' => [
-        'SAR' => 'sa_world',
-        'USD' => 'sa_world',
-        'EGP' => 'eg',
-        'TND' => 'tn',
+    /*
+    |--------------------------------------------------------------------------
+    | Manual review staleness thresholds (step 6, admin surfacing only)
+    |--------------------------------------------------------------------------
+    | Purely for the admin UI to flag an unreviewed manual (pending_review)
+    | order visually — never auto-rejects, auto-expires, or otherwise mutates
+    | anything on its own. A human always decides. Measured from
+    | payment_intended_at (set at manual creation AND refreshed on a
+    | mid-flight switch-to-manual — see PurchaseController::switchToManual()),
+    | not created_at, so the "waiting" clock reflects when THIS review
+    | actually started.
+    */
+
+    'manual_review_thresholds' => [
+        'warning_hours' => (int) env('MANUAL_REVIEW_WARNING_HOURS', 48),
+        'urgent_hours'  => (int) env('MANUAL_REVIEW_URGENT_HOURS', 168),
     ],
 
     /*

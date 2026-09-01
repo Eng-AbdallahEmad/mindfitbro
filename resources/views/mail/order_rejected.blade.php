@@ -60,12 +60,24 @@ body { margin:0; padding:0; background:#F0F4FB; font-family:'Cairo','Segoe UI',T
         <div style="background:#F4F7FF;border-radius:16px;padding:20px 24px;margin-bottom:28px;">
             <div style="font-size:13px;font-weight:900;color:#374151;margin-bottom:10px;font-family:'Cairo','Segoe UI',Tahoma,Arial,sans-serif;">ماذا يمكنك فعله؟</div>
             <div style="font-size:13px;color:#6B7280;line-height:1.8;font-family:'Cairo','Segoe UI',Tahoma,Arial,sans-serif;">
-                يمكنك التواصل معنا مباشرة عبر واتساب لتوضيح المشكلة وإعادة المحاولة.
-                فريقنا مستعد لمساعدتك في إتمام اشتراكك.
+                يمكنك العودة لصفحة طلبك وإعادة المحاولة — إما بالدفع مباشرة بالبطاقة،
+                أو برفع إيصال تحويل جديد وصحيح. لا داعي لبدء طلب جديد من الصفر.
+                يمكنك أيضاً التواصل معنا مباشرة عبر واتساب لو احتجت مساعدة.
             </div>
         </div>
 
-        {{-- CTA button ── --}}
+        {{-- CTA buttons ── --}}
+        <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:14px;">
+            <tr>
+                <td align="center">
+                    <a href="{{ route('paymob.callback', array_filter(['sid' => $subscription->id, 'guest_token' => $subscription->guest_token])) }}"
+                       style="display:inline-block;background:#174DAD;color:#ffffff;font-size:15px;font-weight:900;padding:15px 40px;border-radius:14px;text-decoration:none;font-family:'Cairo','Segoe UI',Tahoma,Arial,sans-serif;letter-spacing:0.3px;">
+                        العودة لطلبي وإعادة المحاولة
+                    </a>
+                </td>
+            </tr>
+        </table>
+
         <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:8px;">
             <tr>
                 <td align="center">

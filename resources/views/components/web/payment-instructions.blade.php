@@ -1,11 +1,22 @@
-@props(['subscription'])
+{{--
+    Takes the eligibility method array directly (App\Services\Web\
+    PaymentEligibilityService::manualMethodFor()'s return value) plus the
+    currency/amount to display — deliberately NOT a $subscription prop.
+    Pre-submission on the purchase form there IS no subscription yet; this
+    component needs to render off a computed-but-unsaved price. Once a
+    subscription exists, the caller passes its own currency/total instead.
+--}}
+{{--
+    liveAmountExpr (optional): a raw Alpine JS expression string evaluated in
+    the parent's x-data scope, e.g. "manualFinalPriceFormatted" — when given,
+    the amount is x-text-bound to it so it stays correct as duration/coupon
+    change, with the server-rendered $total as the pre-hydration/no-JS value.
+--}}
+@props(['method', 'currency', 'total', 'liveAmountExpr' => null])
 @php
-    $methodKey  = $subscription->payment_method_key ?? config('payment.currency_to_method.' . ($subscription->currency ?? 'SAR'), 'sa_world');
-    $method     = config('payment.methods.' . $methodKey, []);
-    $currency   = $subscription->currency ?? 'SAR';
-    $symbol     = \App\Services\Web\CurrencyService::META[$currency]['symbol'] ?? 'ر.س';
-    $decimals   = \App\Services\Web\CurrencyService::META[$currency]['decimals'] ?? 0;
-    $total      = number_format((float) $subscription->total, $decimals);
+    $symbol   = \App\Services\Web\CurrencyService::META[$currency]['symbol'] ?? '';
+    $decimals = \App\Services\Web\CurrencyService::META[$currency]['decimals'] ?? 0;
+    $totalFormatted = number_format((float) $total, $decimals);
 @endphp
 
 @if(!empty($method))
@@ -34,7 +45,9 @@
         </div>
         <div style="display:flex;justify-content:space-between;">
             <span style="color:#6b7280;font-weight:600">المبلغ</span>
-            <span style="font-weight:900;color:#174DAD;direction:ltr">{{ $total }} {{ $symbol }}</span>
+            <span style="font-weight:900;color:#174DAD;direction:ltr"
+                  @if($liveAmountExpr) x-text="{{ $liveAmountExpr }} + ' {{ $symbol }}'" @endif
+            >{{ $totalFormatted }} {{ $symbol }}</span>
         </div>
     </div>
 
@@ -79,7 +92,9 @@
         @endisset
         <div style="border-top:1px solid #e5eaf3;margin-top:4px;padding-top:8px;display:flex;justify-content:space-between;">
             <span style="color:#6b7280;font-weight:700">المبلغ المطلوب</span>
-            <span style="font-weight:900;color:#174DAD;direction:ltr">{{ $total }} {{ $symbol }}</span>
+            <span style="font-weight:900;color:#174DAD;direction:ltr"
+                  @if($liveAmountExpr) x-text="{{ $liveAmountExpr }} + ' {{ $symbol }}'" @endif
+            >{{ $totalFormatted }} {{ $symbol }}</span>
         </div>
     </div>
     @endif
