@@ -121,15 +121,23 @@ class PaymobClient
             'special_reference' => $specialReference,
             // Per-intention, not dashboard-configured, per Batch 4 instructions.
             'notification_url' => route('paymob.webhook'),
-            // sid/guest_token are OUR OWN query params, not Paymob's — Paymob
+            // ref/guest_token are OUR OWN query params, not Paymob's — Paymob
             // treats this URL as opaque and appends its own params (id,
             // order, success, hmac, ...) on top when it redirects the
             // browser back, so these survive the round trip. This is what
             // lets PaymobCallbackController::show() authorize the visitor
             // (owner or matching guest_token) instead of trusting a
             // guessable order/transaction id alone.
+            //
+            // Named 'ref', deliberately NOT 'sid': a shared-hosting WAF
+            // (Imunify360/ModSecurity's OWASP CRS is the common default on
+            // cPanel+LiteSpeed) blocks any request whose query string
+            // contains 'sid=' outright — it's a generic "session id in URL"
+            // signature, matched before the request ever reaches PHP.
+            // Confirmed against a live production 403 with no matching log
+            // line in laravel.log at all (i.e. the request never arrived).
             'redirection_url' => route('paymob.callback', array_filter([
-                'sid' => $subscription->id,
+                'ref' => $subscription->id,
                 'guest_token' => $subscription->guest_token,
             ])),
         ];

@@ -12,7 +12,7 @@ class PaymobCallbackPageTest extends TestCase
     private function visit(Subscription $subscription)
     {
         return $this->get('/paymob/callback?' . http_build_query([
-            'sid' => $subscription->id,
+            'ref' => $subscription->id,
             'guest_token' => $subscription->guest_token,
         ]));
     }
@@ -59,7 +59,7 @@ class PaymobCallbackPageTest extends TestCase
 
         $response = $this->withSession(['currency' => 'EGP', 'detected_country' => 'EG'])
             ->get('/paymob/callback?' . http_build_query([
-                'sid' => $subscription->id, 'guest_token' => $subscription->guest_token,
+                'ref' => $subscription->id, 'guest_token' => $subscription->guest_token,
             ]));
 
         $response->assertOk();
@@ -79,7 +79,7 @@ class PaymobCallbackPageTest extends TestCase
 
         $response = $this->withSession(['currency' => 'USD', 'detected_country' => 'US'])
             ->get('/paymob/callback?' . http_build_query([
-                'sid' => $subscription->id, 'guest_token' => $subscription->guest_token,
+                'ref' => $subscription->id, 'guest_token' => $subscription->guest_token,
             ]));
 
         $response->assertOk();
@@ -147,7 +147,7 @@ class PaymobCallbackPageTest extends TestCase
         $user = User::factory()->create(['name' => 'سارة محمد', 'email' => 'sara@example.com']);
         $subscription = Subscription::factory()->paidViaPaymob()->create(['user_id' => $user->id]);
 
-        $response = $this->actingAs($user)->get('/paymob/callback?' . http_build_query(['sid' => $subscription->id]));
+        $response = $this->actingAs($user)->get('/paymob/callback?' . http_build_query(['ref' => $subscription->id]));
 
         $response->assertOk();
         $response->assertSee('سارة محمد');

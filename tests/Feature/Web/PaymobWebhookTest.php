@@ -290,10 +290,10 @@ class PaymobWebhookTest extends TestCase
     {
         $subscription = $this->makeSubscription(['guest_token' => 'correct-token']);
 
-        $this->get('/paymob/callback?' . http_build_query(['sid' => $subscription->id, 'guest_token' => 'wrong-token']))
+        $this->get('/paymob/callback?' . http_build_query(['ref' => $subscription->id, 'guest_token' => 'wrong-token']))
             ->assertStatus(403);
 
-        $this->get('/paymob/callback?' . http_build_query(['sid' => $subscription->id]))
+        $this->get('/paymob/callback?' . http_build_query(['ref' => $subscription->id]))
             ->assertStatus(403);
     }
 
@@ -301,7 +301,7 @@ class PaymobWebhookTest extends TestCase
     {
         $subscription = $this->makeSubscription(['guest_token' => 'correct-token']);
 
-        $this->get('/paymob/callback?' . http_build_query(['sid' => $subscription->id, 'guest_token' => 'correct-token']))
+        $this->get('/paymob/callback?' . http_build_query(['ref' => $subscription->id, 'guest_token' => 'correct-token']))
             ->assertOk()
             ->assertSee($subscription->invoiceNumber());
     }
@@ -313,7 +313,7 @@ class PaymobWebhookTest extends TestCase
         $subscription = $this->makeSubscription(['user_id' => $owner->id, 'guest_email' => null, 'guest_name' => null, 'guest_token' => null]);
 
         $this->actingAs($someoneElse)
-            ->get('/paymob/callback?' . http_build_query(['sid' => $subscription->id]))
+            ->get('/paymob/callback?' . http_build_query(['ref' => $subscription->id]))
             ->assertStatus(403);
     }
 
@@ -323,7 +323,7 @@ class PaymobWebhookTest extends TestCase
         $subscription = $this->makeSubscription(['user_id' => $owner->id, 'guest_email' => null, 'guest_name' => null, 'guest_token' => null]);
 
         $this->actingAs($owner)
-            ->get('/paymob/callback?' . http_build_query(['sid' => $subscription->id]))
+            ->get('/paymob/callback?' . http_build_query(['ref' => $subscription->id]))
             ->assertOk()
             ->assertSee($subscription->invoiceNumber());
     }

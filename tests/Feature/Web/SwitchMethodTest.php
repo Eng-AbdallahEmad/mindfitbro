@@ -85,7 +85,7 @@ class SwitchMethodTest extends TestCase
 
         $subscription->refresh();
         $response->assertRedirect(route('paymob.callback', [
-            'sid' => $subscription->id, 'guest_token' => $subscription->guest_token,
+            'ref' => $subscription->id, 'guest_token' => $subscription->guest_token,
         ]));
         $this->assertSame(Subscription::STATUS_PENDING_REVIEW, $subscription->status);
         $this->assertSame(Subscription::GATEWAY_MANUAL, $subscription->payment_gateway);
@@ -343,7 +343,7 @@ class SwitchMethodTest extends TestCase
             ]);
 
         $response->assertRedirect(route('paymob.callback', [
-            'sid' => $subscription->id, 'guest_token' => $subscription->guest_token,
+            'ref' => $subscription->id, 'guest_token' => $subscription->guest_token,
         ]));
 
         $subscription->refresh();

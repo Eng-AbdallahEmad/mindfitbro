@@ -664,7 +664,7 @@ class PurchaseController extends Controller
         }
 
         return redirect()->route('paymob.callback', array_filter([
-            'sid' => $subscription->id,
+            'ref' => $subscription->id,
             'guest_token' => $subscription->guest_token,
         ]));
     }
@@ -860,7 +860,7 @@ class PurchaseController extends Controller
         }
 
         return redirect()->route('paymob.callback', array_filter([
-            'sid' => $subscription->id,
+            'ref' => $subscription->id,
             'guest_token' => $subscription->guest_token,
         ]));
     }
@@ -885,7 +885,7 @@ class PurchaseController extends Controller
                 $fx = $this->fxConverter->toEgpCents((float) $subscription->total, $subscription->currency);
             } catch (FxRateNotConfiguredException) {
                 return redirect()->route('paymob.callback', array_filter([
-                    'sid' => $subscription->id,
+                    'ref' => $subscription->id,
                     'guest_token' => $subscription->guest_token,
                 ]))->with('warning', 'عذراً، الدفع بالبطاقة بهذه العملة غير متاح حالياً. برجاء المحاولة لاحقاً.');
             }

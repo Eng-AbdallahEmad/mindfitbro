@@ -70,7 +70,7 @@ body { margin:0; padding:0; background:#F0F4FB; font-family:'Cairo','Segoe UI',T
         <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:14px;">
             <tr>
                 <td align="center">
-                    <a href="{{ route('paymob.callback', array_filter(['sid' => $subscription->id, 'guest_token' => $subscription->guest_token])) }}"
+                    <a href="{{ route('paymob.callback', array_filter(['ref' => $subscription->id, 'guest_token' => $subscription->guest_token])) }}"
                        style="display:inline-block;background:#174DAD;color:#ffffff;font-size:15px;font-weight:900;padding:15px 40px;border-radius:14px;text-decoration:none;font-family:'Cairo','Segoe UI',Tahoma,Arial,sans-serif;letter-spacing:0.3px;">
                         العودة لطلبي وإعادة المحاولة
                     </a>

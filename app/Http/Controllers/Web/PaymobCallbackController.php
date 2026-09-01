@@ -77,18 +77,23 @@ class PaymobCallbackController extends Controller
     }
 
     /**
-     * Prefers our OWN `sid` query param (set by PaymobClient::createIntention()
+     * Prefers our OWN `ref` query param (set by PaymobClient::createIntention()
      * on the redirection_url we hand Paymob) — a direct, unambiguous lookup
      * that doesn't depend on guessing which of Paymob's own param names or
      * shapes actually survived the redirect. Falls back to the best-effort
      * Paymob-param resolution for robustness (older links, or if a gateway
      * ever strips unrecognized query params) — either way, authorize()
      * still runs before anything is rendered.
+     *
+     * Named 'ref', not 'sid': a shared-hosting WAF blocks any request whose
+     * query string contains 'sid=' outright (a generic "session id in URL"
+     * signature) — confirmed against a live 403 with no matching request
+     * ever reaching Laravel's own log.
      */
     private function resolveForDisplay(Request $request, array $flat): ?Subscription
     {
-        if ($sid = $request->query('sid')) {
-            return Subscription::find((int) $sid);
+        if ($ref = $request->query('ref')) {
+            return Subscription::find((int) $ref);
         }
 
         return $this->resolveFromRedirect($flat);

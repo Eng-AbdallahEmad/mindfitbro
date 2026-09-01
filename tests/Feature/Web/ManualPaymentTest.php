@@ -60,7 +60,7 @@ class ManualPaymentTest extends TestCase
 
         $subscription = Subscription::firstOrFail();
         $response->assertRedirect(route('paymob.callback', [
-            'sid' => $subscription->id,
+            'ref' => $subscription->id,
             'guest_token' => $subscription->guest_token,
         ]));
 
@@ -253,7 +253,7 @@ class ManualPaymentTest extends TestCase
         // by taking the latest row, not just any manual-gateway match.
         $subscription = Subscription::where('payment_gateway', Subscription::GATEWAY_MANUAL)->latest('id')->firstOrFail();
         $response->assertRedirect(route('paymob.callback', [
-            'sid' => $subscription->id,
+            'ref' => $subscription->id,
             'guest_token' => $subscription->guest_token,
         ]));
         $this->assertNull($subscription->coupon_code, 'exhausted coupon must not be silently applied');
@@ -301,7 +301,7 @@ class ManualPaymentTest extends TestCase
 
                 $subscription = Subscription::where('guest_email', "test-{$currency}-{$duration}@example.com")->firstOrFail();
                 $response->assertRedirect(route('paymob.callback', [
-                    'sid' => $subscription->id,
+                    'ref' => $subscription->id,
                     'guest_token' => $subscription->guest_token,
                 ]));
 
