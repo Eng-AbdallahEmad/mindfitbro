@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Web;
 use App\Http\Controllers\Controller;
 use App\Models\Subscription;
 use App\Services\Paymob\PaymobClient;
+use App\Services\Web\PaymentEligibilityService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
@@ -17,20 +18,55 @@ use Illuminate\Support\Facades\Log;
  */
 class PaymobCallbackController extends Controller
 {
-    public function show(Request $request, PaymobClient $paymobClient)
+    public function show(Request $request, PaymobClient $paymobClient, PaymentEligibilityService $eligibility)
     {
         $flat = $request->query();
 
         $this->bestEffortVerifyRedirectHmac($flat);
 
-        $subscription = $this->resolveFromRedirect($flat);
+        $subscription = $this->resolveForDisplay($request, $flat);
 
         abort_unless($subscription, 404);
 
-        return view('app.web.purchase.paymob_callback', compact('subscription'));
+        $this->authorize($request, $subscription);
+
+        $subscription->loadMissing('plan', 'user');
+
+        // Step 7: a rejected order can recover via switchMethod() — card is
+        // always offered (retryPayment()'s own eligibility, i.e. none); the
+        // manual re-upload option is offered ONLY when it would actually be
+        // accepted (same check switchToManual() itself re-validates
+        // authoritatively — this is purely so the page doesn't invite an
+        // upload that's certain to be refused).
+        $canSwitchToManual = $subscription->status === Subscription::STATUS_REJECTED
+            && ($manualMethod = $eligibility->manualMethodFor(session('detected_country')))
+            && $manualMethod['currency'] === $subscription->currency;
+
+        return view('app.web.purchase.paymob_callback', [
+            'subscription' => $subscription,
+            'canSwitchToManual' => (bool) $canSwitchToManual,
+        ]);
     }
 
     public function status(Request $request, Subscription $subscription)
+    {
+        $this->authorize($request, $subscription);
+
+        return response()->json([
+            'status' => $subscription->status,
+            'is_paid' => $subscription->isPaid(),
+        ]);
+    }
+
+    /**
+     * Same rule everywhere a customer can view or poll a subscription's
+     * payment result: the authenticated owner, or a guest presenting the
+     * exact guest_token for that row. Never the subscription id alone —
+     * sequential/enumerable ids (our own auto-increment, or Paymob's own
+     * order/transaction ids used by resolveFromRedirect()) must never be
+     * sufficient on their own to see someone else's name/email/phone/order.
+     */
+    private function authorize(Request $request, Subscription $subscription): void
     {
         $authorized = (Auth::check() && $subscription->user_id === Auth::id())
             || (!Auth::check()
@@ -38,11 +74,24 @@ class PaymobCallbackController extends Controller
                 && hash_equals($subscription->guest_token, (string) $request->query('guest_token', '')));
 
         abort_unless($authorized, 403);
+    }
 
-        return response()->json([
-            'status' => $subscription->status,
-            'is_paid' => $subscription->isPaid(),
-        ]);
+    /**
+     * Prefers our OWN `sid` query param (set by PaymobClient::createIntention()
+     * on the redirection_url we hand Paymob) — a direct, unambiguous lookup
+     * that doesn't depend on guessing which of Paymob's own param names or
+     * shapes actually survived the redirect. Falls back to the best-effort
+     * Paymob-param resolution for robustness (older links, or if a gateway
+     * ever strips unrecognized query params) — either way, authorize()
+     * still runs before anything is rendered.
+     */
+    private function resolveForDisplay(Request $request, array $flat): ?Subscription
+    {
+        if ($sid = $request->query('sid')) {
+            return Subscription::find((int) $sid);
+        }
+
+        return $this->resolveFromRedirect($flat);
     }
 
     /**

@@ -166,6 +166,82 @@ class Subscription extends Model
             : $this->charged_amount_cents / 100;
     }
 
+    /**
+     * Customer-facing reference shown on the payment-result page and any
+     * future receipt — deliberately NOT the raw auto-increment id (never
+     * exposed in the UI). Computed, not stored: fully deterministic from
+     * created_at + id, so no migration/backfill is needed and it can never
+     * drift from the row it describes.
+     */
+    public function invoiceNumber(): string
+    {
+        $year = $this->created_at?->format('Y') ?? now()->format('Y');
+
+        return "MFB-{$year}-" . str_pad((string) $this->id, 6, '0', STR_PAD_LEFT);
+    }
+
+    /**
+     * Human-readable payment method label for display only. Paymob doesn't
+     * let us distinguish card vs. wallet without persisting source_data.type
+     * from the webhook (out of scope — webhook logic is untouched here), so
+     * Paymob orders get one generic label. Manual orders key
+     * payment_method_key by CURRENCY (config/payment.php 'manual', one
+     * account per currency) — 'EGP' is InstaPay, everything else is a bank
+     * transfer.
+     */
+    public function paymentMethodLabel(): string
+    {
+        if ($this->payment_gateway === self::GATEWAY_MANUAL) {
+            return match ($this->payment_method_key) {
+                'EGP'   => 'InstaPay',
+                default => 'تحويل بنكي',
+            };
+        }
+
+        return 'بطاقة / محفظة إلكترونية (Paymob)';
+    }
+
+    /**
+     * When THIS review actually started — payment_intended_at, refreshed on
+     * a mid-flight switch-to-manual, not created_at (which could be days
+     * earlier if the row started as a card attempt). Null for anything that
+     * isn't currently an unreviewed manual order — staleness is meaningless
+     * outside that one state.
+     */
+    public function reviewWaitingSince(): ?\Carbon\Carbon
+    {
+        if ($this->payment_gateway !== self::GATEWAY_MANUAL || $this->status !== self::STATUS_PENDING_REVIEW) {
+            return null;
+        }
+
+        return $this->payment_intended_at ?? $this->created_at;
+    }
+
+    /**
+     * Surfacing only (step 6) — never used to auto-reject or auto-expire
+     * anything, purely a display signal for the admin list/detail pages.
+     */
+    public function reviewStalenessLevel(): ?string
+    {
+        $since = $this->reviewWaitingSince();
+
+        if (! $since) {
+            return null;
+        }
+
+        $hours = $since->diffInHours(now());
+
+        if ($hours >= (int) config('payment.manual_review_thresholds.urgent_hours', 168)) {
+            return 'urgent';
+        }
+
+        if ($hours >= (int) config('payment.manual_review_thresholds.warning_hours', 48)) {
+            return 'warning';
+        }
+
+        return 'normal';
+    }
+
     protected static function booted(): void
     {
         static::deleting(function (Subscription $subscription) {

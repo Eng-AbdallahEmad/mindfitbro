@@ -274,6 +274,7 @@ class PaymobWebhookTest extends TestCase
             'order' => $subscription->paymob_order_id,
             'success' => 'true',
             'id' => '999999',
+            'guest_token' => $subscription->guest_token,
         ]));
 
         $response->assertOk();
@@ -281,6 +282,60 @@ class PaymobWebhookTest extends TestCase
         $subscription->refresh();
         $this->assertSame(Subscription::STATUS_AWAITING_PAYMENT, $subscription->status, 'the callback page must never approve anything');
         $this->assertNull($subscription->paid_at);
+    }
+
+    // ── Callback page authorization (owner or matching guest_token only) ──
+
+    public function test_callback_page_rejects_wrong_guest_token(): void
+    {
+        $subscription = $this->makeSubscription(['guest_token' => 'correct-token']);
+
+        $this->get('/paymob/callback?' . http_build_query(['sid' => $subscription->id, 'guest_token' => 'wrong-token']))
+            ->assertStatus(403);
+
+        $this->get('/paymob/callback?' . http_build_query(['sid' => $subscription->id]))
+            ->assertStatus(403);
+    }
+
+    public function test_callback_page_accepts_correct_guest_token(): void
+    {
+        $subscription = $this->makeSubscription(['guest_token' => 'correct-token']);
+
+        $this->get('/paymob/callback?' . http_build_query(['sid' => $subscription->id, 'guest_token' => 'correct-token']))
+            ->assertOk()
+            ->assertSee($subscription->invoiceNumber());
+    }
+
+    public function test_callback_page_rejects_a_logged_in_user_who_does_not_own_the_subscription(): void
+    {
+        $owner   = User::factory()->create();
+        $someoneElse = User::factory()->create();
+        $subscription = $this->makeSubscription(['user_id' => $owner->id, 'guest_email' => null, 'guest_name' => null, 'guest_token' => null]);
+
+        $this->actingAs($someoneElse)
+            ->get('/paymob/callback?' . http_build_query(['sid' => $subscription->id]))
+            ->assertStatus(403);
+    }
+
+    public function test_callback_page_accepts_the_owning_authenticated_user_with_no_token_needed(): void
+    {
+        $owner = User::factory()->create();
+        $subscription = $this->makeSubscription(['user_id' => $owner->id, 'guest_email' => null, 'guest_name' => null, 'guest_token' => null]);
+
+        $this->actingAs($owner)
+            ->get('/paymob/callback?' . http_build_query(['sid' => $subscription->id]))
+            ->assertOk()
+            ->assertSee($subscription->invoiceNumber());
+    }
+
+    public function test_callback_page_never_leaks_another_customers_data_via_the_bare_order_id(): void
+    {
+        $victim = $this->makeSubscription(['guest_token' => 'victim-token', 'guest_name' => 'ضحية سرية']);
+
+        // No sid, no guest_token — only Paymob's own (guessable) order id.
+        $this->get('/paymob/callback?' . http_build_query(['order' => $victim->paymob_order_id]))
+            ->assertStatus(403)
+            ->assertDontSee('ضحية سرية');
     }
 
     // ── Status endpoint authorization ────────────────────────────────────
