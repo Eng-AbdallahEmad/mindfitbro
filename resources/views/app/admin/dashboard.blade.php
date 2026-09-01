@@ -154,6 +154,23 @@
     </div>
 </div>
 
+{{-- ══════════ OVERDUE MANUAL REVIEWS BANNER (step 6, surfacing only) ══════════ --}}
+@if($overdueManualReviews > 0)
+<a href="{{ route('admin.subscriptions.index', ['status' => 'pending_review', 'sort' => 'waiting']) }}"
+   class="flex items-center gap-3 bg-amber-50 border border-amber-200 rounded-2xl px-5 py-4 mb-6 hover:bg-amber-100 transition">
+    <div class="w-10 h-10 rounded-xl bg-amber-100 flex items-center justify-center flex-shrink-0">
+        <span class="material-symbols-rounded text-amber-600" style="font-size:20px;font-variation-settings:'FILL' 1">schedule</span>
+    </div>
+    <div class="flex-1 min-w-0">
+        <p class="font-black text-amber-800 text-sm">
+            {{ $overdueManualReviews }} {{ $overdueManualReviews === 1 ? 'طلب تحويل بنكي' : 'طلبات تحويل بنكي' }} بانتظار المراجعة منذ فترة طويلة
+        </p>
+        <p class="text-amber-600 text-xs font-semibold mt-0.5">اضغط لعرض الطلبات مرتبة حسب مدة الانتظار</p>
+    </div>
+    <span class="material-symbols-rounded text-amber-400 flex-shrink-0" style="font-size:18px">chevron_left</span>
+</a>
+@endif
+
 {{-- ══════════ STATS CARDS ══════════ --}}
 <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-5 mb-8">
 

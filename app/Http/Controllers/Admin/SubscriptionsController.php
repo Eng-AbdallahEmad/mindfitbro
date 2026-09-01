@@ -62,7 +62,15 @@ class SubscriptionsController extends Controller
             }
         }
 
-        $subscriptions = $query->latest()->paginate(15)->withQueryString();
+        // Sort by waiting time — oldest-unreviewed-first, the natural triage
+        // order for manual reviews (step 6). Plain 'latest' otherwise.
+        if ($request->input('sort') === 'waiting') {
+            $query->orderByRaw('COALESCE(payment_intended_at, created_at) ASC');
+        } else {
+            $query->latest();
+        }
+
+        $subscriptions = $query->paginate(15)->withQueryString();
 
         $plans = Plan::orderBy('sort_order')->get(['id', 'name']);
 
@@ -91,7 +99,19 @@ class SubscriptionsController extends Controller
 
         $activeMeetLink = $this->activeBookingFor($subscription)?->meet_link;
 
-        return view('app.admin.subscriptions.show', compact('subscription', 'activeMeetLink'));
+        // Step 6: which coupon (if any) this order's capacity is holding —
+        // surfacing only, never auto-resolved. Only meaningful for a
+        // still-open manual review with a LIMITED coupon (max_uses set);
+        // an unlimited coupon has no capacity to "hold" in the first place.
+        $holdingCoupon = null;
+        if ($subscription->status === Subscription::STATUS_PENDING_REVIEW && $subscription->coupon_code) {
+            $coupon = \App\Models\Coupon::where('code', $subscription->coupon_code)->first();
+            if ($coupon && $coupon->max_uses !== null) {
+                $holdingCoupon = $coupon;
+            }
+        }
+
+        return view('app.admin.subscriptions.show', compact('subscription', 'activeMeetLink', 'holdingCoupon'));
     }
 
     public function update(Request $request, Subscription $subscription)

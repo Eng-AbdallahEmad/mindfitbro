@@ -132,6 +132,24 @@
                 </a>
             </div>
 
+            {{-- Step 6: waiting time + coupon-capacity notice — surfacing only --}}
+            @php $reviewSince = $subscription->reviewWaitingSince(); $staleLevel = $subscription->reviewStalenessLevel(); @endphp
+            @if($reviewSince)
+            <div class="px-5 pt-4 flex flex-wrap items-center gap-2">
+                <span class="badge {{ match($staleLevel) { 'urgent' => 'badge-red', 'warning' => 'badge-yellow', default => 'badge-gray' } }}">
+                    <span class="material-symbols-rounded" style="font-size:12px;font-variation-settings:'FILL' 1">schedule</span>
+                    بانتظار المراجعة منذ {{ $reviewSince->diffForHumans(null, true) }}
+                    ({{ $reviewSince->format('d/m/Y — H:i') }})
+                </span>
+                @if($holdingCoupon)
+                <span class="badge badge-violet" title="هذا الطلب يحجز سعة من كوبون محدود الاستخدام">
+                    <span class="material-symbols-rounded" style="font-size:12px;font-variation-settings:'FILL' 1">confirmation_number</span>
+                    يحجز سعة كوبون {{ $holdingCoupon->code }} ({{ $holdingCoupon->usageCount() }}/{{ $holdingCoupon->max_uses }})
+                </span>
+                @endif
+            </div>
+            @endif
+
             {{-- Receipt inline preview --}}
             @php
                 $receiptExt = $subscription->receipt_path

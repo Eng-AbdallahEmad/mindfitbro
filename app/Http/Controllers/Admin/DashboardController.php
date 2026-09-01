@@ -34,6 +34,20 @@ class DashboardController extends Controller
             ->limit(6)
             ->get();
 
-        return view('app.admin.dashboard', compact('stats', 'recentSubscriptions', 'recentMembers'));
+        // Step 6: unreviewed manual orders past the WARNING threshold —
+        // visible on the landing page so it's seen without navigating to
+        // the subscriptions list. Surfacing only, never auto-resolved.
+        $overdueManualReviews = Subscription::where('status', Subscription::STATUS_PENDING_REVIEW)
+            ->where('payment_gateway', Subscription::GATEWAY_MANUAL)
+            ->where(function ($q) {
+                $q->where('payment_intended_at', '<', now()->subHours((int) config('payment.manual_review_thresholds.warning_hours', 48)))
+                  ->orWhere(function ($q2) {
+                      $q2->whereNull('payment_intended_at')
+                         ->where('created_at', '<', now()->subHours((int) config('payment.manual_review_thresholds.warning_hours', 48)));
+                  });
+            })
+            ->count();
+
+        return view('app.admin.dashboard', compact('stats', 'recentSubscriptions', 'recentMembers', 'overdueManualReviews'));
     }
 }

@@ -243,13 +243,18 @@
                     <option value="guest"      {{ request('member') === 'guest'      ? 'selected' : '' }}>ضيوف</option>
                 </select>
 
+                <select name="sort" class="filter-select flex-1 min-w-[150px]">
+                    <option value="">الأحدث أولاً</option>
+                    <option value="waiting" {{ request('sort') === 'waiting' ? 'selected' : '' }}>الأقدم انتظاراً أولاً</option>
+                </select>
+
                 <button type="submit"
                     class="flex items-center gap-1.5 bg-blue-500 hover:bg-blue-600 text-white font-black text-xs px-4 py-2 rounded-xl transition">
                     <span class="material-symbols-rounded" style="font-size:15px">filter_alt</span>
                     فلتر
                 </button>
 
-                @if(request()->hasAny(['search','status','plan','type','member']))
+                @if(request()->hasAny(['search','status','plan','type','member','sort']))
                 <a href="{{ route('admin.subscriptions.index') }}"
                    class="flex items-center gap-1.5 bg-slate-100 hover:bg-slate-200 text-slate-600 font-black text-xs px-4 py-2 rounded-xl transition">
                     <span class="material-symbols-rounded" style="font-size:15px">close</span>
@@ -258,8 +263,17 @@
                 @endif
             </div>
 
+            {{-- Quick filter: manual transfers awaiting review, oldest first (step 6) --}}
+            <div class="mt-3">
+                <a href="{{ route('admin.subscriptions.index', ['status' => 'pending_review', 'sort' => 'waiting']) }}"
+                   class="inline-flex items-center gap-1.5 bg-amber-50 hover:bg-amber-100 text-amber-700 border border-amber-200 font-black text-xs px-3 py-1.5 rounded-full transition">
+                    <span class="material-symbols-rounded" style="font-size:14px;font-variation-settings:'FILL' 1">schedule</span>
+                    التحويلات البنكية بانتظار المراجعة (الأقدم أولاً)
+                </a>
+            </div>
+
             {{-- Active tags --}}
-            @if(request()->hasAny(['search','status','plan','type','member']))
+            @if(request()->hasAny(['search','status','plan','type','member','sort']))
             <div class="flex flex-wrap gap-2 mt-3 pt-3 border-t border-slate-100">
                 @if(request('search'))
                 <span class="filter-tag"><span class="material-symbols-rounded" style="font-size:13px">search</span>"{{ request('search') }}"</span>
@@ -283,6 +297,11 @@
                 @if(request('member'))
                 <span class="filter-tag"><span class="material-symbols-rounded" style="font-size:13px">person</span>
                 {{ request('member') === 'guest' ? 'ضيوف' : 'أعضاء مسجلون' }}
+                </span>
+                @endif
+                @if(request('sort') === 'waiting')
+                <span class="filter-tag"><span class="material-symbols-rounded" style="font-size:13px">schedule</span>
+                الأقدم انتظاراً أولاً
                 </span>
                 @endif
             </div>
@@ -405,6 +424,20 @@
                             <span class="material-symbols-rounded" style="font-size:11px;font-variation-settings:'FILL' 1">{{ $st[2] }}</span>
                             {{ $st[0] }}
                         </span>
+                        @php $stale = $sub->reviewStalenessLevel(); @endphp
+                        @if($stale && $stale !== 'normal')
+                        @php
+                            $staleMeta = [
+                                'warning' => ['badge-yellow', 'schedule', 'متأخر'],
+                                'urgent'  => ['badge-red', 'warning', 'متأخر جداً'],
+                            ][$stale];
+                        @endphp
+                        <br>
+                        <span class="badge {{ $staleMeta[0] }}" style="margin-top:4px" title="بانتظار المراجعة منذ {{ $sub->reviewWaitingSince()->diffForHumans(null, true) }}">
+                            <span class="material-symbols-rounded" style="font-size:11px;font-variation-settings:'FILL' 1">{{ $staleMeta[1] }}</span>
+                            {{ $staleMeta[2] }} ({{ $sub->reviewWaitingSince()->diffForHumans(null, true) }})
+                        </span>
+                        @endif
                     </td>
 
                     {{-- Date --}}
