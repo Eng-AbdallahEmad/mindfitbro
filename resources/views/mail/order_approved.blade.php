@@ -14,6 +14,9 @@ body { margin:0; padding:0; background:#F0F4FB; font-family:'Cairo','Segoe UI',T
     $currency = $subscription->currency ?? 'SAR';
     $symbol   = \App\Services\Web\CurrencyService::META[$currency]['symbol'] ?? 'ر.س';
     $dec      = \App\Services\Web\CurrencyService::META[$currency]['decimals'] ?? 0;
+
+    $customerEmail = $subscription->user?->email ?? $subscription->guest_email ?? '—';
+    $customerPhone = $subscription->billing_phone ?: '—';
 @endphp
 
 <div style="max-width:600px;margin:0 auto;padding:32px 16px;">
@@ -31,11 +34,49 @@ body { margin:0; padding:0; background:#F0F4FB; font-family:'Cairo','Segoe UI',T
     <div style="padding:36px;">
 
         {{-- Greeting ── --}}
-        <p style="font-size:15px;color:#374151;margin-bottom:28px;line-height:1.8;font-family:'Cairo','Segoe UI',Tahoma,Arial,sans-serif;">
+        <p style="font-size:15px;color:#374151;margin-bottom:20px;line-height:1.8;font-family:'Cairo','Segoe UI',Tahoma,Arial,sans-serif;">
             أهلاً <strong style="color:#16a34a;">{{ $customerName }}</strong>،<br>
             يسعدنا إبلاغك بأن دفعتك تم التحقق منها بنجاح وتم تفعيل اشتراكك في MindFitBro.
             فريقنا مستعد للبدء معك!
         </p>
+
+        {{-- Amount paid — the headline number of this receipt ── --}}
+        <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:14px;">
+            <tr>
+                <td style="background:#F0FDF4;border:1.5px solid #BBF7D0;border-radius:14px;padding:16px 20px;">
+                    <table width="100%" cellpadding="0" cellspacing="0">
+                        <tr>
+                            <td style="font-size:12px;font-weight:800;color:#15803D;font-family:'Cairo','Segoe UI',Tahoma,Arial,sans-serif;">المبلغ المدفوع</td>
+                            <td align="left" style="font-size:20px;font-weight:900;color:#15803D;font-family:'Cairo','Segoe UI',Tahoma,Arial,sans-serif;" dir="ltr">
+                                {{ number_format((float) $subscription->total, $dec) }} {{ $symbol }}
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+        </table>
+
+        {{-- Customer details — a small receipt of what we have on file ── --}}
+        <table width="100%" cellpadding="0" cellspacing="0" style="background:#F4F7FF;border-radius:14px;margin-bottom:28px;">
+            <tr>
+                <td style="padding:14px 18px;">
+                    <table width="100%" cellpadding="0" cellspacing="0">
+                        <tr>
+                            <td style="font-size:12px;color:#6B7280;font-weight:600;padding:4px 0;font-family:'Cairo','Segoe UI',Tahoma,Arial,sans-serif;">الاسم</td>
+                            <td align="left" style="font-size:12px;color:#1C1C1C;font-weight:800;padding:4px 0;font-family:'Cairo','Segoe UI',Tahoma,Arial,sans-serif;">{{ $customerName }}</td>
+                        </tr>
+                        <tr>
+                            <td style="font-size:12px;color:#6B7280;font-weight:600;padding:4px 0;font-family:'Cairo','Segoe UI',Tahoma,Arial,sans-serif;">البريد الإلكتروني</td>
+                            <td align="left" style="font-size:12px;color:#1C1C1C;font-weight:800;padding:4px 0;font-family:'Cairo','Segoe UI',Tahoma,Arial,sans-serif;" dir="ltr">{{ $customerEmail }}</td>
+                        </tr>
+                        <tr>
+                            <td style="font-size:12px;color:#6B7280;font-weight:600;padding:4px 0;font-family:'Cairo','Segoe UI',Tahoma,Arial,sans-serif;">رقم الهاتف</td>
+                            <td align="left" style="font-size:12px;color:#1C1C1C;font-weight:800;padding:4px 0;font-family:'Cairo','Segoe UI',Tahoma,Arial,sans-serif;" dir="ltr">{{ $customerPhone }}</td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+        </table>
 
         {{-- Info chips (table layout — email-safe) ── --}}
         <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:28px;">
