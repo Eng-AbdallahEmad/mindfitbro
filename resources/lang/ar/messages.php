@@ -734,7 +734,7 @@ return [
         'feat_progress_sub' => 'شوف رحلتك خطوة بخطوة',
         'feat_coach'        => 'متابعة مع الكوتش',
         'feat_coach_sub'    => 'ملاحظات ونصايح يومية',
-        'subscribe_now'     => 'اشترك دلوقتي',
+        'subscribe_now'     => 'اشترك الان',
         'back_home'         => 'العودة للصفحة الرئيسية',
         'set_first_session'      => 'حدد موعد جلستك الأولى',
         'required_activation'    => 'مطلوب لتفعيل الباقة',
