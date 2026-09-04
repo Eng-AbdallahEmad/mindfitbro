@@ -478,7 +478,7 @@
                             <h3 class="font-black text-textColor text-lg mb-1">مفيش حجوزات</h3>
                             <p class="text-gray-400 text-sm font-bold">
                                 @if(request('status'))
-                                    مفيش حجوزات بالفلتر ده دلوقتي
+                                    مفيش حجوزات بالفلتر ده الآن
                                 @elseif(request('search'))
                                     مفيش نتائج لـ "{{ request('search') }}"
                                 @else

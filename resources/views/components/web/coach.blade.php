@@ -395,7 +395,7 @@
                     </div>
                     <div class="bg-blue-50/60 border border-blue-100 rounded-xl px-3 py-2.5 flex items-start gap-2">
                         <span class="material-symbols-rounded text-blue-400 flex-shrink-0 mt-0.5" style="font-size:14px">info</span>
-                        <p class="text-[10px] font-bold text-blue-600 font-arabic leading-relaxed">ممكن تضيفها بعدين من صفحة المشترك لو مش عندك البيانات دلوقتي</p>
+                        <p class="text-[10px] font-bold text-blue-600 font-arabic leading-relaxed">ممكن تضيفها بعدين من صفحة المشترك لو مش عندك البيانات الآن</p>
                     </div>
                     <div class="grid grid-cols-1 gap-3">
                         <div>
@@ -1053,7 +1053,7 @@
                 @empty
                 <div class="flex flex-col items-center justify-center py-10 gap-3 font-arabic text-center">
                     <span class="material-symbols-rounded text-gray-300" style="font-size:40px;font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 48">group</span>
-                    <p class="text-gray-400 text-sm font-bold">مفيش مشتركين نشطين دلوقتي</p>
+                    <p class="text-gray-400 text-sm font-bold">مفيش مشتركين نشطين الآن</p>
                 </div>
                 @endforelse
             </div>
